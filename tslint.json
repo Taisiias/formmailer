@@ -1,0 +1,38 @@
+{
+    "extends": "tslint:latest",
+    "rules": {
+        "max-file-line-count": [true, 200],
+        "cyclomatic-complexity": [true, 8],
+
+        "no-any": true,
+        "no-empty-interface": true,
+        "no-inferrable-types": [ true ],
+        "typedef": [true, "call-signature", "parameter", "property-declaration",
+            "member-variable-declaration"],
+        "no-invalid-this": true,
+        "no-null-keyword": true,
+        "no-string-throw": true,
+        "no-switch-case-fall-through": true,
+        "no-use-before-declare": true,
+        "max-line-length": [ true, 80 ],
+        "triple-equals": [true, "allow-null-check", "allow-undefined-check"],
+        "no-default-export": true,
+        "no-mergeable-namespace": true,
+        "no-angle-bracket-type-assertion": true,
+        "align": [true, "parameters", "statements", "arguments"],
+        "linebreak-style": [true, "LF"],
+        "variable-name": [
+            true,
+            "ban-keywords",
+            "allow-leading-underscore",
+            "check-format",
+            "allow-pascal-case"
+        ],
+        "prefer-const": true,
+        "interface-name": [ false ],
+        "max-classes-per-file": [ false ],
+        "no-namespace": false
+
+        //  "completed-docs": [true, "classes", "functions", "methods"],
+   }
+}

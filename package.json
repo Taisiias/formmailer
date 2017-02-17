@@ -1,0 +1,37 @@
+{
+  "name": "formmailer",
+  "version": "0.0.1",
+  "description": "Server that emails data from submitted forms on your static website.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "tsc -w",
+    "build": "tsc",
+    "live": "nodemon --exec ./node_modules/.bin/ts-node -- ./src/index.ts",
+    "start": "tsc && node ./build/src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Taisiias/formmailer.git"
+  },
+  "keywords": [
+    "formmail",
+    "mailform",
+    "forms",
+    "mail",
+    "post"
+  ],
+  "author": "Taisiia Sobchenko",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Taisiias/formmailer/issues"
+  },
+  "homepage": "https://github.com/Taisiias/formmailer#readme",
+  "dependencies": {
+    "@types/node": "^7.0.5",
+    "nodemon": "^1.11.0",
+    "ts-node": "^2.1.0",
+    "tslint": "^4.4.2",
+    "typescript": "^2.1.6"
+  }
+}
