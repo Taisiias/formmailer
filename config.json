@@ -1,5 +1,6 @@
-{
-    "smtpPort": 678,
-    "recipientEmails": "ljkj@gmail.com  ; ;; oiu@gmail.com",
-    "fromEmail": "asdf@gmail.com"
+{ 
+    "HttpListenIP": "0.0.0.0",
+    "HttpListenPort" : "8080",
+    "recipientEmails" : "ljlkj@gmail.com; ;lkjkj@bk.ru; jhkjh@gmai.com",
+    "fromEmail": "es_tee@bk.ru"
 }

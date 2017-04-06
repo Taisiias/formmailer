@@ -2,7 +2,7 @@
     "extends": "tslint:latest",
     "rules": {
         "max-file-line-count": [true, 200],
-        "cyclomatic-complexity": [true, 20],
+        "cyclomatic-complexity": [true, 8],
 
         "no-any": true,
         "no-empty-interface": true,
