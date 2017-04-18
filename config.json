@@ -1,4 +1,5 @@
 { 
+    "smtpPort": "2500",
     "HttpListenIP": "0.0.0.0",
     "HttpListenPort" : "8080",
     "recipientEmails" : "ljlkj@gmail.com; ;lkjkj@bk.ru; jhkjh@gmai.com",

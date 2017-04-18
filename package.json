@@ -32,7 +32,7 @@
     "@types/winston": "^2.2.0",
     "commandpost": "^1.0.1",
     "email-validator": "^1.0.7",
-    "emailjs": "^1.0.8",
+    "nodemailer": "^4.0.0",
     "nodemon": "^1.11.0",
     "querystring": "^0.2.0",
     "ts-node": "^2.1.0",
