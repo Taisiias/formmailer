@@ -1,5 +1,4 @@
 // import * as commandpost from "commandpost";
-
 import * as emailvalidator from "email-validator";
 import * as fs from "fs";
 import * as http from "http";
@@ -13,6 +12,7 @@ interface Config {
     smtpHost: string;
     recipientEmails: string | string[];
     fromEmail: string;
+    subject: string;
 }
 
 let config: Config;
@@ -64,12 +64,21 @@ function validateSmtpPort(smtpPort?: number): number {
     return smtpPort;
 }
 
+function validateSubject(subject?: string): string {
+    // Validating subject
+    if (subject === undefined) {
+        subject = "Default Subject";
+    }
+    return subject;
+}
+
 function ParseConfig(cf: Partial<Config>): Config {
     return {
         fromEmail: validateFromEmail(cf.fromEmail),
         recipientEmails: validateEmailRecipients(cf.recipientEmails as string),
         smtpHost: validateSmtpHost(cf.smtpHost),
         smtpPort: validateSmtpPort(cf.smtpPort),
+        subject: validateSubject(cf.subject),
     };
 }
 
@@ -102,9 +111,6 @@ function ReadConfig(): void {
         winston.error(e.message);
         return;
     }
-
-    winston.info("SMTP host is " + config.smtpHost);
-    winston.info("SMTP port is " + config.smtpPort);
 }
 
 const server = http.createServer((req, res) => {
@@ -125,9 +131,16 @@ const server = http.createServer((req, res) => {
 
         req.on("end", () => {
             const post = qs.parse(bodyStr);
+            let userMessage = "";
+            for (const name in post) {
+                if (name !== "_redirect") {
+                    const str = name + ": " + post[name] + "\n";
+                    userMessage += str;
+                 }
+            }
             sendEmail(post.user_name,
                       post.user_mail,
-                      post.user_message,
+                      userMessage,
                       () => {
                             winston.info("Redirecting to " + post._redirect);
                             res.writeHead(301, { Location: post._redirect });
@@ -151,7 +164,7 @@ function sendEmail(userName: string,
 
     const emailMessage = {
         from: userName + " " + userMail,
-        subject: "Test formmailer",
+        subject: config.subject,
         text: emailText,
         to: config.recipientEmails,
     };

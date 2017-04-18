@@ -1,6 +1,6 @@
 <html>
-   <form action="http://localhost:3000/receive" method="post">
-   <input type="hidden" id="_redirect" name="_redirect" value="https://google.com">
+<form action="http://localhost:3000/receive" method="post">
+    <input type="hidden" id="_redirect" name="_redirect" value="https://google.com">
     <div>
         <label for="name">Name:</label>
         <input type="text" id="name" name="user_name">
@@ -9,12 +9,34 @@
         <label for="mail">E-mail:</label>
         <input type="email" id="mail" name="user_mail">
     </div>
-    <div> 
+    <div>
         <label for="msg">Message:</label>
         <textarea id="msg" name="user_message"></textarea>
+    </div>
+    <div>
+        <label for="select">Choose an option</label>
+        <select name="user_select">
+            <optgroup label="Group 1">
+                <option>Option 1.1</option>
+            </optgroup> 
+            <optgroup label="Group 2">
+                <option>Option 2.1</option>
+                <option>Option 2.2</option>
+            </optgroup>
+            <optgroup label="Group 3">
+                <option>Option 3.1</option>
+                <option>Option 3.2</option>
+                <option>Option 3.3</option>
+            </optgroup>
+        </select>
+    </div>
+    <div>
+        <input type="checkbox" id="subscribeNews" name="subscribe" value="newsletter">
+        <label for="subscribeNews">Subscribe to newsletter?</label>
     </div>
     <div class="button">
         <button type="submit">Send your message</button>
     </div>
 </form>
+
 </html>
