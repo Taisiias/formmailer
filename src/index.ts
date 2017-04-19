@@ -66,18 +66,18 @@ function validateSmtpPort(smtpPort?: number): number {
 }
 
 function validateHttpListenPort(httpListenPort?: number): number {
-    winston.info("Validating HTTP Listen Port.");
     if (httpListenPort === undefined) {
         httpListenPort = 80;
     }
+    winston.info("Validating HTTP Listen Port." + httpListenPort);
     return httpListenPort;
 }
 
 function validateHttpListenIP(httpListenIP?: string): string {
-    winston.info("Validating HTTP Listen IP.");
     if (httpListenIP === undefined) {
         httpListenIP = "0.0.0.0";
     }
+    winston.info("Validating HTTP Listen IP." + httpListenIP);
     return httpListenIP;
 }
 
