@@ -190,7 +190,7 @@ function sendEmail(
 
 function run(): void {
     ReadConfig();
-    server.listen(config.httpListenIP);
+    server.listen(config.httpListenPort, config.httpListenIP);
 }
 
 run();
