@@ -12,12 +12,14 @@ interface Config {
     recipientEmails: string | string[];
     fromEmail: string;
     subject: string;
+    httpListenIP: string;
+    httpListenPort: number;
 }
 
 let config: Config;
 
 function validateFromEmail(fromEmail?: string): string {
-    // Validating fromEmail
+    winston.info("Validating fromEmail");
     if (fromEmail === undefined || fromEmail === "") {
         throw new Error("Please add sender's email");
     }
@@ -25,7 +27,7 @@ function validateFromEmail(fromEmail?: string): string {
 }
 
 function validateEmailRecipients(recipientEmailsStr?: string): string[] {
-    // Validating recipientEmails
+    winston.info("Validating recipientEmails");
     if (recipientEmailsStr === undefined) {
         throw new Error("Undefined recipient emails.");
     }
@@ -42,13 +44,13 @@ function validateEmailRecipients(recipientEmailsStr?: string): string[] {
         recipientEmailsArray[i] = recipientEmailsArray[i].trim();
     }
     if (recipientEmailsArray.length === 0) {
-        throw new Error("Recipient emails list is empty");
+        throw new Error("Recipient emails list is empty.");
     }
     return recipientEmailsArray;
 }
 
 function validateSmtpHost(smtpHost?: string): string {
-    // Validating smtpHost
+    winston.info("Validating smtpHost.");
     if (smtpHost === undefined || smtpHost === "") {
         smtpHost = "localhost";
     }
@@ -56,15 +58,31 @@ function validateSmtpHost(smtpHost?: string): string {
 }
 
 function validateSmtpPort(smtpPort?: number): number {
-    // Validating smtpPort
+    winston.info("Validating smtpPort.");
     if (smtpPort === undefined) {
         smtpPort = 25;
     }
     return smtpPort;
 }
 
+function validateHttpListenPort(httpListenPort?: number): number {
+    winston.info("Validating HTTP Listen Port.");
+    if (httpListenPort === undefined) {
+        httpListenPort = 80;
+    }
+    return httpListenPort;
+}
+
+function validateHttpListenIP(httpListenIP?: string): string {
+    winston.info("Validating HTTP Listen IP.");
+    if (httpListenIP === undefined) {
+        httpListenIP = "0.0.0.0";
+    }
+    return httpListenIP;
+}
+
 function validateSubject(subject?: string): string {
-    // Validating subject
+    winston.info("Validating subject.");
     if (subject === undefined) {
         subject = "Default Subject";
     }
@@ -74,6 +92,8 @@ function validateSubject(subject?: string): string {
 function ParseConfig(cf: Partial<Config>): Config {
     return {
         fromEmail: validateFromEmail(cf.fromEmail),
+        httpListenIP: validateHttpListenIP(cf.httpListenIP),
+        httpListenPort: validateHttpListenPort(cf.httpListenPort),
         recipientEmails: validateEmailRecipients(cf.recipientEmails as string),
         smtpHost: validateSmtpHost(cf.smtpHost),
         smtpPort: validateSmtpPort(cf.smtpPort),
@@ -82,11 +102,11 @@ function ParseConfig(cf: Partial<Config>): Config {
 }
 
 function ReadConfig(): void {
+    winston.info("Reading config.");
     if (!fs.existsSync("./config.json")) {
         winston.error("Config file was not found.");
         return;
     }
-
     let fileContent = "";
     try {
         fileContent = fs.readFileSync("./config.json").toString();
@@ -94,7 +114,6 @@ function ReadConfig(): void {
         winston.error("Config cannot be read.");
         return;
     }
-
     let json;
     try {
         json = JSON.parse(fileContent);
@@ -103,7 +122,6 @@ function ReadConfig(): void {
         return;
     }
     winston.log("info", json);
-
     try {
         config = ParseConfig(json);
     } catch (e) {
@@ -113,11 +131,10 @@ function ReadConfig(): void {
 }
 
 const server = http.createServer((req, res) => {
+    winston.info("Creating server...");
     if (req.method !== "POST") { return; }
-
     const urlPathName = url.parse(req.url as string, true);
     res.writeHead(200, { "Content-Type": "application/json" });
-
     if (urlPathName.pathname === "/receive") {
         let bodyStr = "";
         req.on("data", (chunk) => {
@@ -127,7 +144,6 @@ const server = http.createServer((req, res) => {
                 req.connection.destroy();
             }
         });
-
         req.on("end", () => {
             const post = qs.parse(bodyStr);
             let userMessage = "";
@@ -137,9 +153,8 @@ const server = http.createServer((req, res) => {
                     userMessage += str;
                  }
             }
-            sendEmail(post.user_name,
-                      post.user_mail,
-                      userMessage,
+            winston.info("User message: " + userMessage);
+            sendEmail(post.user_name, post.user_mail, userMessage,
                       () => {
                             winston.info("Redirecting to " + post._redirect);
                             res.writeHead(301, { Location: post._redirect });
@@ -151,16 +166,14 @@ const server = http.createServer((req, res) => {
     }
 });
 
-function sendEmail(userName: string,
-                   userMail: string,
-                   emailText: string,
-                   callbackFromSendMail: () => void): void {
-    ReadConfig();
+function sendEmail(
+    userName: string, userMail: string, emailText: string,
+    callbackFromSendMail: () => void,
+    ): void {
     const transporter = nodemailer.createTransport({
         host: config.smtpHost,
         port: config.smtpPort,
     });
-
     const emailMessage = {
         from: userName + " " + userMail,
         subject: config.subject,
@@ -175,4 +188,9 @@ function sendEmail(userName: string,
         });
 }
 
-server.listen(3000);
+function run(): void {
+    ReadConfig();
+    server.listen(config.httpListenIP);
+}
+
+run();
