@@ -170,6 +170,7 @@ function sendEmail(
     userName: string, userMail: string, emailText: string,
     callbackFromSendMail: () => void,
     ): void {
+    winston.info("Sending e-mail start.");
     const transporter = nodemailer.createTransport({
         host: config.smtpHost,
         port: config.smtpPort,
@@ -182,7 +183,8 @@ function sendEmail(
     };
     transporter.sendMail(emailMessage,
                          (err) => {
-            if (err) { winston.error(err.message); }
+            if (err) {
+                winston.error("Error while sending email: " + err.message); }
             callbackFromSendMail();
             winston.info("Message sent.");
         });

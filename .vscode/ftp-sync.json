@@ -1,0 +1,19 @@
+{
+    "remotePath": "/root/emailsend",
+    "host": "82.196.6.87",
+    "username": "root",
+    "password": "",
+    "port": 22,
+    "secure": true,
+    "protocol": "sftp",
+    "uploadOnSave": true,
+    "passive": false,
+    "debug": false,
+    "privateKeyPath": "/Users/Taisiia/.ssh/taya",
+    "passphrase": null,
+    "ignore": [
+        "\\.vscode",
+        "\\.git",
+        "\\.DS_Store"
+    ]
+}

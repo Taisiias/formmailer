@@ -3,6 +3,6 @@
     "httpListenIP": "0.0.0.0",
     "httpListenPort" : "8080",
     "recipientEmails" : "taisiia.sobchenko@gmail.com",
-    "fromEmail": "es_tee@bk.ru",
+    "fromEmail": "root@formsender-test.localdomain",
     "subject": "Test formmailer"
 }
