@@ -1,4 +1,3 @@
-// import * as commandpost from "commandpost";
 import * as emailvalidator from "email-validator";
 import * as fs from "fs";
 import * as http from "http";
@@ -177,25 +176,3 @@ function sendEmail(userName: string,
 }
 
 server.listen(3000);
-
-// const root = commandpost
-//     .create<{ spice: string[]; cheese: string[]; config: string[]; }, { food: string[]; }>("dinner <food...>")
-//     .version("1.0.0", "-v, --version")
-//     .description("today's dinner!")
-//     .option("-s, --config [config.json]", "What spice do you want? Read from config. Default: pepper")
-//     .option("-c, --cheese <name>", "What cheese do you want? default: mozarella")
-//     .action((opts, args) => {
-//         winston.log("info",
-//             `Your dinner is ${args.food[0]} with ${opts.config[0] || "pepper"} and ${opts.cheese[0] || "mozarella"}!
-//             Lunch is ${args.food[1]}.`);
-//     });
-// commandpost
-//     .exec(root, process.argv)
-//     .catch((err) => {
-//         if (err instanceof Error) {
-//             console.error(err.stack);
-//         } else {
-//             console.error(err);
-//         }
-//         process.exit(1);
-//     });
