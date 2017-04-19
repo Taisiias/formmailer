@@ -15,7 +15,6 @@ interface Config {
     httpListenIP: string;
     httpListenPort: number;
 }
-
 let config: Config;
 
 function validateFromEmail(fromEmail?: string): string {
@@ -51,41 +50,31 @@ function validateEmailRecipients(recipientEmailsStr?: string): string[] {
 
 function validateSmtpHost(smtpHost?: string): string {
     winston.info("Validating smtpHost.");
-    if (smtpHost === undefined || smtpHost === "") {
-        smtpHost = "localhost";
-    }
+    if (smtpHost === undefined || smtpHost === "") { smtpHost = "localhost"; }
     return smtpHost;
 }
 
 function validateSmtpPort(smtpPort?: number): number {
     winston.info("Validating smtpPort.");
-    if (smtpPort === undefined) {
-        smtpPort = 25;
-    }
+    if (smtpPort === undefined) { smtpPort = 25; }
     return smtpPort;
 }
 
 function validateHttpListenPort(httpListenPort?: number): number {
-    if (httpListenPort === undefined) {
-        httpListenPort = 80;
-    }
-    winston.info("Validating HTTP Listen Port." + httpListenPort);
+    if (httpListenPort === undefined) { httpListenPort = 80; }
+    winston.info("Validating HTTP Listen Port " + httpListenPort);
     return httpListenPort;
 }
 
 function validateHttpListenIP(httpListenIP?: string): string {
-    if (httpListenIP === undefined) {
-        httpListenIP = "0.0.0.0";
-    }
-    winston.info("Validating HTTP Listen IP." + httpListenIP);
+    if (httpListenIP === undefined) { httpListenIP = "0.0.0.0"; }
+    winston.info("Validating HTTP Listen IP " + httpListenIP);
     return httpListenIP;
 }
 
 function validateSubject(subject?: string): string {
     winston.info("Validating subject.");
-    if (subject === undefined) {
-        subject = "Default Subject";
-    }
+    if (subject === undefined) { subject = "Default Subject"; }
     return subject;
 }
 
@@ -121,7 +110,6 @@ function ReadConfig(): void {
         winston.error("Config file cannot be parsed.");
         return;
     }
-    winston.log("info", json);
     try {
         config = ParseConfig(json);
     } catch (e) {
@@ -154,7 +142,7 @@ const server = http.createServer((req, res) => {
                  }
             }
             winston.info("User message: " + userMessage);
-            sendEmail(post.user_name, post.user_mail, userMessage,
+            sendEmail(userMessage,
                       () => {
                             winston.info("Redirecting to " + post._redirect);
                             res.writeHead(301, { Location: post._redirect });
@@ -162,25 +150,27 @@ const server = http.createServer((req, res) => {
                         });
         });
     } else {
-        res.end("asdf");
+        res.end("END");
     }
 });
 
-function sendEmail(
-    userName: string, userMail: string, emailText: string,
-    callbackFromSendMail: () => void,
-    ): void {
-    winston.info("Sending e-mail start.");
+function sendEmail( emailText: string, callbackFromSendMail: () => void): void {
+    winston.info("Entering to sendMail. Creating Nodemailer transporter.");
     const transporter = nodemailer.createTransport({
         host: config.smtpHost,
         port: config.smtpPort,
+        tls: {
+            rejectUnauthorized: false,
+        },
     });
+    winston.info("Creating message.");
     const emailMessage = {
-        from: userName + " " + userMail,
+        from: config.fromEmail,
         subject: config.subject,
         text: emailText,
         to: config.recipientEmails,
     };
+    winston.info("Sending email.");
     transporter.sendMail(emailMessage,
                          (err) => {
             if (err) {

@@ -1,7 +1,7 @@
 { 
     "smtpPort": "25",
     "httpListenIP": "0.0.0.0",
-    "httpListenPort" : "8080",
+    "httpListenPort" : "80",
     "recipientEmails" : "taisiia.sobchenko@gmail.com",
     "fromEmail": "root@formsender-test.localdomain",
     "subject": "Test formmailer"
