@@ -14,7 +14,7 @@
         "no-string-throw": true,
         "no-switch-case-fall-through": true,
         "no-use-before-declare": true,
-        "max-line-length": [ true, 80 ],
+        "max-line-length": [ true, 100 ],
         "triple-equals": [true, "allow-null-check", "allow-undefined-check"],
         "no-default-export": true,
         "no-mergeable-namespace": true,
