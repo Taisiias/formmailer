@@ -33,6 +33,7 @@
     "@types/winston": "^2.2.0",
     "commandpost": "^1.0.1",
     "email-validator": "^1.0.7",
+    "node-static": "^0.7.9",
     "nodemailer": "^4.0.0",
     "nodemon": "^1.11.0",
     "querystring": "^0.2.0",

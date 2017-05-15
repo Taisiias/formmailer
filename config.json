@@ -1,8 +1,10 @@
 { 
-    "smtpPort": "25",
-    "httpListenIP": "0.0.0.0",
-    "httpListenPort" : "80",
-    "recipientEmails" : "taisiia.sobchenko@gmail.com",
+    "httpListenPort": "3000",
+    "recipientEmails" : ["taisiia.sobchenko@gmail.com","","tyutyu@asdf.vim    "],
     "fromEmail": "root@formsender-test.localdomain",
-    "subject": "Test formmailer"
+    "subject": "Test formmailer",
+    "httpServerPath": "/receive",
+    "logLevel": "debug",
+    "redirectFieldName": "_redirect",
+    "smtpPort": "2500"
 }
