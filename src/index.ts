@@ -5,6 +5,7 @@
 // -? TODO: Добавить в лог в консоль дату/время соообщения.
 // TODO: форматирование кода.
 
+import * as cp from "commandpost";
 import * as http from "http";
 import * as nodemailer from "nodemailer";
 import * as qs from "querystring";
@@ -18,66 +19,68 @@ function constructConnectionHandler(
 ): (req: http.IncomingMessage, res: http.ServerResponse) => void {
     return (req: http.IncomingMessage, res: http.ServerResponse) => {
         try {
-        // TODO: пересмотреть все уровни вывода на адекватность.
-        //       info должен сообщать о запуске сервера и получении/отправке сообщений.
-        //       warn - предвидимые ошибки. всё остальное - в debug/trace.
-        winston.silly(`${new Date().toLocaleString()} Creating server.`);
-        // TODO: если пришёл запрос не на тот путь или не POST,
-        //       или произошли любые ошибки при парсинге - выводить warn.
-        // -- TODO: взять всю функцию в try/catch и выводить ошибку уровня error в консоль.
-        if (req.method !== "POST") {
-            winston.warn(`${new Date().toLocaleString()} Request was not POST.`);
-            return;
-        }
-        const urlPathName = url.parse(req.url as string, true);
-        // -- TODO: путь вынести в конфиг (httpServerPath). по умолчанию - /
-        winston.silly(`Server path: ${config.httpServerPath}`);
-        if (urlPathName.pathname === config.httpServerPath) {
-            let bodyStr = "";
-            req.on("data", (chunk) => {
-                bodyStr += chunk.toString();
-                // -- TODO: 1e6 - в конфиг (maxHttpRequestSize)
-                if (bodyStr.length > config.maxHttpRequestSize) {
-                    // FLOOD ATTACK OR FAULTY CLIENT, NUKE REQUEST
-                    req.connection.destroy();
-                }
-            });
-            req.on("end", () => {
-                const post = qs.parse(bodyStr);
-                let userMessage = "";
-                for (const name in post) {
-                    // -- TODO: _redirect - в конфиг (redirectFieldName)
-                    // TODO: если поле _redirect не пришло - отображать страницу-затычку: -- routing
-                    //       form was submitted successfully.
-                    if (name !== config.redirectFieldName) {
-                        const str = name + ": " + post[name] + "\n";
-                        userMessage += str;
+            // TODO: пересмотреть все уровни вывода на адекватность.
+            //       info должен сообщать о запуске сервера и получении/отправке сообщений.
+            //       warn - предвидимые ошибки. всё остальное - в debug/trace.
+            winston.silly(`${new Date().toLocaleString()} Creating server.`);
+            // -- TODO: если пришёл запрос не на тот путь или не POST,
+            //       или произошли любые ошибки при парсинге - выводить warn.
+            // -- TODO: взять всю функцию в try/catch и выводить ошибку уровня error в консоль.
+            if (req.method !== "POST") {
+                winston.warn(`${new Date().toLocaleString()} Request was not POST.`);
+                return;
+            }
+            const urlPathName = url.parse(req.url as string, true);
+            // -- TODO: путь вынести в конфиг (httpServerPath). по умолчанию - /
+            winston.silly(`Server path: ${config.httpServerPath}`);
+            if (urlPathName.pathname === config.httpServerPath) {
+                let bodyStr = "";
+                req.on("data", (chunk) => {
+                    bodyStr += chunk.toString();
+                    // -- TODO: 1e6 - в конфиг (maxHttpRequestSize)
+                    if (bodyStr.length > config.maxHttpRequestSize) {
+                        // FLOOD ATTACK OR FAULTY CLIENT, NUKE REQUEST
+                        req.connection.destroy();
                     }
-                }
-                winston.debug(`${new Date().toLocaleString()} User message: ${userMessage}`);
-                sendEmail(
-                    config,
-                    userMessage,
-                    () => {
-                        winston.debug(`${new Date().toLocaleString()}
-                            Redirecting to ${post._redirect}`);
-                        if (post._redirect) {
-                            res.writeHead(301, { Location: post._redirect });
-                        } else {
-                            res.writeHead(200, { "Content-type": "text/html" });
-                            res.write("Form has been submitted successfully.");
+                });
+                req.on("end", () => {
+                    const post = qs.parse(bodyStr);
+                    let userMessage = "";
+                    for (const name in post) {
+                        // -- TODO: _redirect - в конфиг (redirectFieldName)
+                        // TODO: если поле _redirect не пришло - отображать страницу-затычку:
+                        // -- routing
+                        //       form was submitted successfully.
+                        if (name !== config.redirectFieldName) {
+                            const str = name + ": " + post[name] + "\n";
+                            userMessage += str;
                         }
-                        res.end();
-                    });
-            });
-        } else {
-            winston.warn(`${new Date().toLocaleString()}
+                    }
+                    winston.debug(`${new Date().toLocaleString()} User message: ${userMessage}`);
+                    sendEmail(
+                        config,
+                        userMessage,
+                        () => {
+                            winston.debug(`${new Date().toLocaleString()}
+                            Redirecting to ${post._redirect}`);
+                            if (post._redirect) {
+                                res.writeHead(301, { Location: post._redirect });
+                            } else {
+                                res.writeHead(200, { "Content-type": "text/html" });
+                                res.write("Form has been submitted successfully.");
+                            }
+                            res.end();
+                        });
+                });
+            } else {
+                winston.warn(`${new Date().toLocaleString()}
                 Incorrect httpServerPath: ${urlPathName.pathname}`);
-            res.end("END");
+                res.end("END");
+            }
+        } catch (e) {
+            winston.error(`${new Date().toLocaleString()} Error in ConnectionHandler:
+                ${e.message}`);
         }
-    } catch (e) {
-        winston.error(`${new Date().toLocaleString()} Error in ConnectionHandler: ${e.message}`);
-    }
     };
 }
 
@@ -99,9 +102,11 @@ function sendEmail(config: cf.Config, emailText: string, callbackFromSendMail: (
     };
     winston.debug(`${new Date().toLocaleString()} Sending email.`);
     transporter.sendMail(emailMessage, (err) => {
-        if (err) { winston.error(`${new Date().toLocaleString()}
+        if (err) {
+            winston.error(`${new Date().toLocaleString()}
             Error while sending email: ${err.message}`);
-                   return; }
+            return;
+        }
         callbackFromSendMail();
         // -- TODO: добавить информацию на какой емейл отправлено сообщение.
         winston.info(`${new Date().toLocaleString()}
@@ -116,13 +121,41 @@ function run(): void {
     // TODO: передавать путь к кофигу строкой в readConfig()
     // TODO: если произошла ошибка при чтении атрибутов командной строки или конфига,
     //       выходим с process.exit(1)
-    const config: cf.Config = cf.readConfig("");
-    winston.transports.Console.level = config.loglevel;
 
-    const server = http.createServer(constructConnectionHandler(config));
-    server.listen(config.httpListenPort, config.httpListenIP);
-    winston.info(`${new Date().toLocaleString()} Server started.
-        httpListenPort ${config.httpListenPort}, httpListenIp ${config.httpListenIP}`);
+    // let config: cf.Config;
+    let server: http.Server;
+
+    try {
+        const root = cp
+            .create<{ config: string[]; }, { config: string; }>("config [configFile]")
+            .description("Program configuration")
+            .option("-c, --config [configFile]", "Read setting from specified config file path")
+            .action((opts) => {
+                console.log(`Your config file is ${opts.config[0] || "config.json"}!`);
+            });
+
+        cp
+            .exec(root, process.argv)
+            .catch((err) => {
+                if (err instanceof Error) {
+                    console.error(err.stack);
+                } else {
+                    console.error(err);
+                }
+                process.exit(1);
+            });
+
+        const config: cf.Config = cf.readConfig("");
+        winston.transports.Console.level = config.loglevel;
+        server = http.createServer(constructConnectionHandler(config));
+        server.listen(config.httpListenPort, config.httpListenIP);
+        winston.info(`${new Date().toLocaleString()} Server started.
+            httpListenPort ${config.httpListenPort}, httpListenIp ${config.httpListenIP}`);
+
+    } catch (e) {
+        winston.error(`${new Date().toLocaleString()} Incorrect arguments or config file.`);
+    }
+
 }
 
 run();
