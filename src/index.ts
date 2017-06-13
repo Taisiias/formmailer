@@ -5,14 +5,18 @@
 // -? TODO: Добавить в лог в консоль дату/время соообщения.
 // TODO: форматирование кода.
 
-import * as cp from "commandpost";
 import * as http from "http";
 import * as nodemailer from "nodemailer";
 import * as qs from "querystring";
 import * as url from "url";
 import * as winston from "winston";
+import * as yargs from "yargs";
 import * as cf from "./config";
 // import * as ns from "node-static";
+
+interface CommandLineArgs {
+    configFilePath: string;
+}
 
 function constructConnectionHandler(
     config: cf.Config,
@@ -122,30 +126,18 @@ function run(): void {
     // TODO: если произошла ошибка при чтении атрибутов командной строки или конфига,
     //       выходим с process.exit(1)
 
-    // let config: cf.Config;
+    let config: cf.Config;
     let server: http.Server;
 
     try {
-        const root = cp
-            .create<{ config: string[]; }, { config: string; }>("config [configFile]")
-            .description("Program configuration")
-            .option("-c, --config [configFile]", "Read setting from specified config file path")
-            .action((opts) => {
-                console.log(`Your config file is ${opts.config[0] || "config.json"}!`);
-            });
+        let cmdArgs: CommandLineArgs;
+        cmdArgs = yargs.options("configFilePath", {
+            alias: "c",
+            describe: "Read setting from specified config file path",
+        }).help("help")
+            .argv;
 
-        cp
-            .exec(root, process.argv)
-            .catch((err) => {
-                if (err instanceof Error) {
-                    console.error(err.stack);
-                } else {
-                    console.error(err);
-                }
-                process.exit(1);
-            });
-
-        const config: cf.Config = cf.readConfig("");
+        config = cf.readConfig(cmdArgs.configFilePath);
         winston.transports.Console.level = config.loglevel;
         server = http.createServer(constructConnectionHandler(config));
         server.listen(config.httpListenPort, config.httpListenIP);
@@ -153,7 +145,8 @@ function run(): void {
             httpListenPort ${config.httpListenPort}, httpListenIp ${config.httpListenIP}`);
 
     } catch (e) {
-        winston.error(`${new Date().toLocaleString()} Incorrect arguments or config file.`);
+        winston.error(`${new Date().toLocaleString()}
+                      Incorrect arguments or config file: ${e.message}`);
     }
 
 }
