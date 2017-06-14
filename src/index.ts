@@ -119,15 +119,21 @@ function sendEmail(config: cf.Config, emailText: string, callbackFromSendMail: (
 }
 
 function run(): void {
-    // TODO: счиитывать путь к конфигу из аттрибута командной строки:
+    // -- TODO: счиитывать путь к конфигу из аттрибута командной строки:
     //       -c ./config           /     --config="./config"
     // по умолчанию - ./config.json
-    // TODO: передавать путь к кофигу строкой в readConfig()
+    // -- TODO: передавать путь к кофигу строкой в readConfig()
     // TODO: если произошла ошибка при чтении атрибутов командной строки или конфига,
     //       выходим с process.exit(1)
 
     let config: cf.Config;
     let server: http.Server;
+
+    const logger = new winston.Logger({
+    level: "debug",
+    transports: [
+      new (winston.transports.Console)()],
+    });
 
     try {
         let cmdArgs: CommandLineArgs;
@@ -138,7 +144,10 @@ function run(): void {
             .argv;
 
         config = cf.readConfig(cmdArgs.configFilePath);
-        winston.transports.Console.level = config.loglevel;
+        logger.level = config.logLevel;
+        logger.log("info", `Log level: ${logger.level}`);
+        logger.log("info", `Log level in config: ${config.logLevel}`);
+        winston.transports.Console.timestamp = true;
         server = http.createServer(constructConnectionHandler(config));
         server.listen(config.httpListenPort, config.httpListenIP);
         winston.info(`${new Date().toLocaleString()} Server started.

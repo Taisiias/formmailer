@@ -8,7 +8,7 @@ export interface Config {
     recipientEmails: string | string[];
     redirectFieldName: string;
     fromEmail: string;
-    loglevel: string;
+    logLevel: string;
     subject: string;
     httpListenIP: string;
     httpListenPort: number;
@@ -34,7 +34,7 @@ export function readConfig(cfPath: string): Config {
     let cf: Config;
     const configFilePath = cfPath ? cfPath : defaultConfigPath;
     winston.transports.Console.level = defaultLogLevel;
-    winston.debug(`${new Date().toLocaleString()} Reading config file.`);
+    winston.info(`${new Date().toLocaleString()} Reading config file ${cfPath}`);
 
     if (!fs.existsSync(configFilePath)) {
         winston.warn(`${new Date().toLocaleString()} Config file was not found.`);
@@ -112,7 +112,7 @@ function ParseConfig(cf: Partial<Config>): Config {
         httpListenIP: cf.httpListenIP ? cf.httpListenIP : defaultHttpListenIp,
         httpListenPort: cf.httpListenPort ? cf.httpListenPort : defaultHttpListenPort,
         httpServerPath: cf.httpServerPath ? cf.httpServerPath : defaulthttpServerPath,
-        loglevel : cf.loglevel ? cf.loglevel : defaultLogLevel,
+        logLevel : cf.logLevel ? cf.logLevel : defaultLogLevel,
         maxHttpRequestSize:
             cf.maxHttpRequestSize ? cf.maxHttpRequestSize : defaultMaxHttpRequestSize,
         recipientEmails: validateEmailRecipients(cf.recipientEmails),
