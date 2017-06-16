@@ -30,46 +30,45 @@ const defaultLogLevel = "debug";
 // -- TODO: все функции называем в camelCase: readConfig()
 // -- TODO: эта функция должна возвращать Config (или кидать ошибки)
 export function readConfig(cfPath: string): Config {
-    // TODO: убираем лишний вывод.
+
+    winston.remove(winston.transports.Console);
+    winston.add(winston.transports.Console, { timestamp : true, level: defaultLogLevel});
+
+    // -- TODO: убираем лишний вывод.
     let cf: Config;
     const configFilePath = cfPath ? cfPath : defaultConfigPath;
-    winston.transports.Console.level = defaultLogLevel;
-    winston.info(`${new Date().toLocaleString()} Reading config file ${cfPath}`);
 
     if (!fs.existsSync(configFilePath)) {
-        winston.warn(`${new Date().toLocaleString()} Config file was not found.`);
-        throw new Error(`${new Date().toLocaleString()} Config file was not found.`);
+        winston.warn(`Config file was not found.`);
+        throw new Error(`Config file was not found.`);
     }
 
     let fileContent = "";
     try {
         fileContent = fs.readFileSync(configFilePath).toString();
     } catch (e) {
-        winston.warn(`${new Date().toLocaleString()} Config file cannot be read. ${e.Message}`);
-        throw new Error(`${new Date().toLocaleString()} Config file cannot be read. ${e.Message}`);
+        winston.warn(`Config file cannot be read. ${e.Message}`);
+        throw new Error(`Config file cannot be read. ${e.Message}`);
     }
 
     let json;
     try {
         json = JSON.parse(fileContent);
     } catch (e) {
-        winston.warn(`${new Date().toLocaleString()} Config file cannot be parsed. ${e.Message}`);
-        throw new Error(`${new Date().toLocaleString()} 
-            Config file cannot be parsed. ${e.Message}`);
+        winston.warn(`Config file cannot be parsed. ${e.Message}`);
+        throw new Error(`Config file cannot be parsed. ${e.Message}`);
     }
 
     try {
         cf = ParseConfig(json);
     } catch (e) {
-        winston.error(`${new Date().toLocaleString()}
-            Error while parsing config file ${e.Message}`);
+        winston.error(`Error while parsing config file ${e.Message}`);
         throw e;
     }
     return cf;
 }
 
 function validateFromEmail(fromEmail?: string): string {
-    winston.debug(`${new Date().toLocaleString()} Validating fromEmail`);
     if (!fromEmail) {
         throw new Error("Please add sender's email");
     }
@@ -78,7 +77,6 @@ function validateFromEmail(fromEmail?: string): string {
 
 function validateEmailRecipients(recipientEmailsStr?: string | string[]): string[] {
     // -- TODO: принимаем в конфиге string|string[] с емейлами. убираем ручную разбивку строки.
-    winston.debug(`${new Date().toLocaleString()} Validating recipientEmails`);
     if (!recipientEmailsStr) {
         throw new Error("Undefined recipient emails.");
     }
@@ -107,6 +105,7 @@ function validateEmailRecipients(recipientEmailsStr?: string | string[]): string
 }
 
 function ParseConfig(cf: Partial<Config>): Config {
+
     return {
         fromEmail: validateFromEmail(cf.fromEmail),
         httpListenIP: cf.httpListenIP ? cf.httpListenIP : defaultHttpListenIp,

@@ -1,8 +1,8 @@
 // -- TODO: Вынести в отдельный модуль всё что касается конфига.
 // TODO: Убрать config.json из репозитория и сделать схему.
 // TODO: Написать README.
-// ?? TODO: Добавить в конфиг уровень детализации вывода (logLevel). По умолчанию = info.
-// -? TODO: Добавить в лог в консоль дату/время соообщения.
+// -- TODO: Добавить в конфиг уровень детализации вывода (logLevel). По умолчанию = info.
+// -- TODO: Добавить в лог в консоль дату/время соообщения.
 // TODO: форматирование кода.
 
 import * as http from "http";
@@ -13,6 +13,8 @@ import * as winston from "winston";
 import * as yargs from "yargs";
 import * as cf from "./config";
 // import * as ns from "node-static";
+
+const defaultLogLevel = "debug";
 
 interface CommandLineArgs {
     configFilePath: string;
@@ -26,17 +28,15 @@ function constructConnectionHandler(
             // TODO: пересмотреть все уровни вывода на адекватность.
             //       info должен сообщать о запуске сервера и получении/отправке сообщений.
             //       warn - предвидимые ошибки. всё остальное - в debug/trace.
-            winston.silly(`${new Date().toLocaleString()} Creating server.`);
             // -- TODO: если пришёл запрос не на тот путь или не POST,
             //       или произошли любые ошибки при парсинге - выводить warn.
             // -- TODO: взять всю функцию в try/catch и выводить ошибку уровня error в консоль.
             if (req.method !== "POST") {
-                winston.warn(`${new Date().toLocaleString()} Request was not POST.`);
+                winston.warn(`Request was not POST.`);
                 return;
             }
             const urlPathName = url.parse(req.url as string, true);
             // -- TODO: путь вынести в конфиг (httpServerPath). по умолчанию - /
-            winston.silly(`Server path: ${config.httpServerPath}`);
             if (urlPathName.pathname === config.httpServerPath) {
                 let bodyStr = "";
                 req.on("data", (chunk) => {
@@ -53,20 +53,18 @@ function constructConnectionHandler(
                     for (const name in post) {
                         // -- TODO: _redirect - в конфиг (redirectFieldName)
                         // TODO: если поле _redirect не пришло - отображать страницу-затычку:
-                        // -- routing
+                        // routing
                         //       form was submitted successfully.
                         if (name !== config.redirectFieldName) {
                             const str = name + ": " + post[name] + "\n";
                             userMessage += str;
                         }
                     }
-                    winston.debug(`${new Date().toLocaleString()} User message: ${userMessage}`);
                     sendEmail(
                         config,
                         userMessage,
                         () => {
-                            winston.debug(`${new Date().toLocaleString()}
-                            Redirecting to ${post._redirect}`);
+                            winston.debug(`Redirecting to ${post._redirect}`);
                             if (post._redirect) {
                                 res.writeHead(301, { Location: post._redirect });
                             } else {
@@ -77,20 +75,17 @@ function constructConnectionHandler(
                         });
                 });
             } else {
-                winston.warn(`${new Date().toLocaleString()}
-                Incorrect httpServerPath: ${urlPathName.pathname}`);
+                winston.warn(`Incorrect httpServerPath: ${urlPathName.pathname}`);
                 res.end("END");
             }
         } catch (e) {
-            winston.error(`${new Date().toLocaleString()} Error in ConnectionHandler:
-                ${e.message}`);
+            winston.error(`Error in ConnectionHandler: ${e.message}`);
         }
     };
 }
 
 function sendEmail(config: cf.Config, emailText: string, callbackFromSendMail: () => void): void {
-    winston.debug(`${new Date().toLocaleString()}
-        Entering to sendEmail. Creating Nodemailer transporter.`);
+    winston.silly(`Entering to sendEmail. Creating Nodemailer transporter.`);
     const transporter = nodemailer.createTransport({
         host: config.smtpHost,
         port: config.smtpPort,
@@ -104,24 +99,22 @@ function sendEmail(config: cf.Config, emailText: string, callbackFromSendMail: (
         text: emailText,
         to: config.recipientEmails,
     };
-    winston.debug(`${new Date().toLocaleString()} Sending email.`);
+    winston.debug(`Sending email.`);
     transporter.sendMail(emailMessage, (err) => {
         if (err) {
-            winston.error(`${new Date().toLocaleString()}
-            Error while sending email: ${err.message}`);
+            winston.error(`Error while sending email: ${err.message}`);
             return;
         }
         callbackFromSendMail();
         // -- TODO: добавить информацию на какой емейл отправлено сообщение.
-        winston.info(`${new Date().toLocaleString()}
-            Message has been sent to ${config.recipientEmails}`);
+        winston.info(`Message has been sent to ${config.recipientEmails}`);
     });
 }
 
 function run(): void {
     // -- TODO: счиитывать путь к конфигу из аттрибута командной строки:
     //       -c ./config           /     --config="./config"
-    // по умолчанию - ./config.json
+    // -- по умолчанию - ./config.json
     // -- TODO: передавать путь к кофигу строкой в readConfig()
     // TODO: если произошла ошибка при чтении атрибутов командной строки или конфига,
     //       выходим с process.exit(1)
@@ -129,11 +122,8 @@ function run(): void {
     let config: cf.Config;
     let server: http.Server;
 
-    const logger = new winston.Logger({
-    level: "debug",
-    transports: [
-      new (winston.transports.Console)()],
-    });
+    winston.remove(winston.transports.Console);
+    winston.add(winston.transports.Console, { timestamp : true, level: defaultLogLevel});
 
     try {
         let cmdArgs: CommandLineArgs;
@@ -144,18 +134,18 @@ function run(): void {
             .argv;
 
         config = cf.readConfig(cmdArgs.configFilePath);
-        logger.level = config.logLevel;
-        logger.log("info", `Log level: ${logger.level}`);
-        logger.log("info", `Log level in config: ${config.logLevel}`);
-        winston.transports.Console.timestamp = true;
+
+        winston.remove(winston.transports.Console);
+        winston.add(winston.transports.Console, { timestamp : true, level: config.logLevel});
+
         server = http.createServer(constructConnectionHandler(config));
         server.listen(config.httpListenPort, config.httpListenIP);
-        winston.info(`${new Date().toLocaleString()} Server started.
+        winston.info(`Server started.
             httpListenPort ${config.httpListenPort}, httpListenIp ${config.httpListenIP}`);
 
     } catch (e) {
-        winston.error(`${new Date().toLocaleString()}
-                      Incorrect arguments or config file: ${e.message}`);
+        winston.error(`Incorrect arguments or config file: ${e.message}`);
+        process.exit(1);
     }
 
 }
