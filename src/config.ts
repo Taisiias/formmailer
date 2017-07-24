@@ -32,7 +32,7 @@ const defaultLogLevel = "debug";
 export function readConfig(cfPath: string): Config {
 
     winston.remove(winston.transports.Console);
-    winston.add(winston.transports.Console, { timestamp : true, level: defaultLogLevel});
+    winston.add(winston.transports.Console, { timestamp: true, level: defaultLogLevel });
 
     // -- TODO: убираем лишний вывод.
     let cf: Config;
@@ -111,9 +111,9 @@ function ParseConfig(cf: Partial<Config>): Config {
         httpListenIP: cf.httpListenIP ? cf.httpListenIP : defaultHttpListenIp,
         httpListenPort: cf.httpListenPort ? cf.httpListenPort : defaultHttpListenPort,
         httpServerPath: cf.httpServerPath ? cf.httpServerPath : defaulthttpServerPath,
-        logLevel : cf.logLevel ? cf.logLevel : defaultLogLevel,
+        logLevel: cf.logLevel ? cf.logLevel : defaultLogLevel,
         maxHttpRequestSize:
-            cf.maxHttpRequestSize ? cf.maxHttpRequestSize : defaultMaxHttpRequestSize,
+        cf.maxHttpRequestSize ? cf.maxHttpRequestSize : defaultMaxHttpRequestSize,
         recipientEmails: validateEmailRecipients(cf.recipientEmails),
         redirectFieldName: cf.redirectFieldName ? cf.redirectFieldName : defaultRedirectFieldName,
         smtpHost: cf.smtpHost ? cf.smtpHost : defaultSmtpHost,
