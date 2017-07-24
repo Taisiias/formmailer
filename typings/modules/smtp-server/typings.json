@@ -1,0 +1,8 @@
+{
+  "resolution": "main",
+  "tree": {
+    "src": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/1946d5ea731b3d2a7c4eed89b743bd9ce6131273/smtp-server/index.d.ts",
+    "raw": "registry:dt/smtp-server#1.15.0+20161120051914",
+    "typings": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/1946d5ea731b3d2a7c4eed89b743bd9ce6131273/smtp-server/index.d.ts"
+  }
+}
