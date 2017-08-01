@@ -123,7 +123,7 @@ function run(): void {
     let server: http.Server;
 
     winston.remove(winston.transports.Console);
-    winston.add(winston.transports.Console, { timestamp : true, level: defaultLogLevel});
+    winston.add(winston.transports.Console, { timestamp: true, level: defaultLogLevel });
 
     try {
         let cmdArgs: CommandLineArgs;
@@ -136,7 +136,7 @@ function run(): void {
         config = cf.readConfig(cmdArgs.configFilePath);
 
         winston.remove(winston.transports.Console);
-        winston.add(winston.transports.Console, { timestamp : true, level: config.logLevel});
+        winston.add(winston.transports.Console, { timestamp: true, level: config.logLevel });
 
         server = http.createServer(constructConnectionHandler(config));
         server.listen(config.httpListenPort, config.httpListenIP);
