@@ -1,6 +1,6 @@
 { 
     "httpListenPort": "3000",
-    "recipientEmails" : ["taisiia.sobchenko@gmail.com","","tyutyu@asdf.vim    "],
+    "recipientEmails" : "taisiia.sobchenko@gmail.com",
     "fromEmail": "root@formsender-test.localdomain",
     "subject": "Test formmailer",
     "httpServerPath": "/receive",
