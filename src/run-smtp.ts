@@ -14,7 +14,7 @@ const server = new SMTPServer({
     onData,
 });
 
-function onConnect(session: smtp.Session, callback: (err?: Error) => undefined): void {
+function onConnect(session: smtp.Session, callback: (err?: Error) => void): void {
     console.log(`Incoming connection from ${session.remoteAddress}`);
     callback();
 }

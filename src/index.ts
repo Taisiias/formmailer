@@ -122,9 +122,14 @@ function run(): void {
     let config: cf.Config;
     let server: http.Server;
 
-    winston.remove(winston.transports.Console);
-    winston.add(winston.transports.Console, { timestamp: true, level: defaultLogLevel });
-
+    const logger = new winston.Logger({
+        level: defaultLogLevel,
+        transports: [new winston.transports.Console({
+            name: "Console",
+            timestamp: true,
+         })],
+    });
+    logger.debug("Logger has been initialized.");
     try {
         let cmdArgs: CommandLineArgs;
         cmdArgs = yargs.options("configFilePath", {
@@ -135,16 +140,24 @@ function run(): void {
 
         config = cf.readConfig(cmdArgs.configFilePath);
 
-        winston.remove(winston.transports.Console);
-        winston.add(winston.transports.Console, { timestamp: true, level: config.logLevel });
+        logger.configure({
+            level: config.logLevel,
+            transports: [new winston.transports.Console({
+            name: "Console",
+            timestamp: true,
+         })],
+        });
+
+        // logger.remove(logger.transports.Console);
+        // logger.add(logger.transports.Console, { timestamp: true, level: config.logLevel });
 
         server = http.createServer(constructConnectionHandler(config));
         server.listen(config.httpListenPort, config.httpListenIP);
-        winston.info(`Server started.
+        logger.info(`Server started.
             httpListenPort ${config.httpListenPort}, httpListenIp ${config.httpListenIP}`);
 
     } catch (e) {
-        winston.error(`Incorrect arguments or config file: ${e.message}`);
+        logger.error(`Incorrect arguments or config file: ${e.message}`);
         process.exit(1);
     }
 

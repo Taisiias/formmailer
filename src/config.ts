@@ -31,9 +31,6 @@ const defaultLogLevel = "debug";
 // -- TODO: эта функция должна возвращать Config (или кидать ошибки)
 export function readConfig(cfPath: string): Config {
 
-    winston.remove(winston.transports.Console);
-    winston.add(winston.transports.Console, { timestamp: true, level: defaultLogLevel });
-
     // -- TODO: убираем лишний вывод.
     let cf: Config;
     const configFilePath = cfPath ? cfPath : defaultConfigPath;
@@ -51,7 +48,7 @@ export function readConfig(cfPath: string): Config {
         throw new Error(`Config file cannot be read. ${e.Message}`);
     }
 
-    let json;
+    let json: Object;
     try {
         json = JSON.parse(fileContent);
     } catch (e) {
@@ -60,7 +57,7 @@ export function readConfig(cfPath: string): Config {
     }
 
     try {
-        cf = ParseConfig(json);
+        cf = parseConfig(json);
     } catch (e) {
         winston.error(`Error while parsing config file ${e.Message}`);
         throw e;
@@ -104,7 +101,7 @@ function validateEmailRecipients(recipientEmailsStr?: string | string[]): string
     return recipientEmailsArray;
 }
 
-function ParseConfig(cf: Partial<Config>): Config {
+function parseConfig(cf: Partial<Config>): Config {
 
     return {
         fromEmail: validateFromEmail(cf.fromEmail),
