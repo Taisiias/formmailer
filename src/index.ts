@@ -6,13 +6,13 @@
 // TODO: форматирование кода.
 
 import * as http from "http";
+import * as ns from "node-static";
 import * as nodemailer from "nodemailer";
 import * as qs from "querystring";
 import * as url from "url";
 import * as winston from "winston";
 import * as yargs from "yargs";
 import * as cf from "./config";
-// import * as ns from "node-static";
 
 const defaultLogLevel = "debug";
 
@@ -36,12 +36,11 @@ function constructConnectionHandler(
                 return;
             }
             const urlPathName = url.parse(req.url as string, true);
-            // -- TODO: путь вынести в конфиг (httpServerPath). по умолчанию - /
+            const fileServer = new ns.Server("./assets");
             if (urlPathName.pathname === config.httpServerPath) {
                 let bodyStr = "";
                 req.on("data", (chunk) => {
                     bodyStr += chunk.toString();
-                    // -- TODO: 1e6 - в конфиг (maxHttpRequestSize)
                     if (bodyStr.length > config.maxHttpRequestSize) {
                         // FLOOD ATTACK OR FAULTY CLIENT, NUKE REQUEST
                         req.connection.destroy();
@@ -67,11 +66,10 @@ function constructConnectionHandler(
                             winston.debug(`Redirecting to ${post._redirect}`);
                             if (post._redirect) {
                                 res.writeHead(301, { Location: post._redirect });
+                                res.end();
                             } else {
-                                res.writeHead(200, { "Content-type": "text/html" });
-                                res.write("Form has been submitted successfully.");
+                                fileServer.serveFile("thanks.html", 200, {}, req, res);
                             }
-                            res.end();
                         });
                 });
             } else {
@@ -106,7 +104,6 @@ function sendEmail(config: cf.Config, emailText: string, callbackFromSendMail: (
             return;
         }
         callbackFromSendMail();
-        // -- TODO: добавить информацию на какой емейл отправлено сообщение.
         winston.info(`Message has been sent to ${config.recipientEmails}`);
     });
 }
