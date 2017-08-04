@@ -5,7 +5,7 @@
     "properties": {
         "recipientEmails": {
             "description": "Recipient emails",
-            "type": "array"
+            "type": ["string", "array"]
         },
         "httpListenPort": {
             "description": "HTTP listen port",
