@@ -1,0 +1,21 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Configuration file schema",
+    "type": "object",
+    "properties": {
+        "recipientEmails": {
+            "description": "Recipient emails",
+            "type": "array"
+        },
+        "httpListenPort": {
+            "description": "HTTP listen port",
+            "type": "integer"
+        },
+        "fromEmail": {
+            "description": "Sender's email",
+            "type": "string"
+        }
+    },
+    "required": ["recipientEmails"]
+    
+}
