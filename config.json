@@ -6,5 +6,5 @@
     "httpServerPath": "/receive",
     "logLevel": "debug",
     "redirectFieldName": "_redirect",
-    "smtpPort": "2500"
+    "smtpPort": 2500
 }

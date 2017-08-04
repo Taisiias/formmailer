@@ -3,17 +3,37 @@
     "title": "Configuration file schema",
     "type": "object",
     "properties": {
-        "recipientEmails": {
-            "description": "Recipient emails",
-            "type": ["string", "array"]
-        },
         "httpListenPort": {
             "description": "HTTP listen port",
             "type": "integer"
         },
+        "recipientEmails": {
+            "description": "Recipient emails",
+            "type": ["string", "array"]
+        },
         "fromEmail": {
             "description": "Sender's email",
             "type": "string"
+        },
+         "subject": {
+            "description": "Email subject",
+            "type": "string"
+        },
+         "httpServerPath": {
+            "description": "HTTP Server path",
+            "type": "string"
+        },
+         "logLevel": {
+            "description": "Log level",
+            "type": "string"
+        },
+         "redirectFieldName": {
+            "description": "Page to be redirected after the form is submitted.",
+            "type": "string"
+        },
+         "smtpPort": {
+            "description": "SMTP Port",
+            "type": "integer"
         }
     },
     "required": ["recipientEmails"]
