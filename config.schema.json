@@ -3,9 +3,17 @@
     "title": "Configuration file schema",
     "type": "object",
     "properties": {
+         "httpListenIP": {
+            "description": "HTTP listen IP",
+            "type": "string"
+        },
         "httpListenPort": {
             "description": "HTTP listen port",
             "type": "integer"
+        },
+         "httpServerPath": {
+            "description": "HTTP Server Path",
+            "type": "string"
         },
         "recipientEmails": {
             "description": "Recipient emails",
@@ -19,8 +27,8 @@
             "description": "Email subject",
             "type": "string"
         },
-         "httpServerPath": {
-            "description": "HTTP Server path",
+         "maxHttpRequestSize": {
+            "description": "Maximum HTTP Request Size",
             "type": "string"
         },
          "logLevel": {
@@ -34,8 +42,11 @@
          "smtpPort": {
             "description": "SMTP Port",
             "type": "integer"
+        },
+        "smtpHost": {
+            "description": "SMTP Host",
+            "type": "string"
         }
     },
     "required": ["recipientEmails"]
-    
 }
