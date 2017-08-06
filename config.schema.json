@@ -48,5 +48,5 @@
             "type": "string"
         }
     },
-    "required": ["recipientEmails"]
+    "required": ["recipientEmails", "fromEmail"]
 }

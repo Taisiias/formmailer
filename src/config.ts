@@ -14,7 +14,7 @@ export interface Config {
     subject: string;
 }
 
-const DefaultConfigObject: Object = {
+const DefaultConfigObject = {
     httpListenIP: "0.0.0.0",
     httpListenPort: 8080,
     httpServerPath: "/",
@@ -44,7 +44,7 @@ export function readConfig(cfPath?: string): Config {
         throw new Error(`Config file cannot be read. ${e.Message}`);
     }
 
-    let json: Object;
+    let json;
     try {
         json = JSON.parse(fileContent);
         /* tslint:disable:no-any */

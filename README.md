@@ -2,10 +2,13 @@
 
 Server that emails data from submitted forms on your website.
 
-## Simple test SMTP server
+## How To Deploy
 
-To start test SMTP server:
+## How To Contribute
 
-    $ npm run start-smtp
-
-This server will output in `stdout` contents of all incoming emails.
+```
+$ npm install
+$ npm run start-smtp
+$ npm run watch
+$ open test/index.html
+```
