@@ -1,4 +1,7 @@
+// TODO: перепроверить форматирование логгинга (отсутствует дата)
 // TODO: Написать README.
+// TODO: logLevel = debug в конфиге не работает.
+// TODO: при ошибке отправки емейла виснет сайт. должен выдавать ошибку на странице.
 
 import * as http from "http";
 import * as ns from "node-static";
@@ -19,50 +22,53 @@ function constructConnectionHandler(
     config: cf.Config,
 ): (req: http.IncomingMessage, res: http.ServerResponse) => void {
     return (req: http.IncomingMessage, res: http.ServerResponse) => {
-        try {
-            if (req.method !== "POST") {
-                winston.warn(`Request was not POST.`);
-                return;
-            }
-            const urlPathName = url.parse(req.url as string, true);
-            const fileServer = new ns.Server("./assets");
-            if (urlPathName.pathname === config.httpServerPath) {
-                let bodyStr = "";
-                req.on("data", (chunk) => {
-                    bodyStr += chunk.toString();
-                    if (bodyStr.length > config.maxHttpRequestSize) {
-                        // FLOOD ATTACK OR FAULTY CLIENT, NUKE REQUEST
-                        req.connection.destroy();
+        winston.debug(`Request: ${req.url} (method: ${req.method})`);
+        if (req.method !== "POST") {
+            winston.warn(`Request was not POST.`);
+            return;
+        }
+        const urlPathName = url.parse(req.url as string, true);
+        const fileServer = new ns.Server("./assets");
+        if (urlPathName.pathname === config.httpServerPath) {
+            // TODO: вынести содержимое в отдельную функцию
+            let bodyStr = "";
+            req.on("data", (chunk) => {
+                bodyStr += chunk.toString();
+                if (bodyStr.length > config.maxHttpRequestSize) {
+                    // FLOOD ATTACK OR FAULTY CLIENT, NUKE REQUEST
+                    req.connection.destroy();
+                }
+            });
+            req.on("end", () => {
+                const post = qs.parse(bodyStr);
+                let userMessage = "";
+                for (const name in post) {
+                    if (name !== config.redirectFieldName) {
+                        const str = name + ": " + post[name] + "\n";
+                        userMessage += str;
                     }
-                });
-                req.on("end", () => {
-                    const post = qs.parse(bodyStr);
-                    let userMessage = "";
-                    for (const name in post) {
-                        if (name !== config.redirectFieldName) {
-                            const str = name + ": " + post[name] + "\n";
-                            userMessage += str;
+                }
+                sendEmail(
+                    config,
+                    userMessage,
+                    () => {
+                        // TODO: всегда редиректить
+                        // TODO: сделать страницу /thanks и редиректить на нее
+                        //       если не указан путь редиректа.
+                        winston.debug(`Redirecting to ${post._redirect}`);
+                        if (post._redirect) {
+                            // TODO: убедиться в 301
+                            res.writeHead(301, { Location: post._redirect });
+                            res.end();
+                        } else {
+                            fileServer.serveFile("thanks.html", 200, {}, req, res);
                         }
-                    }
-                    sendEmail(
-                        config,
-                        userMessage,
-                        () => {
-                            winston.debug(`Redirecting to ${post._redirect}`);
-                            if (post._redirect) {
-                                res.writeHead(301, { Location: post._redirect });
-                                res.end();
-                            } else {
-                                fileServer.serveFile("thanks.html", 200, {}, req, res);
-                            }
-                        });
-                });
-            } else {
-                winston.warn(`Incorrect httpServerPath: ${urlPathName.pathname}`);
-                res.end("END");
-            }
-        } catch (e) {
-            winston.error(`Error in ConnectionHandler: ${e.message}`);
+                    });
+            });
+        } else {
+            winston.warn(`Incorrect httpServerPath: ${urlPathName.pathname}`);
+            // TODO: display 404 page.
+            res.end();
         }
     };
 }
@@ -122,7 +128,13 @@ function run(): void {
          })],
         });
 
-        server = http.createServer(constructConnectionHandler(config));
+        server = http.createServer((req, resp) => {
+            try {
+                constructConnectionHandler(config)(req, resp);
+            } catch (e) {
+                winston.error(`Error in HTTP connection handler: ${e.message}`);
+            }
+        });
         server.listen(config.httpListenPort, config.httpListenIP);
         logger.info(`Server started.
             httpListenPort ${config.httpListenPort}, httpListenIp ${config.httpListenIP}`);
