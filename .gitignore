@@ -2,3 +2,4 @@
 /node_modules/
 *.log
 /config.json
+/.vscode/ftp-sync.json
