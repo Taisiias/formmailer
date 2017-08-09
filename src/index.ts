@@ -1,7 +1,4 @@
-// -- TODO: перепроверить форматирование логгинга (отсутствует дата)
 // TODO: Написать README.
-// -- TODO: logLevel = debug в конфиге не работает.
-// TODO: при ошибке отправки емейла виснет сайт. должен выдавать ошибку на странице.
 
 import * as http from "http";
 import * as ns from "node-static";
@@ -14,23 +11,39 @@ import * as yargs from "yargs";
 import * as cf from "./config";
 
 const defaultLogLevel = "debug";
+const thanksPath = "/thanks";
 
-class NotFoundError extends Error {}
+class NotFoundError extends Error { }
 
 interface CommandLineArgs {
     configFilePath: string;
 }
 
-function constructConnectionHandler(
+async function formMailerPostProcessingHandler(
     config: cf.Config,
-): (req: http.IncomingMessage, res: http.ServerResponse) => void {
-    return (req: http.IncomingMessage, res: http.ServerResponse) => {
-        const fileServer = new ns.Server("./assets");
-        connectionHandler(config, req, res, fileServer).catch((err) => {
-            winston.warn(`Error in Connection Handler: ${err}`);
-            fileServer.serveFile("error.html", 502, {}, req, res);
-        });
-    };
+    req: http.IncomingMessage,
+    res: http.ServerResponse,
+): Promise<void> {
+    const bodyStr = await readReadable(req, config.maxHttpRequestSize);
+    const post = qs.parse(bodyStr);
+    let userMessage = "";
+    for (const name in post) {
+        if (name !== config.redirectFieldName) {
+            const str = name + ": " + post[name] + "\n";
+            userMessage += str;
+        }
+    }
+    await sendEmail(config, userMessage);
+
+    if (post._redirect) {
+        winston.debug(`Redirecting to ${post._redirect}`);
+        res.writeHead(303, { Location: post._redirect });
+        res.end();
+    } else {
+        winston.debug(`Redirecting to ${thanksPath}`);
+        res.writeHead(303, { Location: thanksPath });
+        res.end();
+    }
 }
 
 async function connectionHandler(
@@ -40,38 +53,31 @@ async function connectionHandler(
     fileServer: ns.Server,
 ): Promise<void> {
     winston.debug(`Request: ${req.url} (method: ${req.method})`);
-    if (req.method !== "POST") {
-        throw new Error(`Request was not POST.`);
-    }
     const urlPathName = url.parse(req.url as string, true);
-    if (urlPathName.pathname === config.httpServerPath) {
-        // TODO: вынести содержимое в отдельную функцию
-
-        const bodyStr = await readReadable(req, config.maxHttpRequestSize);
-        const post = qs.parse(bodyStr);
-        let userMessage = "";
-        for (const name in post) {
-            if (name !== config.redirectFieldName) {
-                const str = name + ": " + post[name] + "\n";
-                userMessage += str;
-            }
-        }
-        await sendEmail(config, userMessage);
-        // TODO: всегда редиректить
-        // TODO: сделать страницу /thanks и редиректить на нее
-        //       если не указан путь редиректа.
-        winston.debug(`Redirecting to ${post._redirect}`);
-        if (post._redirect) {
-            // --  TODO: убедиться в 301 - moved permanently
-            res.writeHead(303, { Location: post._redirect });
-            res.end();
-        } else {
-            fileServer.serveFile("thanks.html", 200, {}, req, res);
-        }
-
+    if (urlPathName.pathname === config.httpServerPath && req.method === "POST") {
+        formMailerPostProcessingHandler(config, req, res);
+    } else if (urlPathName.pathname === thanksPath) {
+        fileServer.serveFile("thanks.html", 200, {}, req, res);
     } else {
-        throw new NotFoundError(`Incorrect httpServerPath: ${urlPathName.pathname}`);
+        throw new NotFoundError(`Incorrect request: ${urlPathName.pathname} (${req.method})`);
     }
+}
+
+function constructConnectionHandler(
+    config: cf.Config,
+): (req: http.IncomingMessage, res: http.ServerResponse) => void {
+    return (req: http.IncomingMessage, res: http.ServerResponse) => {
+        const fileServer = new ns.Server("./assets");
+        connectionHandler(config, req, res, fileServer).catch((err) => {
+            if (err instanceof NotFoundError) {
+                winston.warn(`${err}`);
+                fileServer.serveFile("error404.html", 404, {}, req, res);
+                return;
+            }
+            winston.warn(`Error in Connection Handler: ${err}`);
+            fileServer.serveFile("error502.html", 502, {}, req, res);
+        });
+    };
 }
 
 function readReadable(s: stream.Readable, maxRequestSize: number): Promise<string> {
@@ -141,13 +147,7 @@ function run(): void {
             })],
         });
 
-        server = http.createServer((req, resp) => {
-            try {
-                constructConnectionHandler(config)(req, resp);
-            } catch (e) {
-                winston.error(`Error in HTTP connection handler: ${e.message}`);
-            }
-        });
+        server = http.createServer(constructConnectionHandler(config));
         server.listen(config.httpListenPort, config.httpListenIP);
         winston.info(`Server started.
             httpListenPort ${config.httpListenPort}, httpListenIp ${config.httpListenIP}`);
