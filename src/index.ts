@@ -1,4 +1,6 @@
 // TODO: Написать README.
+// TODO: error: Config file cannot be parsed. undefined (при пустом/неправильном конфиге)
+// TODO: выдавать вменяемую ошибку при отсутствии обязательных полей в конфиге.
 
 import * as http from "http";
 import * as ns from "node-static";
@@ -19,7 +21,7 @@ interface CommandLineArgs {
     configFilePath: string;
 }
 
-async function formMailerPostProcessingHandler(
+async function formHandler(
     config: cf.Config,
     req: http.IncomingMessage,
     res: http.ServerResponse,
@@ -55,7 +57,7 @@ async function connectionHandler(
     winston.debug(`Request: ${req.url} (method: ${req.method})`);
     const urlPathName = url.parse(req.url as string, true);
     if (urlPathName.pathname === config.httpServerPath && req.method === "POST") {
-        formMailerPostProcessingHandler(config, req, res);
+        await formHandler(config, req, res);
     } else if (urlPathName.pathname === thanksPath) {
         fileServer.serveFile("thanks.html", 200, {}, req, res);
     } else {
@@ -139,21 +141,14 @@ function run(): void {
 
         config = cf.readConfig(cmdArgs.configFilePath);
 
-        winston.configure({
-            level: config.logLevel,
-            transports: [new winston.transports.Console({
-                name: "Console",
-                timestamp: true,
-            })],
-        });
+        winston.level = config.logLevel;
 
         server = http.createServer(constructConnectionHandler(config));
         server.listen(config.httpListenPort, config.httpListenIP);
         winston.info(`Server started.
             httpListenPort ${config.httpListenPort}, httpListenIp ${config.httpListenIP}`);
-
     } catch (e) {
-        winston.error(`Incorrect arguments or config file: ${e.message}`);
+        winston.error(`${e.message}`);
         process.exit(1);
     }
 }
