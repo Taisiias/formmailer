@@ -1,3 +1,4 @@
+// TODO: причесать страницы Thanks/Error
 // TODO: Написать README.
 
 import * as http from "http";
@@ -86,7 +87,7 @@ function readReadable(s: stream.Readable, maxRequestSize: number): Promise<strin
         s.on("data", (chunk) => {
             bodyStr += chunk.toString();
             if (bodyStr.length > maxRequestSize) {
-                // FLOOD ATTACK OR FAULTY CLIENT, NUKE REQUEST
+                // FLOOD ATTACK OR FAULTY CLIENT
                 reject("Maximum request size exceeded");
             }
         });
@@ -130,29 +131,28 @@ function run(): void {
         })],
     });
 
-    try {
-        let cmdArgs: CommandLineArgs;
-        cmdArgs = yargs.options("configFilePath", {
-            alias: "c",
-            describe: "Read setting from specified config file path",
-        }).help("help").argv;
+    let cmdArgs: CommandLineArgs;
+    cmdArgs = yargs.options("configFilePath", {
+        alias: "c",
+        describe: "Read setting from specified config file path",
+    }).help("help").argv;
 
-        config = cf.readConfig(cmdArgs.configFilePath);
-    } catch (e) {
-        winston.error(`${e.message}`);
-        return process.exit(1);
-    }
+    config = cf.readConfig(cmdArgs.configFilePath);
 
     winston.level = config.logLevel;
+    server = http.createServer(constructConnectionHandler(config));
+    server.listen(config.httpListenPort, config.httpListenIP);
+    winston.info(`Server started.
+        httpListenPort ${config.httpListenPort}, httpListenIp ${config.httpListenIP}`);
+}
+
+function runAndReport(): void {
     try {
-        server = http.createServer(constructConnectionHandler(config));
-        server.listen(config.httpListenPort, config.httpListenIP);
-        winston.info(`Server started.
-            httpListenPort ${config.httpListenPort}, httpListenIp ${config.httpListenIP}`);
+        run();
     } catch (e) {
-        winston.error(`${e.message}`);
+        winston.error(e.message);
         return process.exit(1);
     }
 }
 
-run();
+runAndReport();
