@@ -2,7 +2,13 @@
 
 Server that emails data from submitted forms on your website.
 
-## How To Deploy
+## Deploying & Using
+
+### Configuration Options
+
+### Example Form
+
+### Special HTML Inputs
 
 ## How To Contribute
 
