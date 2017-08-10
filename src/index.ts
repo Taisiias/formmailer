@@ -1,6 +1,4 @@
 // TODO: Написать README.
-// TODO: error: Config file cannot be parsed. undefined (при пустом/неправильном конфиге)
-// TODO: выдавать вменяемую ошибку при отсутствии обязательных полей в конфиге.
 
 import * as http from "http";
 import * as ns from "node-static";
@@ -140,16 +138,20 @@ function run(): void {
         }).help("help").argv;
 
         config = cf.readConfig(cmdArgs.configFilePath);
+    } catch (e) {
+        winston.error(`${e.message}`);
+        return process.exit(1);
+    }
 
-        winston.level = config.logLevel;
-
+    winston.level = config.logLevel;
+    try {
         server = http.createServer(constructConnectionHandler(config));
         server.listen(config.httpListenPort, config.httpListenIP);
         winston.info(`Server started.
             httpListenPort ${config.httpListenPort}, httpListenIp ${config.httpListenIP}`);
     } catch (e) {
         winston.error(`${e.message}`);
-        process.exit(1);
+        return process.exit(1);
     }
 }
 

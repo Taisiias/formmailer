@@ -15,6 +15,7 @@ export interface Config {
 }
 
 const DefaultConfigObject = {
+    fromEmail: "formmailer@localhost",
     httpListenIP: "0.0.0.0",
     httpListenPort: 8080,
     httpServerPath: "/",
@@ -41,23 +42,25 @@ export function readConfig(cfPath?: string): Config {
     try {
         fileContent = fs.readFileSync(configFilePath).toString();
     } catch (e) {
-        throw new Error(`Config file cannot be read. ${e.Message}`);
+        throw new Error(`Config file cannot be read. ${e}`);
     }
 
     let json;
     try {
+        if (fileContent === "") {
+            throw new Error (`Config file is empty`);
+        }
         json = JSON.parse(fileContent);
         /* tslint:disable:no-any */
         const mergedObject: {[k: string]: any} = Object.assign(DefaultConfigObject, json);
-        if (mergedObject.hasOwnProperty("smtpPort") && !mergedObject.fromEmail) {
-            throw new Error(`Property fromEmail is missing.`);
-        }
-        if (mergedObject.hasOwnProperty("recipientEmails") && !mergedObject.recipientEmails) {
+
+        if (!mergedObject.hasOwnProperty("recipientEmails") && !mergedObject.recipientEmails) {
             throw new Error(`Property recipientEmails is missing.`);
         }
+
         cf = mergedObject as Config;
     } catch (e) {
-        throw new Error(`Config file cannot be parsed. ${e.Message}`);
+        throw new Error(`Config file cannot be parsed. ${e}`);
     }
     return cf;
 }
