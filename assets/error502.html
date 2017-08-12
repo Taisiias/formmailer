@@ -1,3 +1,75 @@
-<html>
-    <h1>Error.</h1>
+<head>
+    <style type="text/css">
+        body {
+            background-color: #f1f1f1;
+            display: block;
+            margin: 8px;
+        }
+
+        .outer {
+            display: table;
+            position: absolute;
+            height: 100%;
+            width: 100%;
+        }
+
+        .middle {
+            display: table-cell;
+            vertical-align: middle;
+        }
+
+        .inner {
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            width: 70%;
+            color: #333;
+            font-family: sans-serif;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .thankyou {
+            font-weight: bold;
+        }
+
+        .button {
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 5%;
+            width: 10%;
+        }
+
+        .link {
+            color: #0aaef3;
+            text-decoration: none;
+        }
+
+        .link:hover {
+            text-decoration: underline;
+        }
+
+        .top {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body class="body">
+    <div class="outer">
+        <div class="middle">
+            <div class="inner">
+                Something went wrong.
+            </div>
+            <div class="inner thankyou">
+                Please try to submit the form again.
+            </div>
+            <div class="inner top">
+                <a href="javascript:history.back();" class="link">Return to previous page</a>
+            </div>
+        </div>
+    </div>
+</body>
+
 </html>
