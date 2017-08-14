@@ -1,5 +1,27 @@
-// TODO: причесать страницы Thanks/Error
 // TODO: Написать README.
+// TODO: Заголовок письма: Form submitted on {{referrerUrl}}
+// TODO: Вынести шаблон письма
+/* TODO: Шаблон письма по умолчанию:
+
+Submitted user form was received by Formmailer server, see deails below.
+
+Page URL: {{referrerURL}}
+
+user_name: qwer
+user_mail: asdf@asdf.ccc
+user_message:
+    adfa
+    sdfg
+
+    rteyerty
+user_select: Option 3.2
+user_checkbox: checked
+
+Submitter IP address: {{incomingIp}}
+
+*/
+// TODO: не надо указывать специальные поля (такие как _redirect в письме)
+// TODO: сохранять историю в БД
 
 import * as http from "http";
 import * as ns from "node-static";
@@ -11,8 +33,8 @@ import winston = require("winston");
 import * as yargs from "yargs";
 import * as cf from "./config";
 
-const defaultLogLevel = "debug";
-const thanksPath = "/thanks";
+const DEFAULT_LOG_LEVEL = "debug";
+const THANKS_PAGE_PATH = "/thanks";
 
 class NotFoundError extends Error { }
 
@@ -29,9 +51,9 @@ async function formHandler(
     const post = qs.parse(bodyStr);
     let userMessage = "";
     for (const name in post) {
+        // TODO: можно просто сделать проверку: если поле начинается с символа _ то игнорируем
         if (name !== config.redirectFieldName) {
-            const str = name + ": " + post[name] + "\n";
-            userMessage += str;
+            userMessage += `${name}: ${post[name]}\n`;
         }
     }
     await sendEmail(config, userMessage);
@@ -41,23 +63,23 @@ async function formHandler(
         res.writeHead(303, { Location: post._redirect });
         res.end();
     } else {
-        winston.debug(`Redirecting to ${thanksPath}`);
-        res.writeHead(303, { Location: thanksPath });
+        winston.debug(`Redirecting to ${THANKS_PAGE_PATH}`);
+        res.writeHead(303, { Location: THANKS_PAGE_PATH });
         res.end();
     }
 }
 
-async function connectionHandler(
+async function requestHandler(
     config: cf.Config,
     req: http.IncomingMessage,
     res: http.ServerResponse,
     fileServer: ns.Server,
 ): Promise<void> {
-    winston.debug(`Request: ${req.url} (method: ${req.method})`);
+    winston.debug(`Incoming request: ${req.url} (method: ${req.method})`);
     const urlPathName = url.parse(req.url as string, true);
     if (urlPathName.pathname === config.httpServerPath && req.method === "POST") {
         await formHandler(config, req, res);
-    } else if (urlPathName.pathname === thanksPath) {
+    } else if (urlPathName.pathname === THANKS_PAGE_PATH) {
         fileServer.serveFile("thanks.html", 200, {}, req, res);
     } else {
         throw new NotFoundError(`Incorrect request: ${urlPathName.pathname} (${req.method})`);
@@ -67,9 +89,9 @@ async function connectionHandler(
 function constructConnectionHandler(
     config: cf.Config,
 ): (req: http.IncomingMessage, res: http.ServerResponse) => void {
+    const fileServer = new ns.Server("./assets");
     return (req: http.IncomingMessage, res: http.ServerResponse) => {
-        const fileServer = new ns.Server("./assets");
-        connectionHandler(config, req, res, fileServer).catch((err) => {
+        requestHandler(config, req, res, fileServer).catch((err) => {
             if (err instanceof NotFoundError) {
                 winston.warn(`${err}`);
                 fileServer.serveFile("error404.html", 404, {}, req, res);
@@ -120,11 +142,8 @@ async function sendEmail(config: cf.Config, emailText: string): Promise<void> {
 }
 
 function run(): void {
-    let config: cf.Config;
-    let server: http.Server;
-
     winston.configure({
-        level: defaultLogLevel,
+        level: DEFAULT_LOG_LEVEL,
         transports: [new winston.transports.Console({
             name: "Console",
             timestamp: true,
@@ -137,13 +156,14 @@ function run(): void {
         describe: "Read setting from specified config file path",
     }).help("help").argv;
 
-    config = cf.readConfig(cmdArgs.configFilePath);
+    const config = cf.readConfig(cmdArgs.configFilePath);
 
     winston.level = config.logLevel;
-    server = http.createServer(constructConnectionHandler(config));
+
+    const server = http.createServer(constructConnectionHandler(config));
     server.listen(config.httpListenPort, config.httpListenIP);
-    winston.info(`Server started.
-        httpListenPort ${config.httpListenPort}, httpListenIp ${config.httpListenIP}`);
+
+    winston.info(`Server started (listening ${config.httpListenIP}:${config.httpListenPort})`);
 }
 
 function runAndReport(): void {
