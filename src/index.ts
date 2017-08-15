@@ -1,11 +1,9 @@
-// TODO: Написать README.
-// TODO: Заголовок письма: Form submitted on {{referrerUrl}}
 // TODO: Вынести шаблон письма
 /* TODO: Шаблон письма по умолчанию:
 
-Submitted user form was received by Formmailer server, see deails below.
+Submitted user form was received by Formmailer server, see details below.
 
-Page URL: {{referrerURL}}
+Referrer page: {{referrerURL}}
 
 user_name: qwer
 user_mail: asdf@asdf.ccc
@@ -20,10 +18,10 @@ user_checkbox: checked
 Submitter IP address: {{incomingIp}}
 
 */
-// TODO: не надо указывать специальные поля (такие как _redirect в письме)
 // TODO: сохранять историю в БД
 
 import * as http from "http";
+import * as mst from "mustache";
 import * as ns from "node-static";
 import * as nodemailer from "nodemailer";
 import * as qs from "querystring";
@@ -51,12 +49,15 @@ async function formHandler(
     const post = qs.parse(bodyStr);
     let userMessage = "";
     for (const name in post) {
-        // TODO: можно просто сделать проверку: если поле начинается с символа _ то игнорируем
-        if (name !== config.redirectFieldName) {
+        if (!name.startsWith("_")) {
             userMessage += `${name}: ${post[name]}\n`;
         }
     }
-    await sendEmail(config, userMessage);
+    let referrer = "";
+    if (req.headers.Referrer) {
+        referrer = req.headers.Referrer;
+    } else { referrer = "Unspecified URL"; }
+    await sendEmail(config, userMessage, referrer);
 
     if (post._redirect) {
         winston.debug(`Redirecting to ${post._redirect}`);
@@ -119,7 +120,11 @@ function readReadable(s: stream.Readable, maxRequestSize: number): Promise<strin
     });
 }
 
-async function sendEmail(config: cf.Config, emailText: string): Promise<void> {
+async function sendEmail(
+    config: cf.Config,
+    emailText: string,
+    referrerPage: string,
+): Promise<void> {
     winston.silly(`Entering to sendEmail. Creating Nodemailer transporter.`);
     const transporter = nodemailer.createTransport({
         host: config.smtpHost,
@@ -130,7 +135,7 @@ async function sendEmail(config: cf.Config, emailText: string): Promise<void> {
     });
     const emailMessage = {
         from: config.fromEmail,
-        subject: config.subject,
+        subject: mst.render(config.subject, { referrerUrl: referrerPage }),
         text: emailText,
         to: config.recipientEmails,
     };

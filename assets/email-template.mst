@@ -1,0 +1,12 @@
+Submitted user form was received by Formmailer server, see details below.
+
+Referrer page: {{referrerURL}}
+
+user_name: {{userName}}
+user_mail: {{userMail}}
+user_message:
+    {{userMessage}}
+user_select: {{userSelect}}
+user_checkbox: {{userCheckBox}}
+
+Submitter IP address: {{incomingIp}}
