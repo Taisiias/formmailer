@@ -16,10 +16,10 @@ user_select: Option 3.2
 user_checkbox: checked
 
 Submitter IP address: {{incomingIp}}
-
 */
 // TODO: сохранять историю в БД
 
+import * as fs from "fs";
 import * as http from "http";
 import * as mst from "mustache";
 import * as ns from "node-static";
@@ -33,6 +33,7 @@ import * as cf from "./config";
 
 const DEFAULT_LOG_LEVEL = "debug";
 const THANKS_PAGE_PATH = "/thanks";
+const TEMPLATE_PATH = "./assets/email-template.mst";
 
 class NotFoundError extends Error { }
 
@@ -48,15 +49,26 @@ async function formHandler(
     const bodyStr = await readReadable(req, config.maxHttpRequestSize);
     const post = qs.parse(bodyStr);
     let userMessage = "";
-    for (const name in post) {
-        if (!name.startsWith("_")) {
-            userMessage += `${name}: ${post[name]}\n`;
-        }
-    }
+
     let referrer = "";
     if (req.headers.Referrer) {
         referrer = req.headers.Referrer;
     } else { referrer = "Unspecified URL"; }
+
+    const objectToRender = {
+            incomingIp: req.headers.incomingIp,
+            referrerURL: referrer,
+            userCheckbox: post.user_checkbox,
+            userMail: post.user_mail,
+            userMessage: post.user_message,
+            userName: post.user_name,
+            userSelect: post.user_select,
+
+        };
+    const template = fs.readFileSync(TEMPLATE_PATH).toString();
+    userMessage = mst.render(
+        template,
+        objectToRender);
     await sendEmail(config, userMessage, referrer);
 
     if (post._redirect) {
