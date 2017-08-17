@@ -1,22 +1,3 @@
-// TODO: Вынести шаблон письма
-/* TODO: Шаблон письма по умолчанию:
-
-Submitted user form was received by Formmailer server, see details below.
-
-Referrer page: {{referrerURL}}
-
-user_name: qwer
-user_mail: asdf@asdf.ccc
-user_message:
-    adfa
-    sdfg
-
-    rteyerty
-user_select: Option 3.2
-user_checkbox: checked
-
-Submitter IP address: {{incomingIp}}
-*/
 // TODO: сохранять историю в БД
 
 import * as fs from "fs";
@@ -30,6 +11,7 @@ import * as url from "url";
 import winston = require("winston");
 import * as yargs from "yargs";
 import * as cf from "./config";
+import * as db from "./database";
 
 const DEFAULT_LOG_LEVEL = "debug";
 const THANKS_PAGE_PATH = "/thanks";
@@ -50,27 +32,36 @@ async function formHandler(
     const post = qs.parse(bodyStr);
     let userMessage = "";
 
-    let referrer = "";
+    let referrerAddress = "";
     if (req.headers.Referrer) {
-        referrer = req.headers.Referrer;
-    } else { referrer = "Unspecified URL"; }
+        referrerAddress = req.headers.Referrer;
+    } else { referrerAddress = "Unspecified URL"; }
     const formattedUserMessage =
         post.user_message.split("\n").map((s: string) => "  " + s).join("\n");
     const objectToRender = {
-            incomingIp: req.connection.remoteAddress,
-            referrerURL: referrer,
-            userCheckBox: post.user_checkbox,
-            userMail: post.user_mail,
-            userMessage: formattedUserMessage,
-            userName: post.user_name,
-            userSelect: post.user_select,
-        };
+        incomingIp: req.connection.remoteAddress,
+        referrerURL: referrerAddress,
+        userCheckBox: post.user_checkbox,
+        userMail: post.user_mail,
+        userMessage: formattedUserMessage,
+        userName: post.user_name,
+        userSelect: post.user_select,
+    };
     const template = fs.readFileSync(TEMPLATE_PATH).toString();
     userMessage = mst.render(
         template,
         objectToRender);
-    await sendEmail(config, userMessage, referrer);
-
+    await sendEmail(config, userMessage, referrerAddress);
+    const row: db.Email = {
+        date: new Date(),
+        id: undefined,
+        ip: req.connection.remoteAddress,
+        postRequest: bodyStr,
+        referrer: referrerAddress,
+        toEmail: config.recipientEmails,
+        userMessage: post.user_message,
+    };
+    db.insertEmail(row);
     if (post._redirect) {
         winston.debug(`Redirecting to ${post._redirect}`);
         res.writeHead(303, { Location: post._redirect });
@@ -176,7 +167,7 @@ function run(): void {
     const config = cf.readConfig(cmdArgs.configFilePath);
 
     winston.level = config.logLevel;
-
+    db.createDatabaseAndTables();
     const server = http.createServer(constructConnectionHandler(config));
     server.listen(config.httpListenPort, config.httpListenIP);
 
