@@ -32,7 +32,6 @@ export async function insertEmail(email: Email): Promise<void> {
         "INSERT INTO formmailer_data (date, referrer, post, user_message, to_email, ip) " +
         "VALUES (datetime(), $referrer, $post, $user_message, $to, $ip)",
         {
-            // $date: new Date(),
             $ip: email.ip,
             $post: email.postRequest,
             $referrer: email.referrer,
@@ -41,10 +40,3 @@ export async function insertEmail(email: Email): Promise<void> {
         });
     db.close();
 }
-
-// export function selectEmail(): Email
-// {
-// db.each("SELECT rowid AS id, info FROM lorem", (err, row) => {
-//         console.log(row.id + ": " + row.info);
-//     });
-// }

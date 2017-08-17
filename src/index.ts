@@ -1,5 +1,3 @@
-// TODO: сохранять историю в БД
-
 import * as fs from "fs";
 import * as http from "http";
 import * as mst from "mustache";
