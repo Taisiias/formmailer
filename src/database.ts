@@ -1,13 +1,12 @@
 import * as sqlite3 from "sqlite3";
 
 export interface Email {
-    id: number | undefined;
     date: Date;
     referrer: string;
     postRequest: string;
     sentMessage: string;
     toEmail: string | string[];
-    ip: string | undefined;
+    ip: string;
 }
 
 export function createDatabaseAndTables(): void {
@@ -22,7 +21,6 @@ export function createDatabaseAndTables(): void {
         "to_email TEXT, " +
         "ip TEXT " +
         ")");
-
     db.close();
 }
 

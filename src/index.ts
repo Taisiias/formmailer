@@ -52,7 +52,6 @@ async function formHandler(
     await sendEmail(config, userMessage, referrerAddress);
     const row: db.Email = {
         date: new Date(),
-        id: undefined,
         ip: req.connection.remoteAddress,
         postRequest: bodyStr,
         referrer: referrerAddress,
