@@ -5,7 +5,7 @@ Referrer page: {{referrerURL}}
 user_name: {{userName}}
 user_mail: {{userMail}}
 user_message:
-    {{userMessage}}
+{{userMessage}}
 user_select: {{userSelect}}
 user_checkbox: {{userCheckBox}}
 

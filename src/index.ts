@@ -54,16 +54,16 @@ async function formHandler(
     if (req.headers.Referrer) {
         referrer = req.headers.Referrer;
     } else { referrer = "Unspecified URL"; }
-
+    const formattedUserMessage =
+        post.user_message.split("\n").map((s: string) => "  " + s).join("\n");
     const objectToRender = {
-            incomingIp: req.headers.incomingIp,
+            incomingIp: req.connection.remoteAddress,
             referrerURL: referrer,
-            userCheckbox: post.user_checkbox,
+            userCheckBox: post.user_checkbox,
             userMail: post.user_mail,
-            userMessage: post.user_message,
+            userMessage: formattedUserMessage,
             userName: post.user_name,
             userSelect: post.user_select,
-
         };
     const template = fs.readFileSync(TEMPLATE_PATH).toString();
     userMessage = mst.render(
