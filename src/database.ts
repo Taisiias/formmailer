@@ -5,7 +5,7 @@ export interface Email {
     date: Date;
     referrer: string;
     postRequest: string;
-    userMessage: string;
+    sentMessage: string;
     toEmail: string | string[];
     ip: string | undefined;
 }
@@ -37,7 +37,7 @@ export async function insertEmail(email: Email): Promise<void> {
             $post: email.postRequest,
             $referrer: email.referrer,
             $to: email.toEmail,
-            $user_message: email.userMessage,
+            $user_message: email.sentMessage,
         });
     db.close();
 }

@@ -58,8 +58,8 @@ async function formHandler(
         ip: req.connection.remoteAddress,
         postRequest: bodyStr,
         referrer: referrerAddress,
+        sentMessage: userMessage,
         toEmail: config.recipientEmails,
-        userMessage: post.user_message,
     };
     db.insertEmail(row);
     if (post._redirect) {
