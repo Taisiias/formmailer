@@ -1,3 +1,6 @@
+// TODO: database config
+// TODO: line 32 userMessage vs formattedUserMessage
+// TODO: Format SQL
 import * as fs from "fs";
 import * as http from "http";
 import * as mst from "mustache";
@@ -30,15 +33,15 @@ async function formHandler(
     const post = qs.parse(bodyStr);
     let userMessage = "";
 
-    let referrerAddress = "";
+    let referrerURL = "";
     if (req.headers.Referrer) {
-        referrerAddress = req.headers.Referrer;
-    } else { referrerAddress = "Unspecified URL"; }
+        referrerURL = req.headers.Referrer;
+    } else { referrerURL = "Unspecified URL"; }
     const formattedUserMessage =
         post.user_message.split("\n").map((s: string) => "  " + s).join("\n");
     const objectToRender = {
         incomingIp: req.connection.remoteAddress,
-        referrerURL: referrerAddress,
+        referrerURL,
         userCheckBox: post.user_checkbox,
         userMail: post.user_mail,
         userMessage: formattedUserMessage,
@@ -49,16 +52,15 @@ async function formHandler(
     userMessage = mst.render(
         template,
         objectToRender);
-    await sendEmail(config, userMessage, referrerAddress);
-    const row: db.Email = {
-        date: new Date(),
-        ip: req.connection.remoteAddress,
-        postRequest: bodyStr,
-        referrer: referrerAddress,
-        sentMessage: userMessage,
-        toEmail: config.recipientEmails,
-    };
-    db.insertEmail(row);
+    await sendEmail(config, userMessage, referrerURL);
+
+    db.insertEmail(
+        req.connection.remoteAddress,
+        bodyStr,
+        referrerURL,
+        config.recipientEmails,
+        userMessage);
+
     if (post._redirect) {
         winston.debug(`Redirecting to ${post._redirect}`);
         res.writeHead(303, { Location: post._redirect });
