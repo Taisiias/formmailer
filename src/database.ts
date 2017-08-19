@@ -1,7 +1,7 @@
 import * as sqlite3 from "sqlite3";
 
-export function createDatabaseAndTables(): void {
-    const db = new sqlite3.Database("formmailer_database");
+export function createDatabaseAndTables(databaseFileName: string): void {
+    const db = new sqlite3.Database(databaseFileName);
 
     db.run(`
         CREATE TABLE IF NOT EXISTS formmailer_data (
@@ -17,16 +17,19 @@ export function createDatabaseAndTables(): void {
 }
 
 export async function insertEmail(
+    databaseFileName: string,
     ip: string,
     post: string,
     referrer: string,
     toEmail: string | string[],
     sentMessage: string,
 ): Promise<void> {
-    const db = new sqlite3.Database("formmailer_database");
+    const db = new sqlite3.Database(databaseFileName);
     db.run(
-        "INSERT INTO formmailer_data (date, referrer, post, user_message, to_email, ip) " +
-        "VALUES (datetime(), $referrer, $post, $user_message, $to, $ip)",
+        `INSERT INTO formmailer_data 
+        (date, referrer, post, user_message, to_email, ip) 
+        VALUES
+        (datetime(), $referrer, $post, $user_message, $to, $ip)`,
         {
             $ip: ip,
             $post: post,

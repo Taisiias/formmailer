@@ -3,6 +3,10 @@
     "title": "Configuration file schema",
     "type": "object",
     "properties": {
+         "databaseFileName": {
+            "description": "Path to SQLite database",
+            "type": "string"
+        },
          "httpListenIP": {
             "description": "HTTP listen IP",
             "type": "string"

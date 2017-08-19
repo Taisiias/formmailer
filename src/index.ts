@@ -1,6 +1,3 @@
-// TODO: database config
-// TODO: line 32 userMessage vs formattedUserMessage
-// TODO: Format SQL
 import * as fs from "fs";
 import * as http from "http";
 import * as mst from "mustache";
@@ -37,14 +34,14 @@ async function formHandler(
     if (req.headers.Referrer) {
         referrerURL = req.headers.Referrer;
     } else { referrerURL = "Unspecified URL"; }
-    const formattedUserMessage =
+    const splittedUserMessageFromPost =
         post.user_message.split("\n").map((s: string) => "  " + s).join("\n");
     const objectToRender = {
         incomingIp: req.connection.remoteAddress,
         referrerURL,
         userCheckBox: post.user_checkbox,
         userMail: post.user_mail,
-        userMessage: formattedUserMessage,
+        userMessage: splittedUserMessageFromPost,
         userName: post.user_name,
         userSelect: post.user_select,
     };
@@ -55,6 +52,7 @@ async function formHandler(
     await sendEmail(config, userMessage, referrerURL);
 
     db.insertEmail(
+        config.databaseFileName,
         req.connection.remoteAddress,
         bodyStr,
         referrerURL,
@@ -166,7 +164,7 @@ function run(): void {
     const config = cf.readConfig(cmdArgs.configFilePath);
 
     winston.level = config.logLevel;
-    db.createDatabaseAndTables();
+    db.createDatabaseAndTables(config.databaseFileName);
     const server = http.createServer(constructConnectionHandler(config));
     server.listen(config.httpListenPort, config.httpListenIP);
 

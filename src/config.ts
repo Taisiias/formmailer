@@ -1,6 +1,7 @@
 import * as fs from "fs";
 
 export interface Config {
+    databaseFileName: string;
     fromEmail: string;
     httpListenIP: string;
     httpListenPort: number;
@@ -15,6 +16,7 @@ export interface Config {
 }
 
 const DefaultConfigObject = {
+    databaseFileName: "./formmailer_database",
     fromEmail: "formmailer@localhost",
     httpListenIP: "0.0.0.0",
     httpListenPort: 8080,
