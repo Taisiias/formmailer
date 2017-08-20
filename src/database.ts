@@ -26,10 +26,8 @@ export async function insertEmail(
 ): Promise<void> {
     const db = new sqlite3.Database(databaseFileName);
     db.run(
-        `INSERT INTO formmailer_data 
-        (date, referrer, post, user_message, to_email, ip) 
-        VALUES
-        (datetime(), $referrer, $post, $user_message, $to, $ip)`,
+        `INSERT INTO formmailer_data (date, referrer, post, user_message, to_email, ip)
+         VALUES (datetime(), $referrer, $post, $user_message, $to, $ip)`,
         {
             $ip: ip,
             $post: post,

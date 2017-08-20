@@ -46,9 +46,7 @@ async function formHandler(
         userSelect: post.user_select,
     };
     const template = fs.readFileSync(TEMPLATE_PATH).toString();
-    userMessage = mst.render(
-        template,
-        objectToRender);
+    userMessage = mst.render(template, objectToRender);
     await sendEmail(config, userMessage, referrerURL);
 
     db.insertEmail(
@@ -129,9 +127,7 @@ async function sendEmail(
     const transporter = nodemailer.createTransport({
         host: config.smtpHost,
         port: config.smtpPort,
-        tls: {
-            rejectUnauthorized: false,
-        },
+        tls: { rejectUnauthorized: false },
     });
     const emailMessage = {
         from: config.fromEmail,
