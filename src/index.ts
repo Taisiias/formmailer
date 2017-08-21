@@ -29,21 +29,25 @@ async function formHandler(
     const bodyStr = await readReadable(req, config.maxHttpRequestSize);
     const post = qs.parse(bodyStr);
     let userMessage = "";
+    for (const name in post) {
+        if (!name.startsWith("_")) {
+            let buf: string = post[name];
+            if (buf.includes("\n")) {
+                buf = "\n" + buf.split("\n").map((s: string) => "     " + s).join("\n");
+            }
+            userMessage += `${name}: ${buf}\n`;
+        }
+    }
 
     let referrerURL = "";
     if (req.headers.Referrer) {
         referrerURL = req.headers.Referrer;
     } else { referrerURL = "Unspecified URL"; }
-    const splittedUserMessageFromPost =
-        post.user_message.split("\n").map((s: string) => "  " + s).join("\n");
+    winston.debug(`User Message: ${userMessage}`);
     const objectToRender = {
         incomingIp: req.connection.remoteAddress,
         referrerURL,
-        userCheckBox: post.user_checkbox,
-        userMail: post.user_mail,
-        userMessage: splittedUserMessageFromPost,
-        userName: post.user_name,
-        userSelect: post.user_select,
+        userMessage,
     };
     const template = fs.readFileSync(TEMPLATE_PATH).toString();
     userMessage = mst.render(template, objectToRender);
