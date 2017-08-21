@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import * as he from "he";
 import * as http from "http";
 import * as mst from "mustache";
 import * as ns from "node-static";
@@ -27,13 +28,13 @@ async function formHandler(
     res: http.ServerResponse,
 ): Promise<void> {
     const bodyStr = await readReadable(req, config.maxHttpRequestSize);
-    const post = qs.parse(bodyStr);
+    const post: { [k: string]: string } = qs.parse(bodyStr);
     let userMessage = "";
     for (const name in post) {
         if (!name.startsWith("_")) {
-            let buf: string = post[name];
+            let buf = he.decode(post[name]);
             if (buf.includes("\n")) {
-                buf = "\n" + buf.split("\n").map((s: string) => "     " + s).join("\n");
+                buf = "\n" + buf.split("\n").map((s) => "     " + s).join("\n");
             }
             userMessage += `${name}: ${buf}\n`;
         }
