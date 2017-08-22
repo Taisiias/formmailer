@@ -11,8 +11,8 @@
   resolved "https://registry.yarnpkg.com/@types/mime/-/mime-1.3.1.tgz#2cf42972d0931c1060c7d5fa6627fce6bd876f2f"
 
 "@types/mustache@^0.8.29":
-  version "0.8.29"
-  resolved "https://registry.yarnpkg.com/@types/mustache/-/mustache-0.8.29.tgz#7a6f13e8f23ff5bcbaaec484888400b2a4427b41"
+  version "0.8.30"
+  resolved "https://registry.yarnpkg.com/@types/mustache/-/mustache-0.8.30.tgz#65e479073bc15e8ac834347f8f311b24220a277d"
 
 "@types/node-static@^0.7.0":
   version "0.7.0"
@@ -30,28 +30,28 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-7.0.42.tgz#051ff1cdbd1e1b7523ba425bc388147483344dbf"
 
 "@types/nodemailer-direct-transport@*":
-  version "1.0.29"
-  resolved "https://registry.yarnpkg.com/@types/nodemailer-direct-transport/-/nodemailer-direct-transport-1.0.29.tgz#0247bb4734f8bbf9398241b16b41022e1303ddf1"
+  version "1.0.30"
+  resolved "https://registry.yarnpkg.com/@types/nodemailer-direct-transport/-/nodemailer-direct-transport-1.0.30.tgz#d47252c5ea2b85c7af2f55006ed36287a7519487"
   dependencies:
     "@types/nodemailer" "*"
 
 "@types/nodemailer-ses-transport@*":
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/@types/nodemailer-ses-transport/-/nodemailer-ses-transport-3.1.0.tgz#87acc365f94bc7d9a0c4b58ba8f8d83971f0b2cc"
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/@types/nodemailer-ses-transport/-/nodemailer-ses-transport-3.1.1.tgz#7a720fe2bd819b9611e0289cf7740545eb5c8978"
   dependencies:
     "@types/nodemailer" "*"
     aws-sdk "^2.37.0"
 
 "@types/nodemailer-smtp-transport@*":
-  version "2.7.2"
-  resolved "https://registry.yarnpkg.com/@types/nodemailer-smtp-transport/-/nodemailer-smtp-transport-2.7.2.tgz#1e5d778d27403baccdb8c9be22a3a9cbacff1c78"
+  version "2.7.3"
+  resolved "https://registry.yarnpkg.com/@types/nodemailer-smtp-transport/-/nodemailer-smtp-transport-2.7.3.tgz#99a6c40f38d84ebd21fd8823b755125113a091e9"
   dependencies:
     "@types/node" "*"
     "@types/nodemailer" "*"
 
 "@types/nodemailer@*":
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/@types/nodemailer/-/nodemailer-3.1.1.tgz#ce20d706deb95b0e04841ce87b027d1d0680a1f9"
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/@types/nodemailer/-/nodemailer-3.1.2.tgz#9cb6c9eb8ea0a5d24aacc6334b5f9756023bc6d0"
   dependencies:
     "@types/node" "*"
     "@types/nodemailer-direct-transport" "*"
@@ -68,14 +68,14 @@
     "@types/nodemailer-smtp-transport" "*"
 
 "@types/sqlite3@^3.1.0":
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/@types/sqlite3/-/sqlite3-3.1.0.tgz#4e906a86aac9992899633c83e583a1c054fcca79"
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/@types/sqlite3/-/sqlite3-3.1.1.tgz#f9b707c574e8d2f73d6c41aaa86e28b6ef85a324"
   dependencies:
     "@types/node" "*"
 
 "@types/winston@^2.3.4":
-  version "2.3.4"
-  resolved "https://registry.yarnpkg.com/@types/winston/-/winston-2.3.4.tgz#5bf6a5fb859f9b71b8509ab747f1eadb3a1cb1a2"
+  version "2.3.5"
+  resolved "https://registry.yarnpkg.com/@types/winston/-/winston-2.3.5.tgz#d8063460a7881e55a9dbfc41fcdfb5063312f3fb"
   dependencies:
     "@types/node" "*"
 
@@ -179,8 +179,8 @@ asynckit@^0.4.0:
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
 
 aws-sdk@^2.37.0:
-  version "2.100.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.100.0.tgz#fc0fbca7690d6c28effd28bd51fe85f7dba42bff"
+  version "2.101.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.101.0.tgz#1252c364b840eba1ae0b8cd8c1accf78bfa14d96"
   dependencies:
     buffer "4.9.1"
     crypto-browserify "1.0.9"

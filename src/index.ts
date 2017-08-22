@@ -40,10 +40,7 @@ async function formHandler(
         }
     }
 
-    let referrerURL = "";
-    if (req.headers.Referrer) {
-        referrerURL = req.headers.Referrer;
-    } else { referrerURL = "Unspecified URL"; }
+    const referrerURL = req.headers.Referrer || "Unspecified URL";
     winston.debug(`User Message: ${userMessage}`);
     const objectToRender = {
         incomingIp: req.connection.remoteAddress,
@@ -62,15 +59,10 @@ async function formHandler(
         config.recipientEmails,
         userMessage);
 
-    if (post._redirect) {
-        winston.debug(`Redirecting to ${post._redirect}`);
-        res.writeHead(303, { Location: post._redirect });
-        res.end();
-    } else {
-        winston.debug(`Redirecting to ${THANKS_PAGE_PATH}`);
-        res.writeHead(303, { Location: THANKS_PAGE_PATH });
-        res.end();
-    }
+    const redirectUrl = post._redirect || THANKS_PAGE_PATH;
+    winston.debug(`Redirecting to ${redirectUrl}`);
+    res.writeHead(303, { Location: redirectUrl });
+    res.end();
 }
 
 async function requestHandler(
