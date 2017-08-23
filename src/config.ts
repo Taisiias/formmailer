@@ -1,6 +1,7 @@
 import * as fs from "fs";
 
 export interface Config {
+    assetsFolder: string;
     databaseFileName: string;
     fromEmail: string;
     httpListenIP: string;
@@ -16,6 +17,7 @@ export interface Config {
 }
 
 const DefaultConfigObject = {
+    assetsFolder: "./assets",
     databaseFileName: "./formmailer_database",
     fromEmail: "formmailer@localhost",
     httpListenIP: "0.0.0.0",
@@ -26,7 +28,7 @@ const DefaultConfigObject = {
     redirectFieldName: "_defaultRedirect",
     smtpHost: "localhost",
     smtpPort: 25,
-    subject: "Message from Formmailer",
+    subject: "Form submitted on {{referrerUrl}}",
 };
 
 const defaultConfigPath = "./config.json";

@@ -1,3 +1,5 @@
+// TODO: readme on deploy process
+
 import * as fs from "fs";
 import * as he from "he";
 import * as http from "http";
@@ -84,8 +86,8 @@ async function requestHandler(
 
 function constructConnectionHandler(
     config: cf.Config,
+    fileServer: ns.Server,
 ): (req: http.IncomingMessage, res: http.ServerResponse) => void {
-    const fileServer = new ns.Server("./assets");
     return (req: http.IncomingMessage, res: http.ServerResponse) => {
         requestHandler(config, req, res, fileServer).catch((err) => {
             if (err instanceof NotFoundError) {
@@ -157,11 +159,12 @@ function run(): void {
     const config = cf.readConfig(cmdArgs.configFilePath);
 
     winston.level = config.logLevel;
+    const fileServer = new ns.Server(config.assetsFolder);
     db.createDatabaseAndTables(config.databaseFileName);
-    const server = http.createServer(constructConnectionHandler(config));
-    server.listen(config.httpListenPort, config.httpListenIP);
-
-    winston.info(`Server started (listening ${config.httpListenIP}:${config.httpListenPort})`);
+    const server = http.createServer(constructConnectionHandler(config, fileServer));
+    server.listen(config.httpListenPort, config.httpListenIP, () => {
+        winston.info(`Server started (listening ${config.httpListenIP}:${config.httpListenPort})`);
+    });
 }
 
 function runAndReport(): void {
