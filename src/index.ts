@@ -1,4 +1,4 @@
-// TODO: readme on deploy process
+// TODO: Redirect to error page
 
 import * as fs from "fs";
 import * as he from "he";
