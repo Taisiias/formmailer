@@ -1,8 +1,8 @@
 # FormMailer
 
-![Form Screenshot](/img/formmailer-workflow.svg)
-
 Receives HTTP POST requests with form contents from the static sites and sends them to the email(s) specified.
+
+![Workflow](/img/formmailer-workflow.png)
 
 Suppose you have this static page:
 
