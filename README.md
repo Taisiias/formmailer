@@ -1,5 +1,7 @@
 # FormMailer
 
+![CircleCI badge](https://img.shields.io/circleci/project/github/Taisiias/formmailer.svg)
+
 Receives HTTP POST requests with form contents from the static sites and sends them to the email(s) specified.
 
 ![Workflow](/img/formmailer-workflow.png)
