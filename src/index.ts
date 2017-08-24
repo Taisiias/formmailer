@@ -14,7 +14,7 @@ import * as yargs from "yargs";
 import * as cf from "./config";
 import * as db from "./database";
 
-const DEFAULT_LOG_LEVEL = "debug";
+const STARTUP_LOG_LEVEL = "debug";
 const THANKS_PAGE_PATH = "/thanks";
 const TEMPLATE_PATH = "./assets/email-template.mst";
 
@@ -143,7 +143,7 @@ async function sendEmail(
 
 function run(): void {
     winston.configure({
-        level: DEFAULT_LOG_LEVEL,
+        level: STARTUP_LOG_LEVEL,
         transports: [new winston.transports.Console({
             name: "Console",
             timestamp: true,

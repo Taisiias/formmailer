@@ -1,3 +1,8 @@
 {
-    "recipientEmails" : "formmailer-dev@localhost"
+    "recipientEmails" : "root@localhost",
+    "fromEmail": "formmailer@localhost",
+    "httpListenIP": "0.0.0.0",
+    "httpListenPort": 3000,
+    "smtpHost": "localhost",
+    "smtpPort": 2500
 }

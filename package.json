@@ -4,7 +4,7 @@
   "description": "HTTP server that emails data submitted on static website forms.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "tsc && tslint .",
     "build": "tsc",
     "live": "nodemon --exec ./node_modules/.bin/ts-node -- ./src/index.ts",
     "start": "tsc && node ./build/src/index.js",
@@ -15,11 +15,11 @@
     "url": "git+https://github.com/Taisiias/formmailer.git"
   },
   "keywords": [
-    "formmail",
-    "mailform",
     "forms",
     "mail",
-    "post"
+    "http",
+    "post",
+    "static"
   ],
   "author": "Taisiia Sobchenko",
   "license": "MIT",
