@@ -23,7 +23,7 @@ const DefaultConfigObject = {
     httpListenIP: "0.0.0.0",
     httpListenPort: 8080,
     httpServerPath: "/",
-    logLevel: "debug",
+    logLevel: "info",
     maxHttpRequestSize: 1e6,
     redirectFieldName: "_defaultRedirect",
     smtpHost: "localhost",

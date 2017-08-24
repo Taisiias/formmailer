@@ -1,7 +1,7 @@
 {
   "name": "formmailer",
-  "version": "0.0.1",
-  "description": "Server that emails data from submitted forms on your static website.",
+  "version": "0.1.0",
+  "description": "HTTP server that emails data submitted on static website forms.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
