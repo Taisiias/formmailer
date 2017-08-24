@@ -15,11 +15,11 @@
     "url": "git+https://github.com/Taisiias/formmailer.git"
   },
   "keywords": [
-    "formmail",
-    "mailform",
     "forms",
     "mail",
-    "post"
+    "http",
+    "post",
+    "static"
   ],
   "author": "Taisiia Sobchenko",
   "license": "MIT",
