@@ -2,7 +2,7 @@
 
 ![CircleCI badge](https://img.shields.io/circleci/project/github/Taisiias/formmailer.svg)
 
-FormMailer runs as a service and emails contents of forms posted on the specified websites. It is most useful as a simple backend that helps to receive user-submitted information from the static website contact/support forms.
+FormMailer runs as a service and emails contents of forms posted on the specified websites. It is the most useful as a simple backend that helps to receive user-submitted information from the static website contact/support forms.
 
 ![Workflow](/img/formmailer-workflow.png)
 
