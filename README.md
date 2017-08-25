@@ -2,7 +2,7 @@
 
 ![CircleCI badge](https://img.shields.io/circleci/project/github/Taisiias/formmailer.svg)
 
-Receives HTTP POST requests with form contents from the static sites and sends them to the email(s) specified.
+FormMailer runs as a service and emails contents of forms posted on the specified websites. It is the most useful as a simple backend that helps to receive user-submitted information from the static website contact/support forms.
 
 ![Workflow](/img/formmailer-workflow.png)
 
@@ -14,7 +14,7 @@ Suppose you have this static page:
     <form action="http://myformmailer.mydomain.com/" method="post">
         <div>
             <label for="msg">Message:</label>
-            <textarea id="msg" name="user_message"></textarea>
+            <textarea id="msg" name="User Message"></textarea>
         </div>
         <div class="button">
             <button type="submit">Send your message</button>
@@ -29,7 +29,7 @@ FormMailer service deployed on your domain `http://myformmailer.mydomain.com/` w
 ```
 > Content-Type: text/plain
 > From: formmailer@mydomain.com
-> To: test@test.com
+> To: support@mydomain.com
 > Subject: Form submitted on http://mydomain.com/index.html
 > Message-ID:
 >  <dfc9cdf6-ec60-1a6a-089c-bed4566b05ef@mydomain.com>
@@ -41,7 +41,7 @@ FormMailer service deployed on your domain `http://myformmailer.mydomain.com/` w
 >
 > Referrer page: http://mydomain.com/index.html
 >
-> user_message:
+> User Message:
 >   Hello world!
 >
 > Submitter IP address: 1.2.3.4
@@ -49,9 +49,9 @@ FormMailer service deployed on your domain `http://myformmailer.mydomain.com/` w
 
 Additional features:
 
-* Mustache templates for email body and subject.
-* All received data and sent emails contents are saved to local SQLite database.
-* Successfull redirect URL can be specified with a special hidden form input field.
+* [Mustache.JS](https://github.com/janl/mustache.js) templates for email body and subject.
+* All received data and sent emails are saved to the local SQLite database.
+* Special hidden form input field can be provided to specify URL where the user should be redirected after the form is submitted.
 
 ## Deploying
 
@@ -100,7 +100,7 @@ Additional features:
     WantedBy=multi-user.target
     ```
 
-    Change `WorkingDirectory` to the absolute path to the directory where you have cloned FormMailer.
+    Change `WorkingDirectory` to the directory where you have cloned FormMailer.
 
     Supposing you have cloned FormMailer repository to `/var/formmailer`, run:
 
@@ -108,7 +108,7 @@ Additional features:
     $ # create user and group
     $ sudo groupadd formmailer && sudo useradd formmailer -g formmailer
 
-    $ # go to the formmailer directory
+    $ # go to the formmailer repo directory
     $ cd /var/formmailer
 
     $ # build JS files from TypeScript sources (you have to do this every time you update source code repo)
@@ -117,16 +117,16 @@ Additional features:
     $ # change the owner of the formmailer directory to the formmailer user
     $ sudo chown formmailer:formmailer . -R
 
-    # force systemd to load the new service file
+    $ # force systemd to load the new service file
     $ sudo systemctl daemon-reload
 
-    # start the service
+    $ # start the service
     $ sudo systemctl start formmailer
     ```
 
     Don't forget to check your firewall settings to allow outside TCP connections to the port specified in `httpListenPort` setting.
 
-    Formmailer uses default NodeJS HTTP server, so for production environment it is recommended to set up reverse proxy (Nginx or alternative) that will hide FormMailer service from the outside world.
+*NOTE: Formmailer uses default NodeJS HTTP server. For production environment it is recommended to set up a reverse proxy (Nginx or alternative) that will hide FormMailer service from the outside world.*
 
 ### Configuration Options
 
@@ -152,31 +152,36 @@ HTML form can include special HTML input with name `_redirect`.
 <input type="hidden" name="_redirect" value="https://google.com">
 ```
 
-Value of this field will be used by FormMailer to determine the address of the webpage to redirect user's browser, after the form is successfuly submitted. If `_redirect` is not specified user will be redirected to the default `thanks.html` page on FormMailer HTTP server.
+FormMailer will redirect user to specified URL after the form is successfuly submitted. If `_redirect` field is ommited, user will be redirected to the default `thanks.html` page hosted by FormMailer.
 
 ## How To Contribute
 
 Run FormMailer in development mode:
 
-1. Install NodeJS, clone this repo and install dependencies (see 1-3 of Deploying section).
+1. Install NodeJS and yarn (with `npm install -g yarn`), clone this repo and install dependencies with `yarn install` command.
 
-2. Copy `config.example.json` to `config.json`. Change configuration options if you like, defaults should work for local development.
+2. Copy `config.example.json` to `config.json`. Change configuration options if you wish so. Defaults should work for local development.
 
-3. Start FormMailer in hot-reloading mode:
+3. Start FormMailer in the hot-reloading mode:
     ```bash
-    $ npm run live
+    $ yarn live
     ```
 
-4. Run mock SMTP server in separate terminal.
+4. Start mock SMTP server in a separate terminal.
     ```bash
-    $ npm run test-smtp-server
+    $ yarn test-smtp-server
     ```
     It will receive SMTP requests and dump their contents in `stdout`.
 
-5. Open `test/index.html` in your browser. Submit the form to test that your setup is working. You should see the contents of the email with submitted data in `test-smtp-server` output.
+5. Open `test/index.html` in your browser and submit the form. If your setup is working correctly, you should see the contents of the email with posted data in `test-smtp-server` output.
 
 6. Hack away and submit a PR when ready!
 
+## Alternatives
+
+* [Formspree](https://github.com/formspree/formspree)
+* [FormMailerService](https://github.com/abbr/FormMailerService)
+
 ## License
 
-MIT License
+[MIT License](LICENSE)
