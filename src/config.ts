@@ -9,6 +9,7 @@ export interface Config {
     httpServerPath: string;
     logLevel: string;
     maxHttpRequestSize: number;
+    reCaptchaSecret: string;
     recipientEmails: string | string[];
     redirectFieldName: string;
     smtpHost: string;
@@ -25,6 +26,7 @@ const DefaultConfigObject = {
     httpServerPath: "/",
     logLevel: "info",
     maxHttpRequestSize: 1e6,
+    reCaptchaSecret: "",
     redirectFieldName: "_redirect",
     smtpHost: "localhost",
     smtpPort: 25,

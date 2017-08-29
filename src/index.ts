@@ -5,6 +5,7 @@ import * as mst from "mustache";
 import * as ns from "node-static";
 import * as nodemailer from "nodemailer";
 import * as qs from "querystring";
+import * as rq from "request";
 import * as stream from "stream";
 import * as url from "url";
 import winston = require("winston");
@@ -22,6 +23,13 @@ interface CommandLineArgs {
     configFilePath: string;
 }
 
+interface recaptchaResponse {
+    success: boolean;
+    challenge_ts: Date;
+    hostname: string;
+    errorCodes: string[];
+}
+
 async function formHandler(
     config: cf.Config,
     req: http.IncomingMessage,
@@ -30,9 +38,28 @@ async function formHandler(
     const bodyStr = await readReadable(req, config.maxHttpRequestSize);
     const post: { [k: string]: string } = qs.parse(bodyStr);
     let userMessage = "";
+    // let successfulRecaptcha = false;
+
+    if (post["g-recaptcha-response"]) {
+        rq.post(
+            "https://google.com/recaptcha/api/siteverify",
+            {
+                json: {
+                    remoteip: req.connection.remoteAddress,
+                    response: post["g-recaptcha-response"],
+                    secret: config.reCaptchaSecret,
+                },
+            },
+            (error, response, body: recaptchaResponse) => {
+                if (!error && response.statusCode === 200) {
+                    winston.debug(`success: ${body.success}`);
+                }
+            });
+    }
+
     for (const name in post) {
-        if (!name.startsWith("_")) {
-            let buf = he.decode(post[name]);
+        if (!name.startsWith("_") && name !== "g-recaptcha-response") {
+            let buf: string = he.decode(post[name]);
             if (buf.includes("\n")) {
                 buf = "\n" + buf.split("\n").map((s) => "     " + s).join("\n");
             }

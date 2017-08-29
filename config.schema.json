@@ -3,11 +3,11 @@
     "title": "Configuration file schema",
     "type": "object",
     "properties": {
-         "databaseFileName": {
+        "databaseFileName": {
             "description": "Path to SQLite database",
             "type": "string"
         },
-         "httpListenIP": {
+        "httpListenIP": {
             "description": "HTTP listen IP",
             "type": "string"
         },
@@ -15,35 +15,42 @@
             "description": "HTTP listen port",
             "type": "integer"
         },
-         "httpServerPath": {
+        "httpServerPath": {
             "description": "HTTP Server Path",
             "type": "string"
         },
         "recipientEmails": {
             "description": "Recipient emails",
-            "type": ["string", "array"]
+            "type": [
+                "string",
+                "array"
+            ]
         },
         "fromEmail": {
             "description": "Sender's email",
             "type": "string"
         },
-         "subject": {
+        "subject": {
             "description": "Email subject",
             "type": "string"
         },
-         "maxHttpRequestSize": {
+        "maxHttpRequestSize": {
             "description": "Maximum HTTP Request Size",
             "type": "string"
         },
-         "logLevel": {
+        "logLevel": {
             "description": "Log level",
             "type": "string"
         },
-         "redirectFieldName": {
+        "redirectFieldName": {
             "description": "Page to be redirected after the form is submitted.",
             "type": "string"
         },
-         "smtpPort": {
+        "reCaptchaSecret": {
+            "description": "Recaptcha Site Key",
+            "type": "string"
+        },
+        "smtpPort": {
             "description": "SMTP Port",
             "type": "integer"
         },
@@ -52,5 +59,7 @@
             "type": "string"
         }
     },
-    "required": ["recipientEmails"]
+    "required": [
+        "recipientEmails"
+    ]
 }

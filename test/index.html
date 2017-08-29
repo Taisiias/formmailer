@@ -1,5 +1,14 @@
 <html>
-<form action="http://localhost:3000/" method="post">
+
+<head>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <script>
+        function onSubmit(token) {
+            document.getElementById("demo-form").submit();
+        }
+    </script>
+</head>
+<form id="demo-form" action="http://localhost:3000/" method="post">
     <div>
         <label for="name">Name:</label>
         <input type="text" id="name" name="user_name">
@@ -34,7 +43,7 @@
         <label for="subscribeNews">Subscribe to newsletter?</label>
     </div>
     <div class="button">
-        <button type="submit">Send your message</button>
+        <button class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" data-callback="onSubmit" type="submit">Send your message</button>
     </div>
 </form>
 
