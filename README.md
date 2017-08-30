@@ -112,7 +112,7 @@ Additional features:
     $ cd /var/formmailer
 
     $ # build JS files from TypeScript sources (you have to do this every time you update source code repo)
-    $ npm build
+    $ npm run build
 
     $ # change the owner of the formmailer directory to the formmailer user
     $ sudo chown formmailer:formmailer . -R
@@ -126,7 +126,7 @@ Additional features:
 
     Don't forget to check your firewall settings to allow outside TCP connections to the port specified in `httpListenPort` setting.
 
-*NOTE: Formmailer uses default NodeJS HTTP server. For production environment it is recommended to set up a reverse proxy (Nginx or alternative) that will hide FormMailer service from the outside world.*
+*NOTE: FormMailer uses default NodeJS HTTP server. For production environment it is recommended to set up a reverse proxy (Nginx or alternative) that will hide FormMailer service from the outside world.*
 
 ### Configuration Options
 
@@ -162,20 +162,18 @@ Run FormMailer in development mode:
 
 2. Copy `config.example.json` to `config.json`. Change configuration options if you wish so. Defaults should work for local development.
 
-3. Start FormMailer in the hot-reloading mode:
+3. Start FormMailer in the development mode:
     ```bash
     $ yarn live
     ```
+    This will start three processes and share terminal stdout/stderr between them:
+    * [SMTP] Mock SMTP server, that outputs all received emails to stdout.
+    * [HTTP] HTTP server that serves files from ./test folder (and opens browser with index.html)
+    * [FM] FormMailer in hot-reloading mode, process will restart after you edit TS sources.
 
-4. Start mock SMTP server in a separate terminal.
-    ```bash
-    $ yarn test-smtp-server
-    ```
-    It will receive SMTP requests and dump their contents in `stdout`.
+4. Page 'http://127.0.0.1:8080/index.html' will be automatically opened in your browser. Try to submit the form, if your setup is working correctly, you should see the contents of the email with posted data in terminal output.
 
-5. Open `test/index.html` in your browser and submit the form. If your setup is working correctly, you should see the contents of the email with posted data in `test-smtp-server` output.
-
-6. Hack away and submit a PR when ready!
+5. Hack away and submit a PR when ready!
 
 ## Alternatives
 
