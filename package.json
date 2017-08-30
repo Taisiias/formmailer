@@ -4,12 +4,13 @@
   "description": "HTTP server that emails data submitted on static website forms.",
   "main": "index.js",
   "scripts": {
-    "test": "tsc && tslint .",
+    "test": "tsc && tslint ./src/**/*",
     "build": "tsc",
-    "live": "nodemon --exec ./node_modules/.bin/ts-node -- ./src/index.ts",
     "start": "tsc && node ./build/src/index.js",
-    "test-smtp-server": "tsc && node ./build/src/run-smtp.js",
-    "test-http": "http-server ./test -o"
+    "live": "tsc && concurrently --kill-others --names \"FM,SMTP,HTTP\" -c \"blue.bold,green.bold,grey.bold\" \"yarn dev-formmailer\" \"yarn dev-smtp-server\" \"yarn dev-static-http\"",
+    "dev-formmailer": "nodemon --exec ./node_modules/.bin/ts-node -- ./src/index.ts",
+    "dev-static-http": "http-server ./test -o",
+    "dev-smtp-server": "node ./build/src/run-smtp.js"
   },
   "repository": {
     "type": "git",
@@ -52,6 +53,7 @@
     "yargs": "^8.0.2"
   },
   "devDependencies": {
+    "concurrently": "^3.5.0",
     "http-server": "^0.10.0",
     "nodemon": "^1.11.0",
     "smtp-server": "^3.0.1",
