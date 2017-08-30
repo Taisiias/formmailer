@@ -23,7 +23,7 @@ interface CommandLineArgs {
     configFilePath: string;
 }
 
-interface recaptchaResponse {
+interface RecaptchaResponse {
     success: boolean;
     challenge_ts: Date;
     hostname: string;
@@ -50,13 +50,12 @@ async function formHandler(
                     secret: config.reCaptchaSecret,
                 },
             },
-            (error, response, body: recaptchaResponse) => {
+            (error, response, body: RecaptchaResponse) => {
                 if (!error && response.statusCode === 200) {
                     winston.debug(`success: ${body.success}`);
                 }
             });
     }
-
     for (const name in post) {
         if (!name.startsWith("_") && name !== "g-recaptcha-response") {
             let buf: string = he.decode(post[name]);
@@ -66,7 +65,6 @@ async function formHandler(
             userMessage += `${name}: ${buf}\n`;
         }
     }
-
     const referrerURL = req.headers.Referrer || "Unspecified URL";
     winston.debug(`User Message: ${userMessage}`);
     const objectToRender = {
@@ -77,7 +75,6 @@ async function formHandler(
     const template = fs.readFileSync(TEMPLATE_PATH).toString();
     userMessage = mst.render(template, objectToRender);
     await sendEmail(config, userMessage, referrerURL);
-
     db.insertEmail(
         config.databaseFileName,
         req.connection.remoteAddress,
@@ -85,7 +82,6 @@ async function formHandler(
         referrerURL,
         config.recipientEmails,
         userMessage);
-
     const redirectUrl = post._redirect || THANKS_PAGE_PATH;
     winston.debug(`Redirecting to ${redirectUrl}`);
     res.writeHead(303, { Location: redirectUrl });
@@ -160,9 +156,7 @@ async function sendEmail(
         to: config.recipientEmails,
     };
     winston.debug(`Sending email.`);
-
     await transporter.sendMail(emailMessage);
-
     winston.info(`Message has been sent to ${config.recipientEmails}`);
 }
 
@@ -174,7 +168,6 @@ function run(): void {
             timestamp: true,
         })],
     });
-
     let cmdArgs: CommandLineArgs;
     cmdArgs = yargs.options("configFilePath", {
         alias: "c",
