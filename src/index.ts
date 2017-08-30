@@ -1,17 +1,17 @@
 import * as fs from "fs";
-import * as he from "he";
 import * as http from "http";
 import * as mst from "mustache";
 import * as ns from "node-static";
-import * as nodemailer from "nodemailer";
 import * as qs from "querystring";
-import * as stream from "stream";
 import * as url from "url";
 import winston = require("winston");
 import * as yargs from "yargs";
 import * as captcha from "./captcha";
-import * as cf from "./config";
-import * as db from "./database";
+import { Config, readConfig } from "./config";
+import { createDatabaseAndTables, insertEmail } from "./database";
+import { constructUserMessage } from "./message";
+import { sendEmail } from "./send";
+import { readReadable } from "./stream";
 
 const STARTUP_LOG_LEVEL = "debug";
 const THANKS_PAGE_PATH = "/thanks";
@@ -25,7 +25,7 @@ interface CommandLineArgs {
 }
 
 async function formHandler(
-    config: cf.Config,
+    config: Config,
     req: http.IncomingMessage,
     res: http.ServerResponse,
 ): Promise<void> {
@@ -65,7 +65,7 @@ async function formHandler(
 
     await sendEmail(config, userMessage, referrerURL);
 
-    db.insertEmail(
+    insertEmail(
         config.databaseFileName,
         req.connection.remoteAddress,
         bodyStr,
@@ -80,7 +80,7 @@ async function formHandler(
 }
 
 async function requestHandler(
-    config: cf.Config,
+    config: Config,
     req: http.IncomingMessage,
     res: http.ServerResponse,
     fileServer: ns.Server,
@@ -96,22 +96,8 @@ async function requestHandler(
     }
 }
 
-async function constructUserMessage(post: { [k: string]: string }): Promise<string> {
-    let userMessage = "";
-    for (const name in post) {
-        if (!name.startsWith("_") && name !== "g-recaptcha-response") {
-            let buf: string = he.decode(post[name]);
-            if (buf.includes("\n")) {
-                buf = "\n" + buf.split("\n").map((s) => "     " + s).join("\n");
-            }
-            userMessage += `${name}: ${buf}\n`;
-        }
-    }
-    return userMessage;
-}
-
 function constructConnectionHandler(
-    config: cf.Config,
+    config: Config,
     fileServer: ns.Server,
 ): (req: http.IncomingMessage, res: http.ServerResponse) => void {
     return (req: http.IncomingMessage, res: http.ServerResponse) => {
@@ -130,43 +116,6 @@ function constructConnectionHandler(
     };
 }
 
-function readReadable(s: stream.Readable, maxRequestSize: number): Promise<string> {
-    return new Promise((resolve, reject) => {
-        let bodyStr = "";
-        s.on("data", (chunk) => {
-            bodyStr += chunk.toString();
-            if (bodyStr.length > maxRequestSize) {
-                // FLOOD ATTACK OR FAULTY CLIENT
-                reject("Maximum request size exceeded");
-            }
-        });
-        s.on("end", () => {
-            resolve(bodyStr);
-        });
-    });
-}
-
-async function sendEmail(
-    config: cf.Config,
-    emailText: string,
-    referrerPage: string,
-): Promise<void> {
-    const transporter = nodemailer.createTransport({
-        host: config.smtpHost,
-        port: config.smtpPort,
-        tls: { rejectUnauthorized: false },
-    });
-    const emailMessage = {
-        from: config.fromEmail,
-        subject: mst.render(config.subject, { referrerUrl: referrerPage }),
-        text: emailText,
-        to: config.recipientEmails,
-    };
-    winston.debug(`Sending email.`);
-    await transporter.sendMail(emailMessage);
-    winston.info(`Message has been sent to ${config.recipientEmails}`);
-}
-
 function run(): void {
     winston.configure({
         level: STARTUP_LOG_LEVEL,
@@ -180,10 +129,10 @@ function run(): void {
         alias: "c",
         describe: "Read setting from specified config file path",
     }).help("help").argv;
-    const config = cf.readConfig(cmdArgs.configFilePath);
+    const config = readConfig(cmdArgs.configFilePath);
     winston.level = config.logLevel;
     const fileServer = new ns.Server(config.assetsFolder);
-    db.createDatabaseAndTables(config.databaseFileName);
+    createDatabaseAndTables(config.databaseFileName);
     const server = http.createServer(constructConnectionHandler(config, fileServer));
     server.listen(config.httpListenPort, config.httpListenIP, () => {
         winston.info(`Server started (listening ${config.httpListenIP}:${config.httpListenPort})`);
