@@ -13,6 +13,7 @@ import { constructUserMessage } from "./message";
 import { sendEmail } from "./send";
 import { readReadable } from "./stream";
 
+const DEFAULT_CONFIG_PATH = "./config.json";
 const STARTUP_LOG_LEVEL = "debug";
 const THANKS_PAGE_PATH = "/thanks";
 const TEMPLATE_PATH = "./assets/email-template.mst";
@@ -21,7 +22,7 @@ class NotFoundError extends Error { }
 class RecaptchaFailure extends Error { }
 
 interface CommandLineArgs {
-    configFilePath: string;
+    config: string;
 }
 
 async function formHandler(
@@ -124,15 +125,28 @@ function run(): void {
             timestamp: true,
         })],
     });
+
     let cmdArgs: CommandLineArgs;
-    cmdArgs = yargs.options("configFilePath", {
-        alias: "c",
-        describe: "Read setting from specified config file path",
-    }).help("help").argv;
-    const config = readConfig(cmdArgs.configFilePath);
+    cmdArgs = yargs.usage("FormMailer server. Usage: $0 [-c <config file>]")
+        .options("config", {
+            alias: "c",
+            default: DEFAULT_CONFIG_PATH,
+            describe: "Read setting from specified config file path",
+            type: "string",
+        })
+        .locale("en")
+        .version()
+        .help("help")
+        .epilog("Support: https://github.com/Taisiias/formmailer")
+        .strict()
+        .argv;
+    const config = readConfig(cmdArgs.config);
+
     winston.level = config.logLevel;
+
     const fileServer = new ns.Server(config.assetsFolder);
     createDatabaseAndTables(config.databaseFileName);
+
     const server = http.createServer(constructConnectionHandler(config, fileServer));
     server.listen(config.httpListenPort, config.httpListenIP, () => {
         winston.info(`Server started (listening ${config.httpListenIP}:${config.httpListenPort})`);
