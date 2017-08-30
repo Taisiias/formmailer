@@ -5,11 +5,11 @@ import * as mst from "mustache";
 import * as ns from "node-static";
 import * as nodemailer from "nodemailer";
 import * as qs from "querystring";
-import * as rq from "request";
 import * as stream from "stream";
 import * as url from "url";
 import winston = require("winston");
 import * as yargs from "yargs";
+import * as captcha from "./captcha";
 import * as cf from "./config";
 import * as db from "./database";
 
@@ -18,16 +18,10 @@ const THANKS_PAGE_PATH = "/thanks";
 const TEMPLATE_PATH = "./assets/email-template.mst";
 
 class NotFoundError extends Error { }
+class RecaptchaFailure extends Error { }
 
 interface CommandLineArgs {
     configFilePath: string;
-}
-
-interface RecaptchaResponse {
-    success: boolean;
-    challenge_ts: Date;
-    hostname: string;
-    errorCodes: string[];
 }
 
 async function formHandler(
@@ -38,33 +32,22 @@ async function formHandler(
     const bodyStr = await readReadable(req, config.maxHttpRequestSize);
     const post: { [k: string]: string } = qs.parse(bodyStr);
     let userMessage = "";
-    // let successfulRecaptcha = false;
-
-    if (post["g-recaptcha-response"]) {
-        rq.post(
-            "https://google.com/recaptcha/api/siteverify",
-            {
-                json: {
-                    remoteip: req.connection.remoteAddress,
-                    response: post["g-recaptcha-response"],
-                    secret: config.reCaptchaSecret,
-                },
-            },
-            (error, response, body: RecaptchaResponse) => {
-                if (!error && response.statusCode === 200) {
-                    winston.debug(`success: ${body.success}`);
-                }
-            });
+    if (config.requireReCaptchaResponse && !post["g-recaptcha-response"]) {
+        throw new Error(`requireReCaptchaResponse is set to true but g-recaptcha-response
+            is missing in POST`);
     }
-    for (const name in post) {
-        if (!name.startsWith("_") && name !== "g-recaptcha-response") {
-            let buf: string = he.decode(post[name]);
-            if (buf.includes("\n")) {
-                buf = "\n" + buf.split("\n").map((s) => "     " + s).join("\n");
-            }
-            userMessage += `${name}: ${buf}\n`;
+    if (post["g-recaptcha-response"]) {
+        const checkCaptcha = await captcha.CheckCaptcha(
+            req.connection.remoteAddress,
+            post["g-recaptcha-response"],
+            config.reCaptchaSecret,
+        );
+        winston.debug(`Captcha Result: ${checkCaptcha}`);
+        if (!checkCaptcha) {
+            throw new RecaptchaFailure(`Recaptcha failure`);
         }
     }
+    userMessage = await constructUserMessage(post);
     const referrerURL = req.headers.Referrer || "Unspecified URL";
     winston.debug(`User Message: ${userMessage}`);
     const objectToRender = {
@@ -105,18 +88,35 @@ async function requestHandler(
     }
 }
 
+async function constructUserMessage(post: { [k: string]: string }): Promise<string> {
+    let userMessage = "";
+    for (const name in post) {
+        if (!name.startsWith("_") && name !== "g-recaptcha-response") {
+            let buf: string = he.decode(post[name]);
+            if (buf.includes("\n")) {
+                buf = "\n" + buf.split("\n").map((s) => "     " + s).join("\n");
+            }
+            userMessage += `${name}: ${buf}\n`;
+        }
+    }
+    return userMessage;
+}
+
 function constructConnectionHandler(
     config: cf.Config,
     fileServer: ns.Server,
 ): (req: http.IncomingMessage, res: http.ServerResponse) => void {
     return (req: http.IncomingMessage, res: http.ServerResponse) => {
         requestHandler(config, req, res, fileServer).catch((err) => {
+            winston.warn(`Error in Connection Handler: ${err}`);
             if (err instanceof NotFoundError) {
-                winston.warn(`${err}`);
                 fileServer.serveFile("error404.html", 404, {}, req, res);
                 return;
             }
-            winston.warn(`Error in Connection Handler: ${err}`);
+            if (err instanceof RecaptchaFailure) {
+                res.end();
+                return;
+            }
             fileServer.serveFile("error502.html", 502, {}, req, res);
         });
     };
@@ -143,7 +143,6 @@ async function sendEmail(
     emailText: string,
     referrerPage: string,
 ): Promise<void> {
-    winston.silly(`Entering to sendEmail. Creating Nodemailer transporter.`);
     const transporter = nodemailer.createTransport({
         host: config.smtpHost,
         port: config.smtpPort,
@@ -173,9 +172,7 @@ function run(): void {
         alias: "c",
         describe: "Read setting from specified config file path",
     }).help("help").argv;
-
     const config = cf.readConfig(cmdArgs.configFilePath);
-
     winston.level = config.logLevel;
     const fileServer = new ns.Server(config.assetsFolder);
     db.createDatabaseAndTables(config.databaseFileName);
@@ -193,5 +190,4 @@ function runAndReport(): void {
         return process.exit(1);
     }
 }
-
 runAndReport();

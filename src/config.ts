@@ -12,6 +12,7 @@ export interface Config {
     reCaptchaSecret: string;
     recipientEmails: string | string[];
     redirectFieldName: string;
+    requireReCaptchaResponse: boolean;
     smtpHost: string;
     smtpPort: number;
     subject: string;
@@ -28,6 +29,7 @@ const DefaultConfigObject = {
     maxHttpRequestSize: 1e6,
     reCaptchaSecret: "",
     redirectFieldName: "_redirect",
+    requireReCaptchaResponse: false,
     smtpHost: "localhost",
     smtpPort: 25,
     subject: "Form submitted on {{referrerUrl}}",
@@ -54,14 +56,19 @@ export function readConfig(cfPath?: string): Config {
     let json;
     try {
         if (fileContent === "") {
-            throw new Error (`Config file is empty`);
+            throw new Error(`Config file is empty`);
         }
         json = JSON.parse(fileContent);
         /* tslint:disable:no-any */
-        const mergedObject: {[k: string]: any} = Object.assign(DefaultConfigObject, json);
+        const mergedObject: { [k: string]: any } = Object.assign(DefaultConfigObject, json);
 
         if (!mergedObject.hasOwnProperty("recipientEmails") && !mergedObject.recipientEmails) {
             throw new Error(`Property recipientEmails is missing.`);
+        }
+
+        if (mergedObject.requireReCaptchaResponse && !mergedObject.reCaptchaSecret) {
+            throw new Error(`requireReCaptchaResponse is set to true but 
+                                reCaptchaSecret is not provided`);
         }
 
         cf = mergedObject as Config;

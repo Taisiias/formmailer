@@ -50,6 +50,10 @@
             "description": "Recaptcha Site Key",
             "type": "string"
         },
+        "requireReCaptchaResponse": {
+            "description": "Determines if g-recaptcha-response should be checked in POST",
+            "type": "boolean"
+        },
         "smtpPort": {
             "description": "SMTP Port",
             "type": "integer"
