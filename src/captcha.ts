@@ -7,16 +7,16 @@ interface RecaptchaResponse {
     errorCodes: string[];
 }
 
-export async function CheckCaptcha(
-    remoteAddress: string,
-    reCaptchaResponse: string,
-    reCaptchaSecret: string,
+export async function checkCaptcha(
+    remoteip: string,
+    response: string,
+    secret: string,
 ): Promise<boolean> {
     const options = {
         form: {
-            remoteip: remoteAddress,
-            response: reCaptchaResponse,
-            secret: reCaptchaSecret,
+            remoteip,
+            response,
+            secret,
         },
         json: true,
         method: "POST",

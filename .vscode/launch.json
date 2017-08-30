@@ -7,11 +7,21 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
+            "name": "Launch FormMailer",
+            "program": "${workspaceRoot}/build/src/index.js",
+            "protocol": "inspector",
+            "preLaunchTask": "npm build",
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch File",
             "program": "${file}",
             "outFiles": [
                 "${workspaceRoot}/build/**/*.js"
-            ]
+            ],
+            "protocol": "inspector",
+            "preLaunchTask": "npm build"
         }
     ]
 }

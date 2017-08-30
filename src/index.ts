@@ -31,33 +31,40 @@ async function formHandler(
 ): Promise<void> {
     const bodyStr = await readReadable(req, config.maxHttpRequestSize);
     const post: { [k: string]: string } = qs.parse(bodyStr);
-    let userMessage = "";
+
     if (config.requireReCaptchaResponse && !post["g-recaptcha-response"]) {
-        throw new Error(`requireReCaptchaResponse is set to true but g-recaptcha-response
-            is missing in POST`);
+        // TODO: Process response w/o captcha as spam.
+        throw new Error(
+            `requireReCaptchaResponse is set to true but g-recaptcha-response is missing in POST`);
     }
+
     if (post["g-recaptcha-response"]) {
-        const checkCaptcha = await captcha.CheckCaptcha(
+        const notSpam = await captcha.checkCaptcha(
             req.connection.remoteAddress,
             post["g-recaptcha-response"],
             config.reCaptchaSecret,
         );
-        winston.debug(`Captcha Result: ${checkCaptcha}`);
-        if (!checkCaptcha) {
-            throw new RecaptchaFailure(`Recaptcha failure`);
+        winston.debug(`reCAPTCHA Result: ${notSpam ? "not spam" : "spam"}`);
+        if (!notSpam) {
+            throw new RecaptchaFailure(`reCAPTCHA failure.`);
         }
     }
-    userMessage = await constructUserMessage(post);
-    const referrerURL = req.headers.Referrer || "Unspecified URL";
+
+    let userMessage = await constructUserMessage(post);
     winston.debug(`User Message: ${userMessage}`);
-    const objectToRender = {
+
+    const referrerURL = req.headers.Referrer || "Unspecified URL";
+
+    const template = fs.readFileSync(TEMPLATE_PATH).toString();
+    const templateData = {
         incomingIp: req.connection.remoteAddress,
         referrerURL,
         userMessage,
     };
-    const template = fs.readFileSync(TEMPLATE_PATH).toString();
-    userMessage = mst.render(template, objectToRender);
+    userMessage = mst.render(template, templateData);
+
     await sendEmail(config, userMessage, referrerURL);
+
     db.insertEmail(
         config.databaseFileName,
         req.connection.remoteAddress,
@@ -65,6 +72,7 @@ async function formHandler(
         referrerURL,
         config.recipientEmails,
         userMessage);
+
     const redirectUrl = post._redirect || THANKS_PAGE_PATH;
     winston.debug(`Redirecting to ${redirectUrl}`);
     res.writeHead(303, { Location: redirectUrl });
