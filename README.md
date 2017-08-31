@@ -77,7 +77,7 @@ Additional features:
     }
     ```
 
-     Edit settings specific for your environment (see [Configuration Options](#configuration-options)). At least specify `recipientEmails` and `fromEmail`.
+     Edit settings specific for your environment (see [Configuration options](#configuration-options)). At least specify `recipientEmails` and `fromEmail`.
 
 4. Start FormMailer:
 
@@ -87,7 +87,7 @@ Additional features:
 
     You can specify `config.json` file location with `-c` command line argument: `formmailer -c /path/to/my/config.json`.
 
-## Configuration Options
+## Configuration options
 
 Default configuration file location is `./config.json`. You can provide different location with `-c` command line argument.
 
@@ -103,9 +103,11 @@ Option  | Description | Default
 `logLevel` | How detailed logging should be (`error`, `warn`, `info`, `verbose`, `debug`, `silly`). | `"info"`
 `maxHttpRequestSize` | Maximum allowed size of HTTP requests, in bytes. | `1000000`
 `redirectFieldName` | Name of the HTML input that contains redirect URL address. | `"_redirect"`
-`subject` | Email subject field content. Special entry `{{referrerUrl}}` will be changed to the address of the webpage from where the form is submitted. | `"Message from {{referrerUrl}}"`
-`reCaptchaSecret` | Site secret reCAPTCHA key. Spam checking will be ignored if not set. | ""
-`requireReCaptchaResponse` | If this option is enabled, receiver handler should always check g-recaptcha-response to be present in POST. | false
+`subject` | Email subject field content. Special entry `{{referrerUrl}}` will be changed to the address of the webpage from where the form is submitted. | `"Form submitted on {{referrerUrl}}"`
+`reCaptchaSecret` | Site secret reCAPTCHA key. No captcha checks will be performed if this value is not set. | `""`
+`requireReCaptchaResponse` | If true, receiver handler should always check g-recaptcha-response to be present in POST. | `false`
+`assetsFolder` | Path to the folder containing static assets. | `"./assets"`
+`databaseFileName` | Path to the SQLite database file. | `"./formmailer.db"`
 
 ## Redirect URL special field
 
@@ -117,21 +119,21 @@ HTML form can include special HTML input with name `_redirect`.
 
 FormMailer will redirect user to specified URL after the form is successfuly submitted. If `_redirect` field is ommited, user will be redirected to the default `thanks.html` page hosted by FormMailer.
 
-## Manual reCAPTCHA Support
+## reCAPTCHA installation
 
-To get reCAPTCHA keys sign up here
+To set up reCAPTCHA checking:
 
-https://www.google.com/recaptcha/admin
+1. Sign up for reCAPTCHA (https://www.google.com/recaptcha/admin), get site key and secret key.
 
-Once you sign up you will get site key and secret key.
+2. Write secret key value into `reCaptchaSecret` option in your config file.
 
-Put secret key value into `reCaptchaSecret` in your config file.
+3. Set configuration option `requireReCaptchaResponse` to true.
 
-Set `requireReCaptchaResponse` to true if you need reciever always check `g-recaptcha-response` to be present in POST. If `requireReCaptchaResponse` is enabled, but `reCaptchaSecret` is not provided, configuration error will be thrown.
+4. Set up reCAPTCHA integration on your static site HTML form.
 
-Refer to the link below on how to use site key and setup reCAPTCHA on the client side.
+    Refer to the link below on how to setup reCAPTCHA on the client side.
 
-https://developers.google.com/recaptcha/docs/invisible
+    https://developers.google.com/recaptcha/docs/display
 
 ## Deploying
 
@@ -148,7 +150,7 @@ After=network.target
 Type=simple
 User=formmailer
 Group=formmailer
-ExecStart=/usr/bin/node ./build/src/index.js -c ./config.json
+ExecStart=/usr/bin/node ./dist/src/index.js -c ./config.json
 Restart=on-failure
 Environment=NODE_ENV=production
 WorkingDirectory=/var/formmailer
@@ -168,9 +170,6 @@ $ sudo groupadd formmailer && sudo useradd formmailer -g formmailer
 $ # go to the formmailer repo directory
 $ cd /var/formmailer
 
-$ # build JS files from TypeScript sources (you have to do this every time you update source code repo)
-$ npm run build
-
 $ # change the owner of the formmailer directory to the formmailer user
 $ sudo chown formmailer:formmailer . -R
 
@@ -186,7 +185,7 @@ Don't forget to check your firewall settings to allow outside TCP connections to
 *NOTE: FormMailer uses default NodeJS HTTP server. For production environment it is recommended to set up a reverse proxy (Nginx or alternative) that will hide FormMailer service from the outside world.*
 
 
-## How To Contribute
+## How to contribute
 
 Run FormMailer in development mode:
 
