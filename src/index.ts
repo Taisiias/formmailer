@@ -1,18 +1,19 @@
 import * as fs from "fs";
-import * as he from "he";
 import * as http from "http";
 import * as mst from "mustache";
 import * as ns from "node-static";
-import * as nodemailer from "nodemailer";
 import * as qs from "querystring";
-import * as stream from "stream";
 import * as url from "url";
 import winston = require("winston");
 import * as yargs from "yargs";
 import * as captcha from "./captcha";
-import * as cf from "./config";
-import * as db from "./database";
+import { Config, readConfig } from "./config";
+import { createDatabaseAndTables, insertEmail } from "./database";
+import { constructUserMessage } from "./message";
+import { sendEmail } from "./send";
+import { readReadable } from "./stream";
 
+const DEFAULT_CONFIG_PATH = "./config.json";
 const STARTUP_LOG_LEVEL = "debug";
 const THANKS_PAGE_PATH = "/thanks";
 const TEMPLATE_PATH = "./assets/email-template.mst";
@@ -21,50 +22,58 @@ class NotFoundError extends Error { }
 class RecaptchaFailure extends Error { }
 
 interface CommandLineArgs {
-    configFilePath: string;
+    config: string;
 }
 
 async function formHandler(
-    config: cf.Config,
+    config: Config,
     req: http.IncomingMessage,
     res: http.ServerResponse,
 ): Promise<void> {
     const bodyStr = await readReadable(req, config.maxHttpRequestSize);
     const post: { [k: string]: string } = qs.parse(bodyStr);
-    let userMessage = "";
+
     if (config.requireReCaptchaResponse && !post["g-recaptcha-response"]) {
-        throw new Error(`requireReCaptchaResponse is set to true but g-recaptcha-response
-            is missing in POST`);
+        // TODO: Process response w/o captcha as spam.
+        throw new Error(
+            `requireReCaptchaResponse is set to true but g-recaptcha-response is missing in POST`);
     }
+
     if (post["g-recaptcha-response"]) {
-        const checkCaptcha = await captcha.CheckCaptcha(
+        const notSpam = await captcha.checkCaptcha(
             req.connection.remoteAddress,
             post["g-recaptcha-response"],
             config.reCaptchaSecret,
         );
-        winston.debug(`Captcha Result: ${checkCaptcha}`);
-        if (!checkCaptcha) {
-            throw new RecaptchaFailure(`Recaptcha failure`);
+        winston.debug(`reCAPTCHA Result: ${notSpam ? "not spam" : "spam"}`);
+        if (!notSpam) {
+            throw new RecaptchaFailure(`reCAPTCHA failure.`);
         }
     }
-    userMessage = await constructUserMessage(post);
-    const referrerURL = req.headers.Referrer || "Unspecified URL";
+
+    let userMessage = await constructUserMessage(post);
     winston.debug(`User Message: ${userMessage}`);
-    const objectToRender = {
+
+    const referrerURL = req.headers.Referrer || "Unspecified URL";
+
+    const template = fs.readFileSync(TEMPLATE_PATH).toString();
+    const templateData = {
         incomingIp: req.connection.remoteAddress,
         referrerURL,
         userMessage,
     };
-    const template = fs.readFileSync(TEMPLATE_PATH).toString();
-    userMessage = mst.render(template, objectToRender);
+    userMessage = mst.render(template, templateData);
+
     await sendEmail(config, userMessage, referrerURL);
-    db.insertEmail(
+
+    insertEmail(
         config.databaseFileName,
         req.connection.remoteAddress,
         bodyStr,
         referrerURL,
         config.recipientEmails,
         userMessage);
+
     const redirectUrl = post._redirect || THANKS_PAGE_PATH;
     winston.debug(`Redirecting to ${redirectUrl}`);
     res.writeHead(303, { Location: redirectUrl });
@@ -72,7 +81,7 @@ async function formHandler(
 }
 
 async function requestHandler(
-    config: cf.Config,
+    config: Config,
     req: http.IncomingMessage,
     res: http.ServerResponse,
     fileServer: ns.Server,
@@ -88,22 +97,8 @@ async function requestHandler(
     }
 }
 
-async function constructUserMessage(post: { [k: string]: string }): Promise<string> {
-    let userMessage = "";
-    for (const name in post) {
-        if (!name.startsWith("_") && name !== "g-recaptcha-response") {
-            let buf: string = he.decode(post[name]);
-            if (buf.includes("\n")) {
-                buf = "\n" + buf.split("\n").map((s) => "     " + s).join("\n");
-            }
-            userMessage += `${name}: ${buf}\n`;
-        }
-    }
-    return userMessage;
-}
-
 function constructConnectionHandler(
-    config: cf.Config,
+    config: Config,
     fileServer: ns.Server,
 ): (req: http.IncomingMessage, res: http.ServerResponse) => void {
     return (req: http.IncomingMessage, res: http.ServerResponse) => {
@@ -122,43 +117,6 @@ function constructConnectionHandler(
     };
 }
 
-function readReadable(s: stream.Readable, maxRequestSize: number): Promise<string> {
-    return new Promise((resolve, reject) => {
-        let bodyStr = "";
-        s.on("data", (chunk) => {
-            bodyStr += chunk.toString();
-            if (bodyStr.length > maxRequestSize) {
-                // FLOOD ATTACK OR FAULTY CLIENT
-                reject("Maximum request size exceeded");
-            }
-        });
-        s.on("end", () => {
-            resolve(bodyStr);
-        });
-    });
-}
-
-async function sendEmail(
-    config: cf.Config,
-    emailText: string,
-    referrerPage: string,
-): Promise<void> {
-    const transporter = nodemailer.createTransport({
-        host: config.smtpHost,
-        port: config.smtpPort,
-        tls: { rejectUnauthorized: false },
-    });
-    const emailMessage = {
-        from: config.fromEmail,
-        subject: mst.render(config.subject, { referrerUrl: referrerPage }),
-        text: emailText,
-        to: config.recipientEmails,
-    };
-    winston.debug(`Sending email.`);
-    await transporter.sendMail(emailMessage);
-    winston.info(`Message has been sent to ${config.recipientEmails}`);
-}
-
 function run(): void {
     winston.configure({
         level: STARTUP_LOG_LEVEL,
@@ -167,15 +125,28 @@ function run(): void {
             timestamp: true,
         })],
     });
+
     let cmdArgs: CommandLineArgs;
-    cmdArgs = yargs.options("configFilePath", {
-        alias: "c",
-        describe: "Read setting from specified config file path",
-    }).help("help").argv;
-    const config = cf.readConfig(cmdArgs.configFilePath);
+    cmdArgs = yargs.usage("FormMailer server. Usage: $0 [-c <config file>]")
+        .options("config", {
+            alias: "c",
+            default: DEFAULT_CONFIG_PATH,
+            describe: "Read setting from specified config file path",
+            type: "string",
+        })
+        .locale("en")
+        .version()
+        .help("help")
+        .epilog("Support: https://github.com/Taisiias/formmailer")
+        .strict()
+        .argv;
+    const config = readConfig(cmdArgs.config);
+
     winston.level = config.logLevel;
+
     const fileServer = new ns.Server(config.assetsFolder);
-    db.createDatabaseAndTables(config.databaseFileName);
+    createDatabaseAndTables(config.databaseFileName);
+
     const server = http.createServer(constructConnectionHandler(config, fileServer));
     server.listen(config.httpListenPort, config.httpListenIP, () => {
         winston.info(`Server started (listening ${config.httpListenIP}:${config.httpListenPort})`);

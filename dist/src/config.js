@@ -1,23 +1,6 @@
-import * as fs from "fs";
-
-export interface Config {
-    assetsFolder: string;
-    databaseFileName: string;
-    fromEmail: string;
-    httpListenIP: string;
-    httpListenPort: number;
-    httpServerPath: string;
-    logLevel: string;
-    maxHttpRequestSize: number;
-    reCaptchaSecret: string;
-    recipientEmails: string | string[];
-    redirectFieldName: string;
-    requireReCaptchaResponse: boolean;
-    smtpHost: string;
-    smtpPort: number;
-    subject: string;
-}
-
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const fs = require("fs");
 const DefaultConfigObject = {
     assetsFolder: "./assets",
     databaseFileName: "./formmailer_database",
@@ -34,22 +17,18 @@ const DefaultConfigObject = {
     smtpPort: 25,
     subject: "Form submitted on {{referrerUrl}}",
 };
-
-export function readConfig(path: string): Config {
-
-    let cf: Config;
-
+function readConfig(path) {
+    let cf;
     if (!fs.existsSync(path)) {
         throw new Error(`Config file was not found.`);
     }
-
     let fileContent = "";
     try {
         fileContent = fs.readFileSync(path).toString();
-    } catch (e) {
+    }
+    catch (e) {
         throw new Error(`Config file cannot be read. ${e}`);
     }
-
     let json;
     try {
         if (fileContent === "") {
@@ -57,20 +36,19 @@ export function readConfig(path: string): Config {
         }
         json = JSON.parse(fileContent);
         /* tslint:disable:no-any */
-        const mergedObject: { [k: string]: any } = Object.assign(DefaultConfigObject, json);
-
+        const mergedObject = Object.assign(DefaultConfigObject, json);
         if (!mergedObject.hasOwnProperty("recipientEmails") && !mergedObject.recipientEmails) {
             throw new Error(`Property recipientEmails is missing.`);
         }
-
         if (mergedObject.requireReCaptchaResponse && !mergedObject.reCaptchaSecret) {
             throw new Error(`requireReCaptchaResponse is set to true but
                                 reCaptchaSecret is not provided`);
         }
-
-        cf = mergedObject as Config;
-    } catch (e) {
+        cf = mergedObject;
+    }
+    catch (e) {
         throw new Error(`Config file cannot be parsed. ${e}`);
     }
     return cf;
 }
+exports.readConfig = readConfig;
