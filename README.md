@@ -53,98 +53,58 @@ Additional features:
 * All received data and sent emails are saved to the local SQLite database.
 * Special hidden form input field can be provided to specify URL where the user should be redirected after the form is submitted.
 
-## Deploying
+## Running
 
 1. Install Node.js.
 
-2. Clone FormMailer repository.
-    ```bash
-    $ git clone https://github.com/Taisiias/formmailer.git
-    $ cd formmailer
-    ```
-
-3. Install FormMailer NPM dependincies:
-    ```bash
-    $ npm install
-    ```
-
-4. Copy `config.example.json` to `config.json` and fill in your configuration (see Configuration Options below).
-
-5. Start FormMailer:
-    ```bash
-    $ npm start
-    ```
-    You can specify `config.json` filename location with `-c` command line argument like that: `npm start -- -c my-config.json`.
-
-6. (optionally) Deploy FormMailer service with Systemd or other means, so it will start-up with the system and always run in background.
-
-    **Example for Ubuntu 17.04**
-
-    Create a new file `/lib/systemd/system/formmailer.service` and place following contents inside:
-
-    ```ini
-    [Unit]
-    Description=FormMailer Service
-    After=network.target
-
-    [Service]
-    Type=simple
-    User=formmailer
-    Group=formmailer
-    ExecStart=/usr/bin/node ./build/src/index.js -c ./config.json
-    Restart=on-failure
-    Environment=NODE_ENV=production
-    WorkingDirectory=/var/formmailer
-
-    [Install]
-    WantedBy=multi-user.target
-    ```
-
-    Change `WorkingDirectory` to the directory where you have cloned FormMailer.
-
-    Supposing you have cloned FormMailer repository to `/var/formmailer`, run:
+2. Install FormMailer with command:
 
     ```bash
-    $ # create user and group
-    $ sudo groupadd formmailer && sudo useradd formmailer -g formmailer
-
-    $ # go to the formmailer repo directory
-    $ cd /var/formmailer
-
-    $ # build JS files from TypeScript sources (you have to do this every time you update source code repo)
-    $ npm run build
-
-    $ # change the owner of the formmailer directory to the formmailer user
-    $ sudo chown formmailer:formmailer . -R
-
-    $ # force systemd to load the new service file
-    $ sudo systemctl daemon-reload
-
-    $ # start the service
-    $ sudo systemctl start formmailer
+    npm install -g formmailer
     ```
 
-    Don't forget to check your firewall settings to allow outside TCP connections to the port specified in `httpListenPort` setting.
+3. Create new `config.json` file and place following defaults inside:
 
-*NOTE: FormMailer uses default NodeJS HTTP server. For production environment it is recommended to set up a reverse proxy (Nginx or alternative) that will hide FormMailer service from the outside world.*
+    ```json
+    {
+        "recipientEmails" : "root@localhost",
+        "fromEmail": "formmailer@localhost",
+        "smtpHost": "localhost",
+        "smtpPort": 25,
+        "httpListenIP": "0.0.0.0",
+        "httpListenPort": 3000
+    }
+    ```
 
-### Configuration Options
+     Edit settings specific for your environment (see [Configuration Options](#configuration-options)). At least specify `recipientEmails` and `fromEmail`.
+
+4. Start FormMailer:
+
+    ```bash
+    formmailer
+    ```
+
+    You can specify `config.json` file location with `-c` command line argument: `formmailer -c /path/to/my/config.json`.
+
+## Configuration Options
 
 Default configuration file location is `./config.json`. You can provide different location with `-c` command line argument.
 
-* `recipientEmails` - E-mail recipient address. String or array of strings (for multiple recepients). Required field.
-* `fromEmail` - E-mail address that will be provided in `From:` email header (default value: `"formmailer@localhost"`).
-* `httpListenIP` - IP address to listen HTTP requests from (default value: `"0.0.0.0"` - all IP addresses).
-* `httpListenPort` - Port to listen HTTP requests from (default value: `3000`).
-* `httpServerPath` - URL path that will receive form data (part that goes after domain name. Default value: `"/"`).
-* `smtpHost` - SMTP server host name or IP (default value: `"localhost"`).
-* `smtpPort` - SMTP server port (default value: `25`).
-* `logLevel` - How detailed logging should be (default value: `"info"`).
-* `maxHttpRequestSize` - Maximum allowed size of HTTP requests, in bytes (default value: `1000000`).
-* `redirectFieldName` - Name of the HTML input that contains redirect URL address (default value: `"_redirect"`).
-* `subject` - Email subject field content (default value: `"Message from {{referrerUrl}}"`, where `{{referrerUrl}}` will be changed to the address of the webpage from where the form is submitted).
+Option  | Description | Default
+--------|-------------|--------
+`recipientEmails` | E-mail recipient address. String or array of strings (for multiple recepients). | Required field.
+`fromEmail` | E-mail address that will be provided in `From:` email header. | `"formmailer@localhost"`
+`httpListenIP` | IP address to listen HTTP requests from. | `"0.0.0.0"` (all IP addresses)
+`httpListenPort` | Port to listen HTTP requests from. | `3000`
+`httpServerPath` | URL path that will receive form data (part that goes after domain name). | `"/"`
+`smtpHost` | SMTP server host name or IP. | `"localhost"`
+`smtpPort` | SMTP server port. | `25`
+`logLevel` | How detailed logging should be (`error`, `warn`, `info`, `verbose`, `debug`, `silly`). | `"info"`
+`maxHttpRequestSize` | Maximum allowed size of HTTP requests, in bytes. | `1000000`
+`redirectFieldName` | Name of the HTML input that contains redirect URL address. | `"_redirect"`
+`subject` | Email subject field content. Special entry `{{referrerUrl}}` will be changed to the address of the webpage from where the form is submitted. | `"Message from {{referrerUrl}}"`
 
-### Redirect URL special field
+## Redirect URL special field
 
 HTML form can include special HTML input with name `_redirect`.
 
@@ -153,6 +113,58 @@ HTML form can include special HTML input with name `_redirect`.
 ```
 
 FormMailer will redirect user to specified URL after the form is successfuly submitted. If `_redirect` field is ommited, user will be redirected to the default `thanks.html` page hosted by FormMailer.
+
+## Deploying
+
+**Example for Ubuntu 17.04**
+
+Create a new file `/lib/systemd/system/formmailer.service` and place following contents inside:
+
+```ini
+[Unit]
+Description=FormMailer Service
+After=network.target
+
+[Service]
+Type=simple
+User=formmailer
+Group=formmailer
+ExecStart=/usr/bin/node ./build/src/index.js -c ./config.json
+Restart=on-failure
+Environment=NODE_ENV=production
+WorkingDirectory=/var/formmailer
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Change `WorkingDirectory` to the directory where you have cloned FormMailer.
+
+Supposing you have cloned FormMailer repository to `/var/formmailer`, run:
+
+```bash
+$ # create user and group
+$ sudo groupadd formmailer && sudo useradd formmailer -g formmailer
+
+$ # go to the formmailer repo directory
+$ cd /var/formmailer
+
+$ # build JS files from TypeScript sources (you have to do this every time you update source code repo)
+$ npm run build
+
+$ # change the owner of the formmailer directory to the formmailer user
+$ sudo chown formmailer:formmailer . -R
+
+$ # force systemd to load the new service file
+$ sudo systemctl daemon-reload
+
+$ # start the service
+$ sudo systemctl start formmailer
+```
+
+Don't forget to check your firewall settings to allow outside TCP connections to the port specified in `httpListenPort` setting.
+
+*NOTE: FormMailer uses default NodeJS HTTP server. For production environment it is recommended to set up a reverse proxy (Nginx or alternative) that will hide FormMailer service from the outside world.*
 
 ## How To Contribute
 

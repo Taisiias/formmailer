@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
 - Manual reCAPTCHA integration support.
+- Installing `formmailer` command in $PATH with `npm install -g formmailer`.
 - Configuration options: `reCaptchaSecret`, `requireReCaptchaResponse`.
 - CHANGELOG.
 
