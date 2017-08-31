@@ -6,7 +6,7 @@ import * as qs from "querystring";
 import * as url from "url";
 import winston = require("winston");
 import * as yargs from "yargs";
-import * as captcha from "./captcha";
+import { checkCaptcha, RecaptchaFailure } from "./captcha";
 import { Config, readConfig } from "./config";
 import { createDatabaseAndTables, insertEmail } from "./database";
 import { constructUserMessage } from "./message";
@@ -19,7 +19,6 @@ const THANKS_PAGE_PATH = "/thanks";
 const TEMPLATE_PATH = "./assets/email-template.mst";
 
 class NotFoundError extends Error { }
-class RecaptchaFailure extends Error { }
 
 interface CommandLineArgs {
     config: string;
@@ -33,23 +32,11 @@ async function formHandler(
     const bodyStr = await readReadable(req, config.maxHttpRequestSize);
     const post: { [k: string]: string } = qs.parse(bodyStr);
 
-    if (config.requireReCaptchaResponse && !post["g-recaptcha-response"]) {
-        // TODO: Process response w/o captcha as spam.
-        throw new Error(
-            `requireReCaptchaResponse is set to true but g-recaptcha-response is missing in POST`);
-    }
-
-    if (post["g-recaptcha-response"]) {
-        const notSpam = await captcha.checkCaptcha(
-            req.connection.remoteAddress,
-            post["g-recaptcha-response"],
-            config.reCaptchaSecret,
-        );
-        winston.debug(`reCAPTCHA Result: ${notSpam ? "not spam" : "spam"}`);
-        if (!notSpam) {
-            throw new RecaptchaFailure(`reCAPTCHA failure.`);
-        }
-    }
+    await checkCaptcha(
+        post["g-recaptcha-response"],
+        config.requireReCaptchaResponse,
+        req.connection.remoteAddress,
+        config.reCaptchaSecret);
 
     let userMessage = await constructUserMessage(post);
     winston.debug(`User Message: ${userMessage}`);

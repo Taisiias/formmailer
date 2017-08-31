@@ -7,7 +7,9 @@ interface RecaptchaResponse {
     errorCodes: string[];
 }
 
-export async function checkCaptcha(
+export class RecaptchaFailure extends Error { }
+
+export async function verifyGoogleCaptcha(
     remoteip: string,
     response: string,
     secret: string,
@@ -24,4 +26,31 @@ export async function checkCaptcha(
     };
     const body: RecaptchaResponse = await rp(options);
     return body.success;
+}
+
+export async function checkCaptcha(
+    postReCaptchaResponse: string,
+    requireReCaptchaResponse: boolean,
+    remoteAddress: string,
+    reCaptchaSecret: string,
+): Promise<void> {
+    if (!reCaptchaSecret) {
+        return;
+    }
+
+    if (requireReCaptchaResponse && !postReCaptchaResponse) {
+        throw new RecaptchaFailure(
+            `requireReCaptchaResponse is set to true but g-recaptcha-response is missing in POST`);
+    }
+
+    if (postReCaptchaResponse) {
+        const notSpam = await verifyGoogleCaptcha(
+            remoteAddress,
+            postReCaptchaResponse,
+            reCaptchaSecret,
+        );
+        if (!notSpam) {
+            throw new RecaptchaFailure(`reCAPTCHA failure.`);
+        }
+    }
 }

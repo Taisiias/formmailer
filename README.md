@@ -52,6 +52,7 @@ Additional features:
 * [Mustache.JS](https://github.com/janl/mustache.js) templates for email body and subject.
 * All received data and sent emails are saved to the local SQLite database.
 * Special hidden form input field can be provided to specify URL where the user should be redirected after the form is submitted.
+* reCAPTCHA support.
 
 ## Running
 
@@ -103,6 +104,8 @@ Option  | Description | Default
 `maxHttpRequestSize` | Maximum allowed size of HTTP requests, in bytes. | `1000000`
 `redirectFieldName` | Name of the HTML input that contains redirect URL address. | `"_redirect"`
 `subject` | Email subject field content. Special entry `{{referrerUrl}}` will be changed to the address of the webpage from where the form is submitted. | `"Message from {{referrerUrl}}"`
+`reCaptchaSecret` | Site secret reCAPTCHA key. Spam checking will be ignored if not set. | ""
+`requireReCaptchaResponse` | If this option is enabled, receiver handler should always check g-recaptcha-response to be present in POST. | false
 
 ## Redirect URL special field
 
@@ -113,6 +116,22 @@ HTML form can include special HTML input with name `_redirect`.
 ```
 
 FormMailer will redirect user to specified URL after the form is successfuly submitted. If `_redirect` field is ommited, user will be redirected to the default `thanks.html` page hosted by FormMailer.
+
+## Manual reCAPTCHA Support
+
+To get reCAPTCHA keys sign up here
+
+https://www.google.com/recaptcha/admin
+
+Once you sign up you will get site key and secret key.
+
+Put secret key value into `reCaptchaSecret` in your config file.
+
+Set `requireReCaptchaResponse` to true if you need reciever always check `g-recaptcha-response` to be present in POST. If `requireReCaptchaResponse` is enabled, but `reCaptchaSecret` is not provided, configuration error will be thrown.
+
+Refer to the link below on how to use site key and setup reCAPTCHA on the client side.
+
+https://developers.google.com/recaptcha/docs/invisible
 
 ## Deploying
 
@@ -165,6 +184,7 @@ $ sudo systemctl start formmailer
 Don't forget to check your firewall settings to allow outside TCP connections to the port specified in `httpListenPort` setting.
 
 *NOTE: FormMailer uses default NodeJS HTTP server. For production environment it is recommended to set up a reverse proxy (Nginx or alternative) that will hide FormMailer service from the outside world.*
+
 
 ## How To Contribute
 
