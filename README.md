@@ -55,7 +55,7 @@ Additional features:
 
 ## Running
 
-1. Install Node.js.
+1. Install [Node.js](https://nodejs.org/en/) (version 6.11 or higher).
 
 2. Install FormMailer with command:
 
