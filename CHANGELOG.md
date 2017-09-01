@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 - Development environment commands and VSCode debugging integration.
 - README fixes.
+- Default DB file path changed to `./formmailer.db`
 
 ## [0.1.1] - 2017-08-26
 ### Added
