@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs");
 const DefaultConfigObject = {
     assetsFolder: "./assets",
-    databaseFileName: "./formmailer_database",
+    databaseFileName: "./formmailer.db",
     fromEmail: "formmailer@localhost",
     httpListenIP: "0.0.0.0",
     httpListenPort: 3000,

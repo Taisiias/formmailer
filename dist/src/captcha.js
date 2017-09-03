@@ -9,7 +9,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const rp = require("request-promise");
-function checkCaptcha(remoteip, response, secret) {
+class RecaptchaFailure extends Error {
+}
+exports.RecaptchaFailure = RecaptchaFailure;
+function verifyGoogleCaptcha(remoteip, response, secret) {
     return __awaiter(this, void 0, void 0, function* () {
         const options = {
             form: {
@@ -23,6 +26,23 @@ function checkCaptcha(remoteip, response, secret) {
         };
         const body = yield rp(options);
         return body.success;
+    });
+}
+exports.verifyGoogleCaptcha = verifyGoogleCaptcha;
+function checkCaptcha(postReCaptchaResponse, requireReCaptchaResponse, remoteAddress, reCaptchaSecret) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (!reCaptchaSecret) {
+            return;
+        }
+        if (requireReCaptchaResponse && !postReCaptchaResponse) {
+            throw new RecaptchaFailure(`requireReCaptchaResponse is set to true but g-recaptcha-response is missing in POST`);
+        }
+        if (postReCaptchaResponse) {
+            const notSpam = yield verifyGoogleCaptcha(remoteAddress, postReCaptchaResponse, reCaptchaSecret);
+            if (!notSpam) {
+                throw new RecaptchaFailure(`reCAPTCHA failure.`);
+            }
+        }
     });
 }
 exports.checkCaptcha = checkCaptcha;

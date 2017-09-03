@@ -16,7 +16,7 @@ const qs = require("querystring");
 const url = require("url");
 const winston = require("winston");
 const yargs = require("yargs");
-const captcha = require("./captcha");
+const captcha_1 = require("./captcha");
 const config_1 = require("./config");
 const database_1 = require("./database");
 const message_1 = require("./message");
@@ -28,23 +28,11 @@ const THANKS_PAGE_PATH = "/thanks";
 const TEMPLATE_PATH = "./assets/email-template.mst";
 class NotFoundError extends Error {
 }
-class RecaptchaFailure extends Error {
-}
 function formHandler(config, req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const bodyStr = yield stream_1.readReadable(req, config.maxHttpRequestSize);
         const post = qs.parse(bodyStr);
-        if (config.requireReCaptchaResponse && !post["g-recaptcha-response"]) {
-            // TODO: Process response w/o captcha as spam.
-            throw new Error(`requireReCaptchaResponse is set to true but g-recaptcha-response is missing in POST`);
-        }
-        if (post["g-recaptcha-response"]) {
-            const notSpam = yield captcha.checkCaptcha(req.connection.remoteAddress, post["g-recaptcha-response"], config.reCaptchaSecret);
-            winston.debug(`reCAPTCHA Result: ${notSpam ? "not spam" : "spam"}`);
-            if (!notSpam) {
-                throw new RecaptchaFailure(`reCAPTCHA failure.`);
-            }
-        }
+        yield captcha_1.checkCaptcha(post["g-recaptcha-response"], config.requireReCaptchaResponse, req.connection.remoteAddress, config.reCaptchaSecret);
         let userMessage = yield message_1.constructUserMessage(post);
         winston.debug(`User Message: ${userMessage}`);
         const referrerURL = req.headers.Referrer || "Unspecified URL";
@@ -86,7 +74,7 @@ function constructConnectionHandler(config, fileServer) {
                 fileServer.serveFile("error404.html", 404, {}, req, res);
                 return;
             }
-            if (err instanceof RecaptchaFailure) {
+            if (err instanceof captcha_1.RecaptchaFailure) {
                 res.end();
                 return;
             }
