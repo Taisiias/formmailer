@@ -35,16 +35,18 @@ function formHandler(config, req, res) {
         yield captcha_1.checkCaptcha(post["g-recaptcha-response"], config.requireReCaptchaResponse, req.connection.remoteAddress, config.reCaptchaSecret);
         let userMessage = yield message_1.constructUserMessage(post);
         winston.debug(`User Message: ${userMessage}`);
-        const referrerURL = req.headers.Referrer || "Unspecified URL";
+        const referrerURL = post._formurl || req.headers.Referrer || "Unspecified URL";
+        const formName = post._formname ? `Submitted form: ${post._formname}\n` : "";
         const template = fs.readFileSync(TEMPLATE_PATH).toString();
         const templateData = {
             incomingIp: req.connection.remoteAddress,
             referrerURL,
+            formName,
             userMessage,
         };
         userMessage = mst.render(template, templateData);
         yield send_1.sendEmail(config, userMessage, referrerURL);
-        database_1.insertEmail(config.databaseFileName, req.connection.remoteAddress, bodyStr, referrerURL, config.recipientEmails, userMessage);
+        database_1.insertEmail(config.databaseFileName, req.connection.remoteAddress, bodyStr, referrerURL, formName, config.recipientEmails, userMessage);
         const redirectUrl = post._redirect || THANKS_PAGE_PATH;
         winston.debug(`Redirecting to ${redirectUrl}`);
         res.writeHead(303, { Location: redirectUrl });
