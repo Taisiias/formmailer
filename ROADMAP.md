@@ -1,7 +1,7 @@
 # Version 1.0 Roadmap
 
 - [x] Manual reCAPTCHA integration support. (#16)
-- [ ] Specifying form URL in special field. (#12)
+- [x] Specifying form URL in special field. (#12)
 - [ ] Sending different forms to different recepients. (#13)
 - [ ] HTTPS support. (#15)
 - [ ] Automatic reCAPTCHA (without HTML forms modifications). (#24)

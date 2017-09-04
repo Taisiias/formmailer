@@ -41,7 +41,7 @@ async function formHandler(
     let userMessage = await constructUserMessage(post);
     winston.debug(`User Message: ${userMessage}`);
 
-    const referrerURL = req.headers.Referrer || "Unspecified URL";
+    const referrerURL = post._formurl || req.headers.Referrer || "Unspecified URL";
 
     const template = fs.readFileSync(TEMPLATE_PATH).toString();
     const templateData = {
