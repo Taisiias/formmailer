@@ -1,7 +1,7 @@
 Submitted user form was received by FormMailer server, see details below.
 
 Referrer page: {{referrerURL}}
-
+{{formName}}
 {{userMessage}}
 
 Submitter IP address: {{incomingIp}}

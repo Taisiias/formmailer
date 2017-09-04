@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
 - Special input for specifying form URL
+- Providing form name in email
 
 ## [0.2.0] - 2017-09-03
 ### Added
