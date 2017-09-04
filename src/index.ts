@@ -42,11 +42,13 @@ async function formHandler(
     winston.debug(`User Message: ${userMessage}`);
 
     const referrerURL = post._formurl || req.headers.Referrer || "Unspecified URL";
+    const formName = post._formName ? `Submitted form: ${post._formName}\n` : "";
 
     const template = fs.readFileSync(TEMPLATE_PATH).toString();
     const templateData = {
         incomingIp: req.connection.remoteAddress,
         referrerURL,
+        formName,
         userMessage,
     };
     userMessage = mst.render(template, templateData);
