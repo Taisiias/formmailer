@@ -15,8 +15,9 @@ import { readReadable } from "./stream";
 
 const DEFAULT_CONFIG_PATH = "./config.json";
 const STARTUP_LOG_LEVEL = "debug";
-const THANKS_PAGE_PATH = "/thanks";
-const TEMPLATE_PATH = "./assets/email-template.mst";
+const EMAIL_TEMPLATE_PATH = "./assets/email-template.mst";
+const THANKS_URL_PATH = "/thanks";
+const SUBMIT_URL_PATH = "/submit";
 
 class NotFoundError extends Error { }
 
@@ -44,7 +45,7 @@ async function formHandler(
     const referrerURL = post._formurl || req.headers.Referrer || "Unspecified URL";
     const formName = post._formname ? `Submitted form: ${post._formname}\n` : "";
 
-    const template = fs.readFileSync(TEMPLATE_PATH).toString();
+    const template = fs.readFileSync(EMAIL_TEMPLATE_PATH).toString();
     const templateData = {
         incomingIp: req.connection.remoteAddress,
         referrerURL,
@@ -64,7 +65,7 @@ async function formHandler(
         config.recipientEmails,
         userMessage);
 
-    const redirectUrl = post._redirect || THANKS_PAGE_PATH;
+    const redirectUrl = post._redirect || THANKS_URL_PATH;
     winston.debug(`Redirecting to ${redirectUrl}`);
     res.writeHead(303, { Location: redirectUrl });
     res.end();
@@ -78,9 +79,9 @@ async function requestHandler(
 ): Promise<void> {
     winston.debug(`Incoming request: ${req.url} (method: ${req.method})`);
     const urlPathName = url.parse(req.url as string, true);
-    if (urlPathName.pathname === config.httpServerPath && req.method === "POST") {
+    if (urlPathName.pathname === SUBMIT_URL_PATH && req.method === "POST") {
         await formHandler(config, req, res);
-    } else if (urlPathName.pathname === THANKS_PAGE_PATH) {
+    } else if (urlPathName.pathname === THANKS_URL_PATH) {
         fileServer.serveFile("thanks.html", 200, {}, req, res);
     } else {
         throw new NotFoundError(`Incorrect request: ${urlPathName.pathname} (${req.method})`);

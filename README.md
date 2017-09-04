@@ -11,7 +11,7 @@ Suppose you have this static page:
 ```html
 <html>
 <body>
-    <form action="http://myformmailer.mydomain.com/" method="post">
+    <form action="http://myformmailer.mydomain.com/submit" method="post">
         <div>
             <label for="msg">Message:</label>
             <textarea id="msg" name="User Message"></textarea>
@@ -87,6 +87,13 @@ Additional features:
 
     You can specify `config.json` file location with `-c` command line argument: `formmailer -c /path/to/my/config.json`.
 
+Now, change the action field in your HTML form(s) to something like this:
+```html
+<form method="post" action="http://[domain or ip]:[port]/submit"> ...
+```
+
+Here `[domain or ip]` should be your FormMailer server domain or IP address, and `[port]` should be the port which your FormMailer instance listens to (`httpListenPort` config setting).
+
 ## Configuration options
 
 Default configuration file location is `./config.json`. You can provide different location with `-c` command line argument.
@@ -97,7 +104,6 @@ Option  | Description | Default
 `fromEmail` | E-mail address that will be provided in `From:` email header. | `"formmailer@localhost"`
 `httpListenIP` | IP address to listen HTTP requests from. | `"0.0.0.0"` (all IP addresses)
 `httpListenPort` | Port to listen HTTP requests from. | `3000`
-`httpServerPath` | URL path that will receive form data (part that goes after domain name). | `"/"`
 `smtpHost` | SMTP server host name or IP. | `"localhost"`
 `smtpPort` | SMTP server port. | `25`
 `logLevel` | How detailed logging should be (`error`, `warn`, `info`, `verbose`, `debug`, `silly`). | `"info"`

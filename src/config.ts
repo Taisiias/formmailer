@@ -6,7 +6,6 @@ export interface Config {
     fromEmail: string;
     httpListenIP: string;
     httpListenPort: number;
-    httpServerPath: string;
     logLevel: string;
     maxHttpRequestSize: number;
     reCaptchaSecret: string;
@@ -24,7 +23,6 @@ const DefaultConfigObject = {
     fromEmail: "formmailer@localhost",
     httpListenIP: "0.0.0.0",
     httpListenPort: 3000,
-    httpServerPath: "/",
     logLevel: "info",
     maxHttpRequestSize: 1e6,
     reCaptchaSecret: "",

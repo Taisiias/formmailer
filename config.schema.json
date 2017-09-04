@@ -15,10 +15,6 @@
             "description": "HTTP listen port",
             "type": "integer"
         },
-        "httpServerPath": {
-            "description": "HTTP Server Path",
-            "type": "string"
-        },
         "recipientEmails": {
             "description": "Recipient emails",
             "type": [
