@@ -2,7 +2,9 @@
 
 ![CircleCI badge](https://img.shields.io/circleci/project/github/Taisiias/formmailer.svg)
 
-FormMailer runs as a service and emails contents of forms posted on the specified websites. It is the most useful as a simple backend that helps to receive user-submitted information from the static website contact/support forms.
+**FormMailer is a simple way to receive emails from contact forms on your static website.**
+
+It runs as a service and emails contents of the forms posted to it.
 
 ![Workflow](/img/formmailer-workflow.png)
 
@@ -47,24 +49,23 @@ FormMailer service deployed on your domain `http://myformmailer.mydomain.com/` w
 > Submitter IP address: 1.2.3.4
 ```
 
-Additional features:
+FormMailer also:
 
-* [Mustache.JS](https://github.com/janl/mustache.js) templates for email body and subject.
-* All received data and sent emails are saved to the local SQLite database.
-* Special hidden form input field can be provided to specify URL where the user should be redirected after the form is submitted.
-* reCAPTCHA support.
+* suports [Mustache.JS](https://github.com/janl/mustache.js) templates for email body and subject.
+* saves all received data (and sent emails) to the local SQLite database.
+* understands reCAPTCHA.
 
 ## Running
 
 1. Install [Node.js](https://nodejs.org/en/) (version 6.11 or higher).
 
-2. Install FormMailer with command:
+2. Install FormMailer with the command:
 
     ```bash
     npm install -g formmailer
     ```
 
-3. Create new `config.json` file and place following defaults inside:
+3. Create a new `config.json` file and place following defaults inside:
 
     ```json
     {
@@ -92,7 +93,7 @@ Now, change the action field in your HTML form(s) to something like this:
 <form method="post" action="http://[domain or ip]:[port]/submit"> ...
 ```
 
-Here `[domain or ip]` should be your FormMailer server domain or IP address, and `[port]` should be the port which your FormMailer instance listens to (`httpListenPort` config setting).
+Here `[domain or ip]` should be your FormMailer server domain (or IP address), and `[port]` should be the port which your FormMailer instance listens to (`httpListenPort` config setting).
 
 ## Configuration options
 
@@ -119,19 +120,21 @@ Option  | Description | Default
 
 ### Special fields
 
-HTML form can include special HTML inputs:
+HTML fields with names that start with underscore character are ignored by FormMailer:
 
 ```html
-<input type="hidden" name="_specialfield" value="https://google.com">
+<input type="text" name="_thisIsIgnored" value="stuff that doesn't have to be sent in email">
 ```
 
-1. `_redirect` - web address user will be redirected to after the form is successfuly submitted. If `_redirect` field is omitted, user will be redirected to the default `thanks.html` page hosted by FormMailer.
+Also, there are some special fields that can be provided in hidden inputs:
 
-2. `_formurl` - will show up in email instead of referrer.
+Input name | Meaning
+-----------|--------
+`_redirect` | URL where to redirect user after the form is successfuly submitted. If `_redirect` field is omitted, user will be redirected to the default `thanks.html` page hosted by FormMailer.
+`_formurl` | Value will replace referrer in emails.
+`_formname` | Value will show up in emails. Should help to identify which form was submitted if there are several on the page.
 
-3. `_formname` - will show up in emails to identify the form POST has been sent from.
-
-## reCAPTCHA installation
+### reCAPTCHA installation
 
 To set up reCAPTCHA checking:
 
