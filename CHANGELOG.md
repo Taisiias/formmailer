@@ -6,8 +6,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
-- Special input for specifying form URL
-- Providing form name in email
+- Providing form URL in special field `_formurl` (will show up in email instead of referrer).
+- Providing form name in special field `_formname` (will show up in emails).
+- CONTRIBUTING.
+
+### Changed
+- Default URL path for submit handler is `/submit` instead of `/`.
+
+### Deleted
+- `httpServerPath` config setting.
+- ROADMAP (using GitHub milestones instead).
 
 ## [0.2.0] - 2017-09-03
 ### Added

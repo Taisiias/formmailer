@@ -24,8 +24,9 @@ const send_1 = require("./send");
 const stream_1 = require("./stream");
 const DEFAULT_CONFIG_PATH = "./config.json";
 const STARTUP_LOG_LEVEL = "debug";
-const THANKS_PAGE_PATH = "/thanks";
-const TEMPLATE_PATH = "./assets/email-template.mst";
+const EMAIL_TEMPLATE_PATH = "./assets/email-template.mst";
+const THANKS_URL_PATH = "/thanks";
+const SUBMIT_URL_PATH = "/submit";
 class NotFoundError extends Error {
 }
 function formHandler(config, req, res) {
@@ -35,17 +36,19 @@ function formHandler(config, req, res) {
         yield captcha_1.checkCaptcha(post["g-recaptcha-response"], config.requireReCaptchaResponse, req.connection.remoteAddress, config.reCaptchaSecret);
         let userMessage = yield message_1.constructUserMessage(post);
         winston.debug(`User Message: ${userMessage}`);
-        const referrerURL = req.headers.Referrer || "Unspecified URL";
-        const template = fs.readFileSync(TEMPLATE_PATH).toString();
+        const referrerURL = post._formurl || req.headers.Referrer || "Unspecified URL";
+        const formName = post._formname ? `Submitted form: ${post._formname}\n` : "";
+        const template = fs.readFileSync(EMAIL_TEMPLATE_PATH).toString();
         const templateData = {
             incomingIp: req.connection.remoteAddress,
             referrerURL,
+            formName,
             userMessage,
         };
         userMessage = mst.render(template, templateData);
         yield send_1.sendEmail(config, userMessage, referrerURL);
-        database_1.insertEmail(config.databaseFileName, req.connection.remoteAddress, bodyStr, referrerURL, config.recipientEmails, userMessage);
-        const redirectUrl = post._redirect || THANKS_PAGE_PATH;
+        database_1.insertEmail(config.databaseFileName, req.connection.remoteAddress, bodyStr, referrerURL, formName, config.recipientEmails, userMessage);
+        const redirectUrl = post._redirect || THANKS_URL_PATH;
         winston.debug(`Redirecting to ${redirectUrl}`);
         res.writeHead(303, { Location: redirectUrl });
         res.end();
@@ -55,10 +58,10 @@ function requestHandler(config, req, res, fileServer) {
     return __awaiter(this, void 0, void 0, function* () {
         winston.debug(`Incoming request: ${req.url} (method: ${req.method})`);
         const urlPathName = url.parse(req.url, true);
-        if (urlPathName.pathname === config.httpServerPath && req.method === "POST") {
+        if (urlPathName.pathname === SUBMIT_URL_PATH && req.method === "POST") {
             yield formHandler(config, req, res);
         }
-        else if (urlPathName.pathname === THANKS_PAGE_PATH) {
+        else if (urlPathName.pathname === THANKS_URL_PATH) {
             fileServer.serveFile("thanks.html", 200, {}, req, res);
         }
         else {
