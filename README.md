@@ -115,15 +115,21 @@ Option  | Description | Default
 `assetsFolder` | Path to the folder containing static assets. | `"./assets"`
 `databaseFileName` | Path to the SQLite database file. | `"./formmailer.db"`
 
-## Redirect URL special field
+## Optional features
 
-HTML form can include special HTML input with name `_redirect`.
+### Special fields
+
+HTML form can include special HTML inputs:
 
 ```html
-<input type="hidden" name="_redirect" value="https://google.com">
+<input type="hidden" name="_specialfield" value="https://google.com">
 ```
 
-FormMailer will redirect user to specified URL after the form is successfuly submitted. If `_redirect` field is ommited, user will be redirected to the default `thanks.html` page hosted by FormMailer.
+1. `_redirect` - web address user will be redirected to after the form is successfuly submitted. If `_redirect` field is omitted, user will be redirected to the default `thanks.html` page hosted by FormMailer.
+
+2. `_formurl` - will show up in email instead of referrer.
+
+3. `_formname` - will show up in emails to identify the form POST has been sent from.
 
 ## reCAPTCHA installation
 
