@@ -58,10 +58,10 @@ async function formHandler(
 
     let key = "";
     if (req.url) {
-        key = req.url.slice(req.url.lastIndexOf("/") + 1);
-        winston.debug(`Key: ${key}`);
+        key = req.url.slice(req.url.lastIndexOf("/submit") + 8);
     }
-    if (!targetFormExists(config, key)) {
+    winston.debug(`Key: ${key}`);
+    if (key && !targetFormExists(config, key)) {
         throw new NotFoundError(`Target form ${key} doesn't exist in config.`);
     }
 

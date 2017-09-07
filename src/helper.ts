@@ -16,10 +16,11 @@ export function getSubject(
     key: string,
 ): string {
     let subject = "";
-
-    const value = config.formTargets[key];
-    if (!(typeof value === "string") && !(value instanceof Array)) {
-        subject = value.subject;
+    if (key) {
+        const value = config.formTargets[key];
+        if (!(typeof value === "string") && !(value instanceof Array)) {
+            subject = value.subject;
+        }
     }
     return subject;
 }
@@ -29,12 +30,13 @@ export function getRecipients(
     key: string,
 ): string | string[] {
     let to: string | string[] = "";
-    const value = config.formTargets[key];
-    if (typeof value === "string" || value instanceof Array) {
-        to = value;
-    } else {
-        to = value.recipient;
+    if (key) {
+        const value = config.formTargets[key];
+        if (typeof value === "string" || value instanceof Array) {
+            to = value;
+        } else {
+            to = value.recipient;
+        }
     }
-
     return to;
 }
