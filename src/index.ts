@@ -1,3 +1,5 @@
+// TODO: Error if /submit/formname doesn't exist in config.
+
 import * as fs from "fs";
 import * as http from "http";
 import * as mst from "mustache";
@@ -9,6 +11,7 @@ import * as yargs from "yargs";
 import { checkCaptcha, RecaptchaFailure } from "./captcha";
 import { Config, readConfig } from "./config";
 import { createDatabaseAndTables, insertEmail } from "./database";
+import { GetRecipients, GetSubject } from "./helper";
 import { constructUserMessage } from "./message";
 import { sendEmail } from "./send";
 import { readReadable } from "./stream";
@@ -52,9 +55,17 @@ async function formHandler(
         formName,
         userMessage,
     };
+
     userMessage = mst.render(template, templateData);
 
-    await sendEmail(config, userMessage, referrerURL);
+    let key = "";
+    if (req.url) {
+        key = req.url.slice(req.url.lastIndexOf("/") + 1);
+        winston.debug(`Key: ${key}`);
+    }
+    const subject = await GetSubject(config, key);
+    const to =  await GetRecipients(config, key);
+    await sendEmail(config, to, subject, userMessage, referrerURL);
 
     insertEmail(
         config.databaseFileName,
@@ -62,7 +73,7 @@ async function formHandler(
         bodyStr,
         referrerURL,
         formName,
-        config.recipientEmails,
+        to,
         userMessage);
 
     const redirectUrl = post._redirect || THANKS_URL_PATH;
@@ -79,7 +90,9 @@ async function requestHandler(
 ): Promise<void> {
     winston.debug(`Incoming request: ${req.url} (method: ${req.method})`);
     const urlPathName = url.parse(req.url as string, true);
-    if (urlPathName.pathname === SUBMIT_URL_PATH && req.method === "POST") {
+    if (urlPathName.pathname
+        && urlPathName.pathname.toString().startsWith(SUBMIT_URL_PATH)
+        && req.method === "POST") {
         await formHandler(config, req, res);
     } else if (urlPathName.pathname === THANKS_URL_PATH) {
         fileServer.serveFile("thanks.html", 200, {}, req, res);

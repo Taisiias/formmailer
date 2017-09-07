@@ -5,6 +5,8 @@ import * as nodemailer from "nodemailer";
 
 export async function sendEmail(
     config: Config,
+    to: string | string [],
+    subject: string,
     emailText: string,
     referrerPage: string,
 ): Promise<void> {
@@ -13,13 +15,15 @@ export async function sendEmail(
         port: config.smtpPort,
         tls: { rejectUnauthorized: false },
     });
+
     const emailMessage = {
         from: config.fromEmail,
-        subject: mst.render(config.subject, { referrerUrl: referrerPage }),
+        subject : subject || mst.render(config.subject, { referrerUrl: referrerPage }),
         text: emailText,
-        to: config.recipientEmails,
+        to: to || config.recipientEmails,
     };
+
     winston.debug(`Sending email.`);
     await transporter.sendMail(emailMessage);
-    winston.info(`Message has been sent to ${config.recipientEmails}`);
+    winston.info(`Message has been sent to ${to}`);
 }

@@ -3,6 +3,7 @@ import * as fs from "fs";
 export interface Config {
     assetsFolder: string;
     databaseFileName: string;
+    formTargets: {[k: string]: string | string [] | FormTargetData };
     fromEmail: string;
     httpListenIP: string;
     httpListenPort: number;
@@ -17,9 +18,15 @@ export interface Config {
     subject: string;
 }
 
+export interface FormTargetData {
+    recipient: string | string [];
+    subject: string;
+}
+
 const DefaultConfigObject = {
     assetsFolder: "./assets",
     databaseFileName: "./formmailer.db",
+    formTargets: {},
     fromEmail: "formmailer@localhost",
     httpListenIP: "0.0.0.0",
     httpListenPort: 3000,

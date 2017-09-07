@@ -4,6 +4,7 @@ const fs = require("fs");
 const DefaultConfigObject = {
     assetsFolder: "./assets",
     databaseFileName: "./formmailer.db",
+    formTargets: {},
     fromEmail: "formmailer@localhost",
     httpListenIP: "0.0.0.0",
     httpListenPort: 3000,
