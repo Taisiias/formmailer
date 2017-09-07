@@ -1,5 +1,3 @@
-// TODO: Error if /submit/formname doesn't exist in config.
-
 import * as fs from "fs";
 import * as http from "http";
 import * as mst from "mustache";
@@ -11,7 +9,7 @@ import * as yargs from "yargs";
 import { checkCaptcha, RecaptchaFailure } from "./captcha";
 import { Config, readConfig } from "./config";
 import { createDatabaseAndTables, insertEmail } from "./database";
-import { GetRecipients, GetSubject } from "./helper";
+import { getRecipients, getSubject, targetFormExists } from "./helper";
 import { constructUserMessage } from "./message";
 import { sendEmail } from "./send";
 import { readReadable } from "./stream";
@@ -63,9 +61,15 @@ async function formHandler(
         key = req.url.slice(req.url.lastIndexOf("/") + 1);
         winston.debug(`Key: ${key}`);
     }
-    const subject = await GetSubject(config, key);
-    const to =  await GetRecipients(config, key);
-    await sendEmail(config, to, subject, userMessage, referrerURL);
+    if (!targetFormExists(config, key)) {
+        throw new NotFoundError(`Target form ${key} doesn't exist in config.`);
+    }
+
+    const subject =
+        await getSubject(config, key) || mst.render(config.subject, { referrerUrl: referrerURL });
+    const to = await getRecipients(config, key) || config.recipientEmails;
+
+    await sendEmail(config, to, subject, userMessage);
 
     insertEmail(
         config.databaseFileName,

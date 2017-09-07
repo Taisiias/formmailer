@@ -1,41 +1,40 @@
 import { Config } from "./config";
 
- export function GetSubject(
+export function targetFormExists(
     config: Config,
     key: string,
-): Promise<string> {
-    let subject = "";
-    let to: string | string[] = config.recipientEmails;
-
-    if (config.formTargets) {
-        if (config.formTargets.hasOwnProperty(key)) {
-            const value = config.formTargets[key];
-            if (typeof value === "string" || value instanceof Array) {
-                to = value;
-            } else {
-                to = value.recipient;
-                subject = value.subject;
-            }
-        }
+): boolean {
+    if (config.formTargets && !config.formTargets.hasOwnProperty(key)) {
+        return false;
+    } else {
+        return true;
     }
-    return Promise.resolve(subject);
 }
 
- export function GetRecipients(
+export function getSubject(
     config: Config,
     key: string,
-): Promise<string | string[]> {
-    let to: string | string[] = "";
+): string {
+    let subject = "";
 
-    if (config.formTargets) {
-        if (config.formTargets.hasOwnProperty(key)) {
-            const value = config.formTargets[key];
-            if (typeof value === "string" || value instanceof Array) {
-                to = value;
-            } else {
-                to = value.recipient;
-            }
-        }
+    const value = config.formTargets[key];
+    if (!(typeof value === "string") && !(value instanceof Array)) {
+        subject = value.subject;
     }
-    return Promise.resolve(to);
+    return subject;
+}
+
+export function getRecipients(
+    config: Config,
+    key: string,
+): string | string[] {
+    let to: string | string[] = "";
+    const value = config.formTargets[key];
+    if (typeof value === "string" || value instanceof Array) {
+        to = value;
+    } else {
+        to = value.recipient;
+    }
+
+    return to;
 }

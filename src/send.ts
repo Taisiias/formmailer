@@ -1,4 +1,3 @@
-import * as mst from "mustache";
 import { Config } from "./config";
 import winston = require("winston");
 import * as nodemailer from "nodemailer";
@@ -8,7 +7,6 @@ export async function sendEmail(
     to: string | string [],
     subject: string,
     emailText: string,
-    referrerPage: string,
 ): Promise<void> {
     const transporter = nodemailer.createTransport({
         host: config.smtpHost,
@@ -18,9 +16,9 @@ export async function sendEmail(
 
     const emailMessage = {
         from: config.fromEmail,
-        subject : subject || mst.render(config.subject, { referrerUrl: referrerPage }),
+        subject,
         text: emailText,
-        to: to || config.recipientEmails,
+        to,
     };
 
     winston.debug(`Sending email.`);
