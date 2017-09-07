@@ -1,42 +1,30 @@
-import { Config } from "./config";
+// TODO: rename file to form-target/helpers.ts
 
-export function targetFormExists(
-    config: Config,
-    key: string,
-): boolean {
-    if (config.formTargets && !config.formTargets.hasOwnProperty(key)) {
-        return false;
-    } else {
-        return true;
-    }
-}
+import { Config } from "./config";
 
 export function getSubject(
     config: Config,
     key: string,
-): string {
-    let subject = "";
-    if (key) {
-        const value = config.formTargets[key];
-        if (!(typeof value === "string") && !(value instanceof Array)) {
-            subject = value.subject;
-        }
+): string | undefined {
+    const value = config.formTargets[key];
+    if (!value) { return undefined; }
+    if (!(typeof value === "string") && !(value instanceof Array)) {
+        return value.subject;
     }
-    return subject;
+    return undefined;
 }
 
 export function getRecipients(
     config: Config,
     key: string,
-): string | string[] {
-    let to: string | string[] = "";
-    if (key) {
-        const value = config.formTargets[key];
-        if (typeof value === "string" || value instanceof Array) {
-            to = value;
-        } else {
-            to = value.recipient;
-        }
-    }
-    return to;
+): string[] | undefined {
+    const value = config.formTargets[key];
+    if (!value) { return undefined; }
+
+    if (typeof value === "string") { return [value]; }
+    if (value instanceof Array) { return value; }
+
+    const targetRecipient = value.recipient;
+    if (typeof targetRecipient === "string") { return [targetRecipient]; }
+    return targetRecipient;
 }
