@@ -4,7 +4,8 @@ import * as nodemailer from "nodemailer";
 
 export async function sendEmail(
     config: Config,
-    to: string | string [],
+    // TODO: change to string[]
+    to: string | string[],
     subject: string,
     emailText: string,
 ): Promise<void> {
@@ -16,6 +17,7 @@ export async function sendEmail(
 
     const emailMessage = {
         from: config.fromEmail,
+        // TODO: subject should always be processed by mustache (referrer).
         subject,
         text: emailText,
         to,
