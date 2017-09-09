@@ -20,8 +20,7 @@ export interface Config {
 
 export interface FormTargetData {
     recipient: string | string [];
-    // TODO: subject is not required.
-    subject: string;
+    subject?: string;
 }
 
 const DefaultConfigObject = {

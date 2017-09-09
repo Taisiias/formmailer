@@ -1,6 +1,4 @@
-// TODO: rename file to form-target/helpers.ts
-
-import { Config } from "./config";
+import { Config } from "../config";
 
 export function getSubject(
     config: Config,

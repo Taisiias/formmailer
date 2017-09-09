@@ -9,7 +9,7 @@ import * as yargs from "yargs";
 import { checkCaptcha, RecaptchaFailure } from "./captcha";
 import { Config, readConfig } from "./config";
 import { createDatabaseAndTables, insertEmail } from "./database";
-import { getRecipients, getSubject } from "./helper";
+import { getRecipients, getSubject } from "./form-target/helpers";
 import { constructUserMessage } from "./message";
 import { sendEmail } from "./send";
 import { readReadable } from "./stream";
@@ -28,6 +28,7 @@ interface CommandLineArgs {
 
 async function formHandler(
     config: Config,
+    key: string,
     req: http.IncomingMessage,
     res: http.ServerResponse,
 ): Promise<void> {
@@ -56,25 +57,21 @@ async function formHandler(
 
     userMessage = mst.render(template, templateData);
 
-    let subject = mst.render(config.subject, { referrerUrl: referrerURL });
+    let subject = config.subject;
     let recepients = config.recipientEmails;
 
-    if (req.url) {
-        const key = req.url.slice(req.url.lastIndexOf("/submit") + 8);
-        // TODO: strip slash from end of key.
-        winston.debug(`Provided form target key: "${key}"`);
-        if (key) {
-            if (!config.formTargets.hasOwnProperty(key)) {
-                throw new NotFoundError(`Target form "${key}" doesn't exist in config.`);
-            }
-            const formTargetSubject = getSubject(config, key);
-            subject = formTargetSubject ? formTargetSubject : subject;
-            const formTargetRecepients = getRecipients(config, key);
-            recepients = formTargetRecepients ? formTargetRecepients : recepients;
-        }
+    if (key) {
+        const formTargetSubject = getSubject(config, key);
+        subject = formTargetSubject ? formTargetSubject : subject;
+        const formTargetRecepients = getRecipients(config, key);
+        recepients = formTargetRecepients ? formTargetRecepients : recepients;
     }
 
-    await sendEmail(config, recepients, subject, userMessage);
+    await sendEmail(
+        config,
+        recepients,
+        mst.render(subject, { referrerUrl: referrerURL }),
+        userMessage);
 
     insertEmail(
         config.databaseFileName,
@@ -102,8 +99,20 @@ async function requestHandler(
     if (urlPathName.pathname
         && urlPathName.pathname.toString().startsWith(SUBMIT_URL_PATH)
         && req.method === "POST") {
-            // TODO: retrieve key from the url here and provide it to formHandler()
-            await formHandler(config, req, res);
+        let key = "";
+        if (req.url) {
+            key = req.url.slice(req.url.lastIndexOf("/submit") + 8);
+            if (key.endsWith("/")) {
+                key = key.slice(0, key.lastIndexOf("/"));
+            }
+            winston.debug(`Provided form target key: "${key}"`);
+            if (key) {
+                if (!config.formTargets.hasOwnProperty(key)) {
+                    throw new NotFoundError(`Target form "${key}" doesn't exist in config.`);
+                }
+            }
+        }
+        await formHandler(config, key, req, res);
     } else if (urlPathName.pathname === THANKS_URL_PATH) {
         fileServer.serveFile("thanks.html", 200, {}, req, res);
     } else {
