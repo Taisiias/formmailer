@@ -1,3 +1,7 @@
+// TODO: README
+// TODO: config schema
+// TODO: test forms
+
 import * as fs from "fs";
 import * as http from "http";
 import * as mst from "mustache";
@@ -44,13 +48,13 @@ async function formHandler(
     let userMessage = await constructUserMessage(post);
     winston.debug(`User Message: ${userMessage}`);
 
-    const referrerURL = post._formurl || req.headers.Referrer || "Unspecified URL";
+    const referrerUrl = post._formurl || req.headers.Referrer || "Unspecified URL";
     const formName = post._formname ? `Submitted form: ${post._formname}\n` : "";
 
     const template = fs.readFileSync(EMAIL_TEMPLATE_PATH).toString();
     const templateData = {
         incomingIp: req.connection.remoteAddress,
-        referrerURL,
+        referrerUrl,
         formName,
         userMessage,
     };
@@ -67,17 +71,19 @@ async function formHandler(
         recepients = formTargetRecepients ? formTargetRecepients : recepients;
     }
 
+    const renderedSubject = mst.render(subject, { referrerUrl, formName });
+
     await sendEmail(
         config,
         recepients,
-        mst.render(subject, { referrerUrl: referrerURL }),
+        renderedSubject,
         userMessage);
 
     insertEmail(
         config.databaseFileName,
         req.connection.remoteAddress,
         bodyStr,
-        referrerURL,
+        referrerUrl,
         formName,
         recepients,
         userMessage);
@@ -100,6 +106,7 @@ async function requestHandler(
         && urlPathName.pathname.toString().startsWith(SUBMIT_URL_PATH)
         && req.method === "POST") {
         let key = "";
+        // TODO: use urlPathName instead of req.url
         if (req.url) {
             key = req.url.slice(req.url.lastIndexOf("/submit") + 8);
             if (key.endsWith("/")) {
