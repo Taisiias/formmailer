@@ -115,6 +115,7 @@ Option  | Description | Default
 `requireReCaptchaResponse` | If true, receiver handler should always check g-recaptcha-response to be present in POST. | `false`
 `assetsFolder` | Path to the folder containing static assets. | `"./assets"`
 `databaseFileName` | Path to the SQLite database file. | `"./formmailer.db"`
+`formTargets` | See details in Optional features -> Sending different forms to different recipients section| { }
 
 ## Optional features
 
@@ -149,6 +150,31 @@ To set up reCAPTCHA checking:
     Refer to the link below on how to setup reCAPTCHA on the client side.
 
     https://developers.google.com/recaptcha/docs/display
+
+
+### Sending different forms to different recipients
+
+First, user should add a dictionary similar to this one in the configuration file:
+
+```json
+"formTargets": {
+    "contact": "contact@mydomain.com",
+    "support": ["support@mydomain.com", "team@mydomain.com"],
+    "sales": {
+        "recepient": "sales@mydomain.com",
+        "subject": "Purchase inquiry submitted"
+    }
+}
+```
+After that, user should provide form's action URL in format
+
+`http://formmailer.domain.com/submit/:formtarget` where `:formtarget` is a key from this dictionary:
+
+```
+<form method="POST" action="http://formmailer.domain.com/submit/sales">...
+```
+
+FormMailer will use a corresponding recipient (and optionally a subject) instead of the default one.
 
 ## Deploying
 
