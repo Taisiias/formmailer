@@ -8,7 +8,15 @@
         }
     </script>
 </head>
-<form id="demo-form" action="http://localhost:3000/submit/support/" method="post">
+<h3>
+    <div>
+        Test Form 1: General testing with recaptcha and formname
+    </div>
+    <div>
+        http://localhost:3000/submit/
+    </div>
+</h3>
+<form id="demo-form" action="http://localhost:3000/submit/" method="post">
     <div>
         <label for="name">Name:</label>
         <input type="text" id="name" name="user_name">
@@ -43,11 +51,66 @@
         <label for="subscribeNews">Subscribe to newsletter?</label>
     </div>
     <div class="button">
-        <button class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
-            data-callback="onSubmit" type="submit">Send your message</button>
+        <button class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" data-callback="onSubmit" type="submit">Send your message</button>
     </div>
-    <input type="hidden" id="_formurl" name="_formurl" value="http://mydomain.com/form/page/url/">
-    <input type="hidden" name="_formname" value="Contact Us">
+    <input type="hidden" name="_formname" value="General Form">
+</form>
+
+<h3>
+    <div>
+        Test Form 2: No reCAPTCHA, no _formname, no _formurl
+    </div>
+    <div>
+        http://localhost:3000/submit/
+    </div>
+</h3>
+<form id="demo-form" action="http://localhost:3000/submit/" method="post">
+    <div>
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="user_name">
+    </div>
+    <div class="button">
+        <button type="submit">Send your message</button>
+    </div>
+</form>
+
+<h3>
+    <div>
+        Test Form 3: Form url will appear in email
+    </div>
+    <div>
+        http://localhost:3000/submit/
+    </div>
+</h3>
+<form id="demo-form" action="http://localhost:3000/submit/" method="post">
+    <div>
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="user_name">
+    </div>
+    <div class="button">
+        <button class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" data-callback="onSubmit" type="submit">Send your message</button>
+    </div>
+    <input type="hidden" id="_formurl" name="_formurl" value="http://mydomain.com/form/page/contact/">
+</form>
+
+<h3>
+    <div>
+        Test Form 4: Testing form targets with reCAPTCHA, _formname and _formurl
+    </div>
+    <div>
+        http://localhost:3000/submit/sales/
+    </div>
+</h3>
+<form id="demo-form" action="http://localhost:3000/submit/sales/" method="post">
+    <div>
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="user_name">
+    </div>
+    <div class="button">
+        <button class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" data-callback="onSubmit" type="submit">Send your message</button>
+    </div>
+    <input type="hidden" id="_formurl" name="_formurl" value="http://mydomain.com/form/page/sales/">
+    <input type="hidden" name="_formname" value="Form Targets">
 </form>
 
 </html>

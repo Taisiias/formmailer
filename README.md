@@ -161,7 +161,7 @@ First, user should add a dictionary similar to this one in the configuration fil
     "contact": "contact@mydomain.com",
     "support": ["support@mydomain.com", "team@mydomain.com"],
     "sales": {
-        "recepient": "sales@mydomain.com",
+        "recipient": "sales@mydomain.com",
         "subject": "Purchase inquiry submitted"
     }
 }
