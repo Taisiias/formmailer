@@ -9,7 +9,7 @@
     "start": "tsc && node ./build/src/index.js",
     "live": "tsc && concurrently --kill-others --names \"FM,SMTP,HTTP\" -c \"blue.bold,green.bold,grey.bold\" \"yarn dev-formmailer\" \"yarn dev-smtp-server\" \"yarn dev-static-http\"",
     "live-support": "concurrently --kill-others --names \"SMTP,HTTP\" -c \"green.bold,grey.bold\" \"yarn dev-smtp-server\" \"yarn dev-static-http\"",
-    "dev-formmailer": "nodemon --exec ./node_modules/.bin/ts-node -- ./src/index.ts",
+    "dev-formmailer": "nodemon --exec ./node_modules/.bin/ts-node -- ./src/index.ts --config ./test/config.test.json",
     "dev-static-http": "http-server ./test -o",
     "dev-smtp-server": "node ./build/src/run-smtp.js",
     "prepare": "tsc --outDir ./dist --sourceMap false"
