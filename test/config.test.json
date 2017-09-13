@@ -1,0 +1,14 @@
+{
+    "recipientEmails" : "root@localhost",
+    "fromEmail": "formmailer@localhost",
+    "smtpHost": "localhost",
+    "smtpPort": 2500,
+    "httpListenIP": "0.0.0.0",
+    "httpListenPort": 3000,
+    "formTargets": {
+        "sales": {
+            "recipient": "sales@mydomain.com",
+            "subject": "Purchase inquiry submitted"
+        }
+    }
+}

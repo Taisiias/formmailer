@@ -4,7 +4,7 @@ Run FormMailer in development mode:
 
 1. Install NodeJS and yarn (with `npm install -g yarn`), clone this repo and install dependencies with `yarn install` command.
 
-2. Copy `config.example.json` to `config.json`. Change configuration options if you wish so. Defaults should work for local development.
+2. Change options in development config file `test/config.test.json` if you wish so. Defaults should work as they are.
 
 3. Start FormMailer in the development mode:
     ```bash
