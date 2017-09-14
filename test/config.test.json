@@ -10,5 +10,6 @@
             "recipient": "sales@mydomain.com",
             "subject": "Purchase inquiry submitted"
         }
-    }
+    },
+    "logLevel": "debug"
 }

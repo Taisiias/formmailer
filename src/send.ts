@@ -4,10 +4,9 @@ import * as nodemailer from "nodemailer";
 
 export async function sendEmail(
     config: Config,
-    // TODO: change to string[]
     to: string | string[],
     subject: string,
-    emailText: string,
+    text: string,
 ): Promise<void> {
     const transporter = nodemailer.createTransport({
         host: config.smtpHost,
@@ -17,9 +16,8 @@ export async function sendEmail(
 
     const emailMessage = {
         from: config.fromEmail,
-        // TODO: subject should always be processed by mustache (referrer).
         subject,
-        text: emailText,
+        text,
         to,
     };
 
