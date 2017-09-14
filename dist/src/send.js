@@ -8,10 +8,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const mst = require("mustache");
 const winston = require("winston");
 const nodemailer = require("nodemailer");
-function sendEmail(config, emailText, referrerPage) {
+function sendEmail(config, to, subject, text) {
     return __awaiter(this, void 0, void 0, function* () {
         const transporter = nodemailer.createTransport({
             host: config.smtpHost,
@@ -20,13 +19,13 @@ function sendEmail(config, emailText, referrerPage) {
         });
         const emailMessage = {
             from: config.fromEmail,
-            subject: mst.render(config.subject, { referrerUrl: referrerPage }),
-            text: emailText,
-            to: config.recipientEmails,
+            subject,
+            text,
+            to,
         };
         winston.debug(`Sending email.`);
         yield transporter.sendMail(emailMessage);
-        winston.info(`Message has been sent to ${config.recipientEmails}`);
+        winston.info(`Message has been sent to ${to}`);
     });
 }
 exports.sendEmail = sendEmail;

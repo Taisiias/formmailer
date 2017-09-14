@@ -19,6 +19,7 @@ const yargs = require("yargs");
 const captcha_1 = require("./captcha");
 const config_1 = require("./config");
 const database_1 = require("./database");
+const helpers_1 = require("./form-target/helpers");
 const message_1 = require("./message");
 const send_1 = require("./send");
 const stream_1 = require("./stream");
@@ -29,25 +30,34 @@ const THANKS_URL_PATH = "/thanks";
 const SUBMIT_URL_PATH = "/submit";
 class NotFoundError extends Error {
 }
-function formHandler(config, req, res) {
+function formHandler(config, key, req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const bodyStr = yield stream_1.readReadable(req, config.maxHttpRequestSize);
         const post = qs.parse(bodyStr);
         yield captcha_1.checkCaptcha(post["g-recaptcha-response"], config.requireReCaptchaResponse, req.connection.remoteAddress, config.reCaptchaSecret);
         let userMessage = yield message_1.constructUserMessage(post);
         winston.debug(`User Message: ${userMessage}`);
-        const referrerURL = post._formurl || req.headers.Referrer || "Unspecified URL";
+        const referrerUrl = post._formurl || req.headers.Referrer || "Unspecified URL";
         const formName = post._formname ? `Submitted form: ${post._formname}\n` : "";
         const template = fs.readFileSync(EMAIL_TEMPLATE_PATH).toString();
         const templateData = {
             incomingIp: req.connection.remoteAddress,
-            referrerURL,
+            referrerUrl,
             formName,
             userMessage,
         };
         userMessage = mst.render(template, templateData);
-        yield send_1.sendEmail(config, userMessage, referrerURL);
-        database_1.insertEmail(config.databaseFileName, req.connection.remoteAddress, bodyStr, referrerURL, formName, config.recipientEmails, userMessage);
+        let subject = config.subject;
+        let recepients = config.recipientEmails;
+        if (key) {
+            const formTargetSubject = helpers_1.getSubject(config, key);
+            subject = formTargetSubject ? formTargetSubject : subject;
+            const formTargetRecepients = helpers_1.getRecipients(config, key);
+            recepients = formTargetRecepients ? formTargetRecepients : recepients;
+        }
+        const renderedSubject = mst.render(subject, { referrerUrl, formName });
+        yield send_1.sendEmail(config, recepients, renderedSubject, userMessage);
+        database_1.insertEmail(config.databaseFileName, req.connection.remoteAddress, bodyStr, referrerUrl, formName, recepients, userMessage);
         const redirectUrl = post._redirect || THANKS_URL_PATH;
         winston.debug(`Redirecting to ${redirectUrl}`);
         res.writeHead(303, { Location: redirectUrl });
@@ -58,8 +68,22 @@ function requestHandler(config, req, res, fileServer) {
     return __awaiter(this, void 0, void 0, function* () {
         winston.debug(`Incoming request: ${req.url} (method: ${req.method})`);
         const urlPathName = url.parse(req.url, true);
-        if (urlPathName.pathname === SUBMIT_URL_PATH && req.method === "POST") {
-            yield formHandler(config, req, res);
+        if (urlPathName.pathname
+            && urlPathName.pathname.toString().startsWith(SUBMIT_URL_PATH)
+            && req.method === "POST") {
+            let key = "";
+            winston.debug(`Provided urlPathName: "${urlPathName.pathname}"`);
+            key = urlPathName.pathname.slice(urlPathName.pathname.lastIndexOf("/submit") + 8);
+            if (key.endsWith("/")) {
+                key = key.slice(0, key.lastIndexOf("/"));
+            }
+            winston.debug(`Provided form target key: "${key}"`);
+            if (key) {
+                if (!config.formTargets.hasOwnProperty(key)) {
+                    throw new NotFoundError(`Target form "${key}" doesn't exist in config.`);
+                }
+            }
+            yield formHandler(config, key, req, res);
         }
         else if (urlPathName.pathname === THANKS_URL_PATH) {
             fileServer.serveFile("thanks.html", 200, {}, req, res);
