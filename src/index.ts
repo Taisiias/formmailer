@@ -102,19 +102,18 @@ async function requestHandler(
         && urlPathName.pathname.toString().startsWith(SUBMIT_URL_PATH)
         && req.method === "POST") {
         let key = "";
-        // TODO: use urlPathName instead of req.url
-        if (req.url) {
-            key = req.url.slice(req.url.lastIndexOf("/submit") + 8);
-            if (key.endsWith("/")) {
-                key = key.slice(0, key.lastIndexOf("/"));
-            }
-            winston.debug(`Provided form target key: "${key}"`);
-            if (key) {
-                if (!config.formTargets.hasOwnProperty(key)) {
-                    throw new NotFoundError(`Target form "${key}" doesn't exist in config.`);
-                }
+        winston.debug(`Provided urlPathName: "${urlPathName.pathname}"`);
+        key = urlPathName.pathname.slice(urlPathName.pathname.lastIndexOf("/submit") + 8);
+        if (key.endsWith("/")) {
+            key = key.slice(0, key.lastIndexOf("/"));
+        }
+        winston.debug(`Provided form target key: "${key}"`);
+        if (key) {
+            if (!config.formTargets.hasOwnProperty(key)) {
+                throw new NotFoundError(`Target form "${key}" doesn't exist in config.`);
             }
         }
+
         await formHandler(config, key, req, res);
     } else if (urlPathName.pathname === THANKS_URL_PATH) {
         fileServer.serveFile("thanks.html", 200, {}, req, res);

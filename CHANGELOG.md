@@ -6,8 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased] - 2017-09-14
 ### Added
-- Sending different forms to different recipients.
-- Test forms to `index.html`
+- Sending different forms to different recipients with `formTargets`.
+- Test forms to `index.html`.
+- Development config file in `test/config.test.json`.
 
 ## [0.3.0] - 2017-09-06
 ### Added
