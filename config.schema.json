@@ -22,6 +22,33 @@
                 "array"
             ]
         },
+        "formTargets": {
+            "description": "Form keys",
+            "type": "object",
+            "patternProperties": {
+                ".*": {
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "subject": {
+                                    "type": "string"
+                                },
+                                "recipient": {
+                                    "type": ["array", "string"]
+                                }
+                            }
+                        },
+                        {
+                            "type": "array"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
+                }
+            }
+        },
         "fromEmail": {
             "description": "Sender's email",
             "type": "string"
