@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] - 2017-09-14
+### Added
+- Sending different forms to different recipients.
+- Test forms to `index.html`
+
 ## [0.3.0] - 2017-09-06
 ### Added
 - Providing form URL in special field `_formurl` (will show up in email instead of referrer).
