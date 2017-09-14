@@ -3,8 +3,8 @@
 
 
 "@types/bluebird@*":
-  version "3.5.10"
-  resolved "https://registry.yarnpkg.com/@types/bluebird/-/bluebird-3.5.10.tgz#c4b09b7ffa4b1b2baec2b03eca8618687099acb0"
+  version "3.5.11"
+  resolved "https://registry.yarnpkg.com/@types/bluebird/-/bluebird-3.5.11.tgz#60482b3cddce9111dee3cafd08ab54fffee4b119"
 
 "@types/form-data@*":
   version "2.2.0"
@@ -1325,11 +1325,7 @@ mime-types@^2.1.12, mime-types@~2.1.7:
   dependencies:
     mime-db "~1.30.0"
 
-mime@>=1.2.9:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/mime/-/mime-2.0.1.tgz#73dd0bc6a678836cc8322db5d8e4c3e6f3c06471"
-
-mime@^1.2.11:
+mime@^1.2.11, mime@^1.2.9:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/mime/-/mime-1.4.0.tgz#69e9e0db51d44f2a3b56e48b7817d7d137f1a343"
 
@@ -1388,12 +1384,12 @@ node-pre-gyp@^0.6.36, node-pre-gyp@~0.6.37:
     tar "^2.2.1"
     tar-pack "^3.4.0"
 
-node-static@^0.7.9:
-  version "0.7.9"
-  resolved "https://registry.yarnpkg.com/node-static/-/node-static-0.7.9.tgz#9bb69fce2281f7ae3cd1fb983e9ea0ec0cd9fecb"
+node-static@^0.7.10:
+  version "0.7.10"
+  resolved "https://registry.yarnpkg.com/node-static/-/node-static-0.7.10.tgz#a1ddb72027c7f67179fb33487807b57e8bc7d2e7"
   dependencies:
     colors ">=0.6.0"
-    mime ">=1.2.9"
+    mime "^1.2.9"
     optimist ">=0.3.4"
 
 nodemailer@^4.0.1:

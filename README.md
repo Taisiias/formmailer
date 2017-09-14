@@ -121,7 +121,7 @@ Option  | Description | Default
 
 ### Special fields
 
-HTML fields with names that start with underscore character are ignored by FormMailer:
+HTML fields with names that start with the underscore character are ignored by FormMailer:
 
 ```html
 <input type="text" name="_thisIsIgnored" value="stuff that doesn't have to be sent in email">
@@ -166,7 +166,7 @@ First, add a dictionary similar to this one in the configuration file:
     }
 }
 ```
-After that, provide form's action URL in the format
+After that, provide form's action URL in the following format
 
 `http://formmailer.domain.com/submit/<formtarget>` where `<formtarget>` is a key from this dictionary.
 
@@ -180,7 +180,7 @@ FormMailer will use a corresponding recipient (and optionally a subject) instead
 
 **Example for Ubuntu 17.04**
 
-Create a new file `/lib/systemd/system/formmailer.service` and place following contents inside:
+Create a new file `/lib/systemd/system/formmailer.service` and place the following contents inside:
 
 ```ini
 [Unit]
@@ -202,7 +202,7 @@ WantedBy=multi-user.target
 
 Change `WorkingDirectory` to the directory where you have cloned FormMailer.
 
-Supposing you have cloned FormMailer repository to `/var/formmailer`, run:
+Supposing you have cloned the FormMailer repository to `/var/formmailer`, run:
 
 ```bash
 $ # create user and group
@@ -223,7 +223,7 @@ $ sudo systemctl start formmailer
 
 Don't forget to check your firewall settings to allow outside TCP connections to the port specified in `httpListenPort` setting.
 
-*NOTE: FormMailer uses default NodeJS HTTP server. For production environment it is recommended to set up a reverse proxy (Nginx or alternative) that will hide FormMailer service from the outside world.*
+*NOTE: FormMailer uses default NodeJS HTTP server. For production environment it is recommended to set up a reverse proxy (Nginx or alternative) that will hide the FormMailer service from the outside world.*
 
 ## Alternatives
 
