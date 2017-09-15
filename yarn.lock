@@ -91,6 +91,12 @@
     "@types/form-data" "*"
     "@types/node" "*"
 
+"@types/smtp-server@^1.15.2":
+  version "1.15.2"
+  resolved "https://registry.yarnpkg.com/@types/smtp-server/-/smtp-server-1.15.2.tgz#7ca4c6b1cc89997d93278d3e2957de0010ad4272"
+  dependencies:
+    "@types/node" "*"
+
 "@types/sqlite3@^3.1.0":
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/@types/sqlite3/-/sqlite3-3.1.1.tgz#f9b707c574e8d2f73d6c41aaa86e28b6ef85a324"
