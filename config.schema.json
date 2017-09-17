@@ -3,16 +3,36 @@
     "title": "Configuration file schema",
     "type": "object",
     "properties": {
+        "certPath": {
+            "description": "Path to the certificate",
+            "type": "string"
+        },
         "databaseFileName": {
             "description": "Path to SQLite database",
             "type": "string"
+        },
+        "enableHttp": {
+            "description": "Determines if HTTP is enabled",
+            "type": "boolean"
+        },
+        "enableHttps": {
+            "description": "Determines if HTTPS is enabled",
+            "type": "boolean"
         },
         "httpListenIP": {
             "description": "HTTP listen IP",
             "type": "string"
         },
+        "httpsListenIP": {
+            "description": "HTTPS listen IP",
+            "type": "string"
+        },
         "httpListenPort": {
             "description": "HTTP listen port",
+            "type": "integer"
+        },
+        "httpsListenPort": {
+            "description": "HTTPS listen port",
             "type": "integer"
         },
         "recipientEmails": {
@@ -59,6 +79,10 @@
         },
         "maxHttpRequestSize": {
             "description": "Maximum HTTP Request Size",
+            "type": "string"
+        },
+        "keyPath": {
+            "description": "Path to the certificate private key",
             "type": "string"
         },
         "logLevel": {

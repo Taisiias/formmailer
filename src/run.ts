@@ -1,6 +1,6 @@
-// import * as fs from "fs";
+import * as fs from "fs";
 import * as http from "http";
-// import * as https from "https";
+import * as https from "https";
 import * as ns from "node-static";
 import winston = require("winston");
 import * as yargs from "yargs";
@@ -45,23 +45,26 @@ function run(): void {
     const fileServer = new ns.Server(config.assetsFolder);
     createDatabaseAndTables(config.databaseFileName);
 
-    // TODO: if(config.enableHttp)
-    const httpServer = http.createServer(constructConnectionHandler(config, fileServer));
-    httpServer.listen(config.httpListenPort, config.httpListenIP, () => {
-        winston.info(`Server started (listening ${config.httpListenIP}:${config.httpListenPort})`);
-    });
+    if (config.enableHttp) {
+        const httpServer = http.createServer(constructConnectionHandler(config, fileServer));
+        httpServer.listen(config.httpListenPort, config.httpListenIP, () => {
+            winston.info(
+                `Server started (listening ${config.httpListenIP}:${config.httpListenPort})`);
+        });
+    }
 
-    // const options = {
-    //     cert: fs.readFileSync("./cert/server.crt", "utf8"),
-    //     key: fs.readFileSync("./cert/key.pem", "utf8"),
-    // };
-    // TODO: if (enableHttps && config.keyPath && config.certPath)
-    // TODO: Change to config.httpsListenPort etc.
-    // const httpsServer = https.createServer(
-    //    options, constructConnectionHandler(config, fileServer));
-    // httpsServer.listen(config.httpListenPort, config.httpListenIP, () => {
-    // winston.info(`Server started (listening ${config.httpListenIP}:${config.httpListenPort})`);
-    // });
+    if (config.enableHttps && config.keyPath && config.certPath) {
+        const options = {
+            cert: fs.readFileSync(config.certPath, "utf8"),
+            key: fs.readFileSync(config.keyPath, "utf8"),
+        };
+        const httpsServer = https.createServer(
+            options, constructConnectionHandler(config, fileServer));
+        httpsServer.listen(config.httpsListenPort, config.httpsListenIP, () => {
+            winston.info(
+                `Server started (listening ${config.httpsListenIP}:${config.httpsListenPort})`);
+        });
+    }
 }
 
 export function runAndReport(): void {

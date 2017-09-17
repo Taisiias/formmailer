@@ -2,12 +2,18 @@ import * as fs from "fs";
 
 export interface Config {
     assetsFolder: string;
+    certPath: string;
     databaseFileName: string;
+    enableHttp: boolean;
+    enableHttps: boolean;
     formTargets: {[k: string]: string | string [] | FormTargetData };
     fromEmail: string;
     httpListenIP: string;
+    httpsListenIP: string;
     httpListenPort: number;
+    httpsListenPort: number;
     logLevel: string;
+    keyPath: string;
     maxHttpRequestSize: number;
     reCaptchaSecret: string;
     recipientEmails: string | string[];
@@ -25,11 +31,17 @@ export interface FormTargetData {
 
 const DefaultConfigObject = {
     assetsFolder: "./assets",
+    certPath: "",
     databaseFileName: "./formmailer.db",
+    enableHttp: true,
+    enableHttps: true,
     formTargets: {},
     fromEmail: "formmailer@localhost",
     httpListenIP: "0.0.0.0",
     httpListenPort: 3000,
+    httpsListenIP: "0.0.0.0",
+    httpsListenPort: 443,
+    keyPath: "",
     logLevel: "info",
     maxHttpRequestSize: 1e6,
     reCaptchaSecret: "",
