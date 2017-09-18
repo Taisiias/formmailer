@@ -9,8 +9,12 @@
             "request": "launch",
             "name": "Launch FormMailer",
             "program": "${workspaceRoot}/build/src/index.js",
+            "args": [
+                "--config",
+                "./test/config.test.json"
+            ],
             "protocol": "inspector",
-            "preLaunchTask": "npm build",
+            "preLaunchTask": "npm build"
         },
         {
             "type": "node",

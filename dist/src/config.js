@@ -3,11 +3,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs");
 const DefaultConfigObject = {
     assetsFolder: "./assets",
+    certPath: "",
     databaseFileName: "./formmailer.db",
+    enableHttp: true,
+    enableHttps: true,
     formTargets: {},
     fromEmail: "formmailer@localhost",
     httpListenIP: "0.0.0.0",
     httpListenPort: 3000,
+    httpsListenIP: "0.0.0.0",
+    httpsListenPort: 443,
+    keyPath: "",
     logLevel: "info",
     maxHttpRequestSize: 1e6,
     reCaptchaSecret: "",

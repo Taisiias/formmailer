@@ -49,7 +49,7 @@ function run(): void {
         const httpServer = http.createServer(constructConnectionHandler(config, fileServer));
         httpServer.listen(config.httpListenPort, config.httpListenIP, () => {
             winston.info(
-                `Server started (listening ${config.httpListenIP}:${config.httpListenPort})`);
+                `HTTP server started (listening ${config.httpListenIP}:${config.httpListenPort})`);
         });
     }
 
@@ -62,7 +62,8 @@ function run(): void {
             options, constructConnectionHandler(config, fileServer));
         httpsServer.listen(config.httpsListenPort, config.httpsListenIP, () => {
             winston.info(
-                `Server started (listening ${config.httpsListenIP}:${config.httpsListenPort})`);
+                `HTTPS server started ` +
+                `(listening ${config.httpsListenIP}:${config.httpsListenPort})`);
         });
     }
 }

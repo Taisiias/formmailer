@@ -5,9 +5,9 @@
     "smtpPort": 2500,
     "httpListenIP": "0.0.0.0",
     "httpListenPort": 3000,
-    "httpsListenPort": 8000,
-    "certPath": "./cert/server.crt",
-    "keyPath": "./cert/key.pem",
+    "httpsListenPort": 3001,
+    "certPath": "./test/cert/server.crt",
+    "keyPath": "./test/cert/key.pem",
     "enableHttps": true,
     "enableHttp": true,
     "formTargets": {

@@ -2,6 +2,7 @@ import * as fs from "fs";
 
 export interface Config {
     assetsFolder: string;
+    // TODO: rename to "httpsCertificatePath"
     certPath: string;
     databaseFileName: string;
     enableHttp: boolean;
@@ -13,6 +14,7 @@ export interface Config {
     httpListenPort: number;
     httpsListenPort: number;
     logLevel: string;
+    // TODO: rename to "httpsPrivateKeyPath"
     keyPath: string;
     maxHttpRequestSize: number;
     reCaptchaSecret: string;
