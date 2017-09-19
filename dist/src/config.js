@@ -21,7 +21,7 @@ const DefaultConfigObject = {
     requireReCaptchaResponse: false,
     smtpHost: "localhost",
     smtpPort: 25,
-    subject: "Form submitted on {{referrerUrl}}",
+    subject: "Form submitted on {{{refererUrl}}}",
 };
 function readConfig(path) {
     let cf;

@@ -43,10 +43,10 @@ function run() {
             winston.info(`HTTP server started (listening ${config.httpListenIP}:${config.httpListenPort})`);
         });
     }
-    if (config.enableHttps && config.keyPath && config.certPath) {
+    if (config.enableHttps && config.httpsPrivateKeyPath && config.httpsCertificatePath) {
         const options = {
-            cert: fs.readFileSync(config.certPath, "utf8"),
-            key: fs.readFileSync(config.keyPath, "utf8"),
+            cert: fs.readFileSync(config.httpsCertificatePath, "utf8"),
+            key: fs.readFileSync(config.httpsPrivateKeyPath, "utf8"),
         };
         const httpsServer = https.createServer(options, handler_1.constructConnectionHandler(config, fileServer));
         httpsServer.listen(config.httpsListenPort, config.httpsListenIP, () => {

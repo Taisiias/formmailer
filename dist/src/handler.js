@@ -31,12 +31,12 @@ function formHandler(config, key, req, res) {
         yield captcha_1.checkCaptcha(post["g-recaptcha-response"], config.requireReCaptchaResponse, req.connection.remoteAddress, config.reCaptchaSecret);
         let userMessage = yield message_1.constructUserMessage(post);
         winston.debug(`User Message: ${userMessage}`);
-        const referrerUrl = post._formurl || req.headers.Referrer || "Unspecified URL";
+        const refererUrl = post._formurl || req.headers.referer || "Unspecified URL";
         const formName = post._formname ? `Submitted form: ${post._formname}\n` : "";
         const template = fs.readFileSync(EMAIL_TEMPLATE_PATH).toString();
         const templateData = {
             incomingIp: req.connection.remoteAddress,
-            referrerUrl,
+            refererUrl,
             formName,
             userMessage,
         };
@@ -49,9 +49,9 @@ function formHandler(config, key, req, res) {
             const formTargetRecepients = helpers_1.getRecipients(config, key);
             recepients = formTargetRecepients ? formTargetRecepients : recepients;
         }
-        const renderedSubject = mst.render(subject, { referrerUrl, formName });
+        const renderedSubject = mst.render(subject, { refererUrl, formName });
         yield send_1.sendEmail(config, recepients, renderedSubject, userMessage);
-        database_1.insertEmail(config.databaseFileName, req.connection.remoteAddress, bodyStr, referrerUrl, formName, recepients, userMessage);
+        database_1.insertEmail(config.databaseFileName, req.connection.remoteAddress, bodyStr, refererUrl, formName, recepients, userMessage);
         const redirectUrl = post._redirect || THANKS_URL_PATH;
         winston.debug(`Redirecting to ${redirectUrl}`);
         res.writeHead(303, { Location: redirectUrl });

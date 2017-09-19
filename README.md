@@ -185,9 +185,9 @@ FormMailer will use a corresponding recipient (and optionally a subject) instead
 
 ### Enabling HTTPS
 
-Acquire SSL certificate (either buy from one of the authorities or [get one for free](https://gethttpsforfree.com/)). You should have two files (usually `.pem` and `.crt`), put them in some directory.
+Acquire SSL certificate (either buy from one of the authorities or [get one for free](https://gethttpsforfree.com/)). You should have two files (usually `.pem` and `.crt`). Put them in some directory.
 
-In the configuration file, add private key (`.pem`) path into `httpsPrivateKeyPath` and certificate (`.crt`) path into `httpsCertificatePath`. For example:
+In the configuration file add private key (`.pem`) path into `httpsPrivateKeyPath` and certificate (`.crt`) path into `httpsCertificatePath`. For example:
 
 ```json
 {
