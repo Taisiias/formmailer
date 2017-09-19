@@ -51,7 +51,7 @@ FormMailer service deployed on your domain `http://myformmailer.mydomain.com/` w
 
 FormMailer also:
 
-* supports HTTPS
+* supports HTTPS.
 * supports [Mustache.JS](https://github.com/janl/mustache.js) templates for email body and subject.
 * saves all received data (and sent emails) to the local SQLite database.
 * understands reCAPTCHA.
@@ -110,14 +110,14 @@ Option  | Description | Default
 `httpListenPort` | Port to listen HTTP requests from. | `3000`
 `httpsListenIP` | IP address to listen HTTPS requests from. | `"0.0.0.0"` (all IP addresses)
 `httpsListenPort` | Port to listen HTTPS requests from. | `443`
-`httpsPrivateKeyPath` | Path to HTTPS private key | ""
-`httpsCertificatePath` | Path to HTTPS certificate | ""
+`httpsPrivateKeyPath` | Path to HTTPS private key. Specify to enable HTTPS. | ""
+`httpsCertificatePath` | Path to HTTPS certificate. Specify to enable HTTPS. | ""
 `smtpHost` | SMTP server host name or IP. | `"localhost"`
 `smtpPort` | SMTP server port. | `25`
 `logLevel` | How detailed logging should be (`error`, `warn`, `info`, `verbose`, `debug`, `silly`). | `"info"`
 `maxHttpRequestSize` | Maximum allowed size of HTTP requests, in bytes. | `1000000`
 `redirectFieldName` | Name of the HTML input that contains redirect URL address. | `"_redirect"`
-`subject` | Email subject field content. Special entry `{{{referrerUrl}}}` will be changed to the address of the webpage from where the form is submitted. | `"Form submitted on {{referrerUrl}}"`
+`subject` | Email subject field content. Special entry `{{{referrerUrl}}}` will be changed to the address of the webpage from where the form is submitted. | `"Form submitted on {{{referrerUrl}}}"`
 `reCaptchaSecret` | Site secret reCAPTCHA key. No captcha checks will be performed if this value is not set. | `""`
 `requireReCaptchaResponse` | If true, receiver handler should always check g-recaptcha-response to be present in POST. | `false`
 `assetsFolder` | Path to the folder containing static assets. | `"./assets"`
@@ -185,17 +185,19 @@ FormMailer will use a corresponding recipient (and optionally a subject) instead
 
 ### Enabling HTTPS
 
-1. In the configuration file:
-    - set `enableHttps` to `true`
-    - specify `httpsListenIP`
-    - specify `httpsListenIP`
-    - add HTTPS private key path into `httpsPrivateKeyPath`
-    - add HTTPS certificate path into `httpsCertificatePath`
-Now Forrmailer will listen to HTTPS requests according to your settings.
+Acquire SSL certificate (either buy from one of the authorities or [get one for free](https://gethttpsforfree.com/)). You should have two files (usually `.pem` and `.crt`), put them in some directory.
 
-### Disabling HTTPP
+In the configuration file, add private key (`.pem`) path into `httpsPrivateKeyPath` and certificate (`.crt`) path into `httpsCertificatePath`. For example:
 
-Set `enableHttp` to false in the configuration file and restart Formmailer.
+```json
+{
+    ...
+    "httpsPrivateKeyPath": "./mycert/mydomain.pem",
+    "httpsCertificatePath": "./mycert/mydomain.crt"
+}
+```
+
+On the next run FormMailer should start HTTPS server, along with HTTP. If you wish to disable HTTP, change `enableHttp` config setting to `false`.
 
 ## Deploying
 
