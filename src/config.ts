@@ -2,8 +2,7 @@ import * as fs from "fs";
 
 export interface Config {
     assetsFolder: string;
-    // TODO: rename to "httpsCertificatePath"
-    certPath: string;
+    httpsCertificatePath: string;
     databaseFileName: string;
     enableHttp: boolean;
     enableHttps: boolean;
@@ -14,8 +13,7 @@ export interface Config {
     httpListenPort: number;
     httpsListenPort: number;
     logLevel: string;
-    // TODO: rename to "httpsPrivateKeyPath"
-    keyPath: string;
+    httpsPrivateKeyPath: string;
     maxHttpRequestSize: number;
     reCaptchaSecret: string;
     recipientEmails: string | string[];
@@ -51,7 +49,7 @@ const DefaultConfigObject = {
     requireReCaptchaResponse: false,
     smtpHost: "localhost",
     smtpPort: 25,
-    subject: "Form submitted on {{referrerUrl}}",
+    subject: "Form submitted on {{{refererUrl}}}",
 };
 
 export function readConfig(path: string): Config {

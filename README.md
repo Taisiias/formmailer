@@ -51,7 +51,8 @@ FormMailer service deployed on your domain `http://myformmailer.mydomain.com/` w
 
 FormMailer also:
 
-* suports [Mustache.JS](https://github.com/janl/mustache.js) templates for email body and subject.
+* supports HTTPS
+* supports [Mustache.JS](https://github.com/janl/mustache.js) templates for email body and subject.
 * saves all received data (and sent emails) to the local SQLite database.
 * understands reCAPTCHA.
 
@@ -103,14 +104,20 @@ Option  | Description | Default
 --------|-------------|--------
 `recipientEmails` | E-mail recipient address. String or array of strings (for multiple recepients). | Required field.
 `fromEmail` | E-mail address that will be provided in `From:` email header. | `"formmailer@localhost"`
+`enableHttp` | Determines if HTTP should be enabled | true
+`enableHttps` | Determines if HTTPS should be enabled | true
 `httpListenIP` | IP address to listen HTTP requests from. | `"0.0.0.0"` (all IP addresses)
 `httpListenPort` | Port to listen HTTP requests from. | `3000`
+`httpsListenIP` | IP address to listen HTTPS requests from. | `"0.0.0.0"` (all IP addresses)
+`httpsListenPort` | Port to listen HTTPS requests from. | `443`
+`httpsPrivateKeyPath` | Path to HTTPS private key | ""
+`httpsCertificatePath` | Path to HTTPS certificate | ""
 `smtpHost` | SMTP server host name or IP. | `"localhost"`
 `smtpPort` | SMTP server port. | `25`
 `logLevel` | How detailed logging should be (`error`, `warn`, `info`, `verbose`, `debug`, `silly`). | `"info"`
 `maxHttpRequestSize` | Maximum allowed size of HTTP requests, in bytes. | `1000000`
 `redirectFieldName` | Name of the HTML input that contains redirect URL address. | `"_redirect"`
-`subject` | Email subject field content. Special entry `{{referrerUrl}}` will be changed to the address of the webpage from where the form is submitted. | `"Form submitted on {{referrerUrl}}"`
+`subject` | Email subject field content. Special entry `{{{referrerUrl}}}` will be changed to the address of the webpage from where the form is submitted. | `"Form submitted on {{referrerUrl}}"`
 `reCaptchaSecret` | Site secret reCAPTCHA key. No captcha checks will be performed if this value is not set. | `""`
 `requireReCaptchaResponse` | If true, receiver handler should always check g-recaptcha-response to be present in POST. | `false`
 `assetsFolder` | Path to the folder containing static assets. | `"./assets"`
@@ -154,7 +161,7 @@ To set up reCAPTCHA checking:
 
 ### Sending different forms to different recipients
 
-First, add a dictionary similar to this one in the configuration file:
+First, add a dictionary similar to the one below to the configuration file:
 
 ```json
 "formTargets": {
@@ -175,6 +182,20 @@ After that, provide form's action URL in the following format
 ```
 
 FormMailer will use a corresponding recipient (and optionally a subject) instead of the default one.
+
+### Enabling HTTPS
+
+1. In the configuration file:
+    - set `enableHttps` to `true`
+    - specify `httpsListenIP`
+    - specify `httpsListenIP`
+    - add HTTPS private key path into `httpsPrivateKeyPath`
+    - add HTTPS certificate path into `httpsCertificatePath`
+Now Forrmailer will listen to HTTPS requests according to your settings.
+
+### Disabling HTTPP
+
+Set `enableHttp` to false in the configuration file and restart Formmailer.
 
 ## Deploying
 

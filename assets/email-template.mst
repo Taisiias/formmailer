@@ -1,6 +1,6 @@
 Submitted user form was received by FormMailer server, see details below.
 
-Referrer page: {{referrerUrl}}
+Referrer page: {{{refererUrl}}}
 {{formName}}
 {{userMessage}}
 

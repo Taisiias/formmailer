@@ -53,10 +53,10 @@ function run(): void {
         });
     }
 
-    if (config.enableHttps && config.keyPath && config.certPath) {
+    if (config.enableHttps && config.httpsPrivateKeyPath && config.httpsCertificatePath) {
         const options = {
-            cert: fs.readFileSync(config.certPath, "utf8"),
-            key: fs.readFileSync(config.keyPath, "utf8"),
+            cert: fs.readFileSync(config.httpsCertificatePath, "utf8"),
+            key: fs.readFileSync(config.httpsPrivateKeyPath, "utf8"),
         };
         const httpsServer = https.createServer(
             options, constructConnectionHandler(config, fileServer));

@@ -36,14 +36,13 @@ async function formHandler(
     let userMessage = await constructUserMessage(post);
     winston.debug(`User Message: ${userMessage}`);
 
-    const referrerUrl = post._formurl || req.headers.referer || "Unspecified URL";
+    const refererUrl = post._formurl || req.headers.referer || "Unspecified URL";
     const formName = post._formname ? `Submitted form: ${post._formname}\n` : "";
 
     const template = fs.readFileSync(EMAIL_TEMPLATE_PATH).toString();
-    // TODO: don't urlencode referer in email body.
     const templateData = {
         incomingIp: req.connection.remoteAddress,
-        referrerUrl,
+        refererUrl,
         formName,
         userMessage,
     };
@@ -60,7 +59,7 @@ async function formHandler(
         recepients = formTargetRecepients ? formTargetRecepients : recepients;
     }
 
-    const renderedSubject = mst.render(subject, { referrerUrl, formName });
+    const renderedSubject = mst.render(subject, { refererUrl, formName });
 
     await sendEmail(
         config,
@@ -72,7 +71,7 @@ async function formHandler(
         config.databaseFileName,
         req.connection.remoteAddress,
         bodyStr,
-        referrerUrl,
+        refererUrl,
         formName,
         recepients,
         userMessage);
