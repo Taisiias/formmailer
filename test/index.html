@@ -129,19 +129,31 @@
         <button type="submit">Send your message</button>
     </div>
 </form>
-<label>Your name: 
+<div>
+    <label>Your name: 
         <input type="text" id="ajaxTextbox" />
       </label>
-<span id="ajaxButton" style="cursor: pointer; text-decoration: underline">
+    <span id="ajaxButton" style="cursor: pointer; text-decoration: underline">
         Make a request
       </span>
+</div>
 
 <script>
     (function () {
         var httpRequest;
-        document.getElementById("ajaxButton").addEventListener('click', makeRequest);
 
-        function makeRequest() {
+        // document.getElementById("ajaxButton").onclick = function () {
+        //     var userName = document.getElementById("ajaxTextbox").value;
+        //     makeRequest('test.html');
+        // };
+
+        //document.getElementById("ajaxButton").addEventListener('click', makeRequest);
+
+        document.getElementById("ajaxButton").onclick = function () {
+            makeRequest('test.xml');
+        };
+
+        function makeRequest(url) {
             httpRequest = new XMLHttpRequest();
 
             if (!httpRequest) {
@@ -149,14 +161,18 @@
                 return false;
             }
             httpRequest.onreadystatechange = alertContents;
-            httpRequest.open('GET', 'test.html');
-            httpRequest.send();
+            httpRequest.open('GET', url);
+            // httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            // httpRequest.send('userName=' + encodeURIComponent(userName));
         }
 
         function alertContents() {
             if (httpRequest.readyState === XMLHttpRequest.DONE) {
                 if (httpRequest.status === 200) {
-                    alert(httpRequest.responseText);
+                    // var response = JSON.parse(httpRequest.responseText);
+                    var xmldoc = httpRequest.responseXML;
+                    var root_node = xmldoc.getElementsByTagName('root').item(0);
+                    alert(root_node.firstChild.data);
                 } else {
                     alert('There was a problem with the request.');
                 }
