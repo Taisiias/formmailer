@@ -89,6 +89,16 @@ async function requestHandler(
     fileServer: ns.Server,
 ): Promise<void> {
     winston.debug(`Incoming request: ${req.url} (method: ${req.method})`);
+    // Set CORS headers
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Request-Method", "*");
+    res.setHeader("Access-Control-Allow-Methods", "OPTIONS, GET, POST");
+    res.setHeader("Access-Control-Allow-Headers", "content-type");
+    if (req.method === "OPTIONS") {
+        res.writeHead(200);
+        res.end();
+        return;
+    }
     const urlPathName = url.parse(req.url as string, true);
     if (urlPathName.pathname
         && urlPathName.pathname.toString().startsWith(SUBMIT_URL_PATH)
