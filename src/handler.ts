@@ -33,6 +33,8 @@ async function formHandler(
         req.connection.remoteAddress,
         config.reCaptchaSecret);
 
+    winston.debug(`Header: ${req.rawHeaders.indexOf("application/json") > 0}`);
+
     let userMessage = await constructUserMessage(post);
     winston.debug(`User Message: ${userMessage}`);
 
