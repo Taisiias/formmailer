@@ -25,7 +25,14 @@ async function formHandler(
     res: http.ServerResponse,
 ): Promise<void> {
     const bodyStr = await readReadable(req, config.maxHttpRequestSize);
-    const post: { [k: string]: string } = qs.parse(bodyStr);
+    let post: { [k: string]: string };
+
+    if (req.rawHeaders.indexOf("application/json")) {
+        post = JSON.parse(bodyStr);
+        winston.debug(`JSON: ${post}`);
+    } else {
+        post = qs.parse(bodyStr);
+    }
 
     await checkCaptcha(
         post["g-recaptcha-response"],
@@ -33,9 +40,8 @@ async function formHandler(
         req.connection.remoteAddress,
         config.reCaptchaSecret);
 
-    winston.debug(`Header: ${req.rawHeaders.indexOf("application/json") > 0}`);
-
     let userMessage = await constructUserMessage(post);
+
     winston.debug(`User Message: ${userMessage}`);
 
     const refererUrl = post._formurl || req.headers.referer || "Unspecified URL";

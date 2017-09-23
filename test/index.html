@@ -148,7 +148,7 @@
         };
         httpRequest.open("POST", "http://localhost:3000/submit/");
         httpRequest.setRequestHeader('Content-Type', 'application/json');
-        httpRequest.send(JSON.stringify({hello: "world"}));
+        httpRequest.send(JSON.stringify({"user_name": "User Name", "user_message": "Some info"}));
     }
 
 </script>
