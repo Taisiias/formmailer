@@ -27,7 +27,14 @@ class NotFoundError extends Error {
 function formHandler(config, key, req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const bodyStr = yield stream_1.readReadable(req, config.maxHttpRequestSize);
-        const post = qs.parse(bodyStr);
+        let post;
+        if (req.rawHeaders.indexOf("application/json")) {
+            post = JSON.parse(bodyStr);
+            winston.debug(`JSON: ${post}`);
+        }
+        else {
+            post = qs.parse(bodyStr);
+        }
         yield captcha_1.checkCaptcha(post["g-recaptcha-response"], config.requireReCaptchaResponse, req.connection.remoteAddress, config.reCaptchaSecret);
         let userMessage = yield message_1.constructUserMessage(post);
         winston.debug(`User Message: ${userMessage}`);
@@ -61,6 +68,16 @@ function formHandler(config, key, req, res) {
 function requestHandler(config, req, res, fileServer) {
     return __awaiter(this, void 0, void 0, function* () {
         winston.debug(`Incoming request: ${req.url} (method: ${req.method})`);
+        // Set CORS headers
+        res.setHeader("Access-Control-Allow-Origin", "*");
+        res.setHeader("Access-Control-Request-Method", "*");
+        res.setHeader("Access-Control-Allow-Methods", "OPTIONS, GET, POST");
+        res.setHeader("Access-Control-Allow-Headers", "content-type");
+        if (req.method === "OPTIONS") {
+            res.writeHead(200);
+            res.end();
+            return;
+        }
         const urlPathName = url.parse(req.url, true);
         if (urlPathName.pathname
             && urlPathName.pathname.toString().startsWith(SUBMIT_URL_PATH)
