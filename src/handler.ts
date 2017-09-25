@@ -3,8 +3,8 @@ import * as http from "http";
 import * as mst from "mustache";
 import * as ns from "node-static";
 import * as qs from "querystring";
-import winston = require("winston");
 import * as url from "url";
+import winston = require("winston");
 import { checkCaptcha, RecaptchaFailure } from "./captcha";
 import { Config } from "./config";
 import { insertEmail } from "./database";
@@ -27,31 +27,34 @@ async function formHandler(
     const bodyStr = await readReadable(req, config.maxHttpRequestSize);
     let post: { [k: string]: string };
 
-    if (req.rawHeaders.indexOf("application/json")) {
+    if (req.rawHeaders.indexOf("application/json") > 0) {
         post = JSON.parse(bodyStr);
         winston.debug(`JSON: ${post}`);
     } else {
         post = qs.parse(bodyStr);
     }
 
+    const remoteAddress = req.connection.remoteAddress || "unknown remote address";
+
     await checkCaptcha(
         post["g-recaptcha-response"],
         config.requireReCaptchaResponse,
-        req.connection.remoteAddress,
+        remoteAddress,
         config.reCaptchaSecret);
 
     let userMessage = await constructUserMessage(post);
 
     winston.debug(`User Message: ${userMessage}`);
 
-    const refererUrl = post._formurl || req.headers.referer || "Unspecified URL";
+    const refererUrl = getRefererUrl(post, req);
+
     const formName = post._formname ? `Submitted form: ${post._formname}\n` : "";
 
     const template = fs.readFileSync(EMAIL_TEMPLATE_PATH).toString();
     const templateData = {
+        formName,
         incomingIp: req.connection.remoteAddress,
         refererUrl,
-        formName,
         userMessage,
     };
 
@@ -77,7 +80,7 @@ async function formHandler(
 
     insertEmail(
         config.databaseFileName,
-        req.connection.remoteAddress,
+        remoteAddress,
         bodyStr,
         refererUrl,
         formName,
@@ -88,6 +91,17 @@ async function formHandler(
     winston.debug(`Redirecting to ${redirectUrl}`);
     res.writeHead(303, { Location: redirectUrl });
     res.end();
+}
+
+function getRefererUrl(
+    post: { [k: string]: string },
+    req: http.IncomingMessage,
+): string {
+    const headerRefererUrl: string =
+        (req.headers.referer instanceof Array) ?
+            req.headers.referer[0] : req.headers.referer as string;
+
+    return post._formurl || headerRefererUrl || "Unspecified URL";
 }
 
 async function requestHandler(

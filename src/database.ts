@@ -5,14 +5,14 @@ export function createDatabaseAndTables(databaseFileName: string): void {
 
     db.run(`
         CREATE TABLE IF NOT EXISTS formmailer_data (
-            id INTEGER PRIMARY KEY AUTOINCREMENT, 
-            date DATETIME, 
-            referrer TEXT, 
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            date DATETIME,
+            referrer TEXT,
             form_name TEXT,
-            post TEXT, 
-            user_message TEXT, 
-            to_email TEXT, 
-            ip TEXT 
+            post TEXT,
+            user_message TEXT,
+            to_email TEXT,
+            ip TEXT
         )`);
     db.close();
 }

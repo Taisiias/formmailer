@@ -11,8 +11,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs");
 const mst = require("mustache");
 const qs = require("querystring");
-const winston = require("winston");
 const url = require("url");
+const winston = require("winston");
 const captcha_1 = require("./captcha");
 const database_1 = require("./database");
 const helpers_1 = require("./form-target/helpers");
@@ -35,7 +35,8 @@ function formHandler(config, key, req, res) {
         else {
             post = qs.parse(bodyStr);
         }
-        yield captcha_1.checkCaptcha(post["g-recaptcha-response"], config.requireReCaptchaResponse, req.connection.remoteAddress, config.reCaptchaSecret);
+        const remoteAddress = req.connection.remoteAddress || "unknown remote address";
+        yield captcha_1.checkCaptcha(post["g-recaptcha-response"], config.requireReCaptchaResponse, remoteAddress, config.reCaptchaSecret);
         let userMessage = yield message_1.constructUserMessage(post);
         winston.debug(`User Message: ${userMessage}`);
         const refererUrl = post._formurl || req.headers.referer || "Unspecified URL";

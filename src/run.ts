@@ -11,10 +11,6 @@ import { constructConnectionHandler } from "./handler";
 const DEFAULT_CONFIG_PATH = "./config.json";
 const STARTUP_LOG_LEVEL = "debug";
 
-interface CommandLineArgs {
-    config: string;
-}
-
 function run(): void {
     winston.configure({
         level: STARTUP_LOG_LEVEL,
@@ -24,8 +20,7 @@ function run(): void {
         })],
     });
 
-    let cmdArgs: CommandLineArgs;
-    cmdArgs = yargs.usage("FormMailer server. Usage: $0 [-c <config file>]")
+    const args = yargs.usage("FormMailer server. Usage: $0 [-c <config file>]")
         .options("config", {
             alias: "c",
             default: DEFAULT_CONFIG_PATH,
@@ -38,7 +33,7 @@ function run(): void {
         .epilog("Support: https://github.com/Taisiias/formmailer")
         .strict()
         .argv;
-    const config = readConfig(cmdArgs.config);
+    const config = readConfig(args.config);
 
     winston.level = config.logLevel;
 
