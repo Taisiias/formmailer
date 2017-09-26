@@ -129,13 +129,19 @@
         <button type="submit">Send your message</button>
     </div>
 </form>
+
+<h3>
+    <div>
+        Test Form 6: AJAX
+    </div>
+</h3>
 <div>
     <label>Your name: 
         <input type="text" id="ajaxTextbox" />
       </label>
-    <span id="ajaxButton" style="cursor: pointer; text-decoration: underline" onclick="makeRequest()">
-        Make a request
-      </span>
+      <div class="button">
+        <button type="submit" onclick="makeRequest()">Send request</button>
+    </div>
 </div>
 
 <script>
@@ -146,9 +152,10 @@
         httpRequest.onreadystatechange = function(){ 
             console.log("Ready");
         };
+        var userName = document.getElementById("ajaxTextbox").value;
         httpRequest.open("POST", "http://localhost:3000/submit/");
         httpRequest.setRequestHeader('Content-Type', 'application/json');
-        httpRequest.send(JSON.stringify({"user_name": "User Name", "user_message": "Some info"}));
+        httpRequest.send(JSON.stringify({"user_name": encodeURIComponent(userName)}));
     }
 
 </script>
