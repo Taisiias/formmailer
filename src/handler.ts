@@ -27,12 +27,13 @@ async function formHandler(
     const bodyStr = await readReadable(req, config.maxHttpRequestSize);
     let post: { [k: string]: string };
 
-    if (req.rawHeaders.indexOf("application/json") > 0) {
-        post = JSON.parse(bodyStr);
-        winston.debug(`JSON: ${post}`);
-    } else {
-        post = qs.parse(bodyStr);
-    }
+    // TODO: add `application/javascript`
+    // TODO: check only `Content-Type` header not all of them.
+    // TODO: use req.headers
+    post = req.rawHeaders.indexOf("application/json") > 0 ?
+        JSON.parse(bodyStr) : post = qs.parse(bodyStr);
+
+    winston.debug(`Request body: ${JSON.stringify(post)}`);
 
     const remoteAddress = req.connection.remoteAddress || "unknown remote address";
 
@@ -43,11 +44,9 @@ async function formHandler(
         config.reCaptchaSecret);
 
     let userMessage = await constructUserMessage(post);
-
-    winston.debug(`User Message: ${userMessage}`);
+    winston.debug(`User message: ${userMessage}`);
 
     const refererUrl = getRefererUrl(post, req);
-
     const formName = post._formname ? `Submitted form: ${post._formname}\n` : "";
 
     const template = fs.readFileSync(EMAIL_TEMPLATE_PATH).toString();
@@ -57,7 +56,6 @@ async function formHandler(
         refererUrl,
         userMessage,
     };
-
     userMessage = mst.render(template, templateData);
 
     let subject = config.subject;
@@ -122,9 +120,10 @@ async function requestHandler(
         return;
     }
     const urlPathName = url.parse(req.url as string, true);
-    if (urlPathName.pathname
-        && urlPathName.pathname.toString().startsWith(SUBMIT_URL_PATH)
-        && req.method === "POST") {
+    if (urlPathName.pathname &&
+        urlPathName.pathname.toString().startsWith(SUBMIT_URL_PATH) &&
+        req.method === "POST") {
+
         let key = "";
         winston.debug(`Provided urlPathName: "${urlPathName.pathname}"`);
         key = urlPathName.pathname.slice(urlPathName.pathname.lastIndexOf("/submit") + 8);
@@ -140,7 +139,7 @@ async function requestHandler(
 
         await formHandler(config, key, req, res);
     } else if (urlPathName.pathname === THANKS_URL_PATH) {
-        fileServer.serveFile("thanks.html", 200, {}, req, res);
+        await fileServer.serveFile("thanks.html", 200, {}, req, res);
     } else {
         throw new NotFoundError(`Incorrect request: ${urlPathName.pathname} (${req.method})`);
     }
@@ -151,17 +150,17 @@ export function constructConnectionHandler(
     fileServer: ns.Server,
 ): (req: http.IncomingMessage, res: http.ServerResponse) => void {
     return (req: http.IncomingMessage, res: http.ServerResponse) => {
-        requestHandler(config, req, res, fileServer).catch((err) => {
+        requestHandler(config, req, res, fileServer).catch(async (err) => {
             winston.warn(`Error in Connection Handler: ${err}`);
             if (err instanceof NotFoundError) {
-                fileServer.serveFile("error404.html", 404, {}, req, res);
+                await fileServer.serveFile("error404.html", 404, {}, req, res);
                 return;
             }
             if (err instanceof RecaptchaFailure) {
                 res.end();
                 return;
             }
-            fileServer.serveFile("error502.html", 502, {}, req, res);
+            await fileServer.serveFile("error502.html", 502, {}, req, res);
         });
     };
 }

@@ -136,7 +136,7 @@
     </div>
 </h3>
 <div>
-    <label>Your name: 
+    <label>Your name:
         <input type="text" id="ajaxTextbox" />
       </label>
       <div class="button">
@@ -149,11 +149,12 @@
     function makeRequest() {
         var httpRequest = new XMLHttpRequest();
 
-        httpRequest.onreadystatechange = function(){ 
+        httpRequest.onreadystatechange = function(){
             console.log("Ready");
         };
+
         var userName = document.getElementById("ajaxTextbox").value;
-        httpRequest.open("POST", "http://localhost:3000/submit/");
+        httpRequest.open("POST", "http://localhost:3000/submit/", true);
         httpRequest.setRequestHeader('Content-Type', 'application/json');
         httpRequest.send(JSON.stringify({"user_name": encodeURIComponent(userName)}));
     }
