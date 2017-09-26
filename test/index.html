@@ -129,8 +129,9 @@
         <button type="submit">Send your message</button>
     </div>
 </form>
+
 <div>
-    <label>Your name: 
+    <label>Your name:
         <input type="text" id="ajaxTextbox" />
       </label>
     <span id="ajaxButton" style="cursor: pointer; text-decoration: underline" onclick="makeRequest()">
@@ -143,10 +144,10 @@
     function makeRequest() {
         var httpRequest = new XMLHttpRequest();
 
-        httpRequest.onreadystatechange = function(){ 
+        httpRequest.onreadystatechange = function(){
             console.log("Ready");
         };
-        httpRequest.open("POST", "http://localhost:3000/submit/");
+        httpRequest.open("POST", "http://localhost:3000/submit/", true);
         httpRequest.setRequestHeader('Content-Type', 'application/json');
         httpRequest.send(JSON.stringify({"user_name": "User Name", "user_message": "Some info"}));
     }
