@@ -30,7 +30,10 @@ async function formHandler(
     // TODO: add `application/javascript`
     // TODO: check only `Content-Type` header not all of them.
     // TODO: use req.headers
-    post = req.rawHeaders.indexOf("application/json") > 0 ?
+    winston.debug(`Contnent-type: ${req.headers["content-type"]}`);
+
+    post = req.headers["content-type"] === "application/json" ||
+            req.headers["content-type"] === "application/javascript" ?
         JSON.parse(bodyStr) : post = qs.parse(bodyStr);
 
     winston.debug(`Request body: ${JSON.stringify(post)}`);
