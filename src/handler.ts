@@ -27,9 +27,6 @@ async function formHandler(
     const bodyStr = await readReadable(req, config.maxHttpRequestSize);
     let post: { [k: string]: string };
 
-    // TODO: add `application/javascript`
-    // TODO: check only `Content-Type` header not all of them.
-    // TODO: use req.headers
     winston.debug(`Contnent-type: ${req.headers["content-type"]}`);
 
     post = req.headers["content-type"] === "application/json" ||
