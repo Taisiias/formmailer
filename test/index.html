@@ -139,25 +139,30 @@
     <label>Your name:
         <input type="text" id="ajaxTextbox" />
       </label>
-      <div class="button">
+    <div class="button">
         <button type="submit" onclick="makeRequest()">Send request</button>
     </div>
 </div>
 
 <script>
-
     function makeRequest() {
         var httpRequest = new XMLHttpRequest();
 
-        httpRequest.onreadystatechange = function(){
+        httpRequest.onreadystatechange = function () {
             console.log("Ready");
         };
+        httpRequest.onload = ajaxSuccess;
 
         var userName = document.getElementById("ajaxTextbox").value;
         httpRequest.open("POST", "http://localhost:3000/submit/", true);
         httpRequest.setRequestHeader('Content-Type', 'application/json');
-        httpRequest.send(JSON.stringify({"user_name": encodeURIComponent(userName)}));
+        httpRequest.send(JSON.stringify({ "user_name": encodeURIComponent(userName) }));
     }
+
+    function ajaxSuccess() {
+        var res = JSON.parse(this.responseText);
+        alert(res.result);
+    };
 
 </script>
 

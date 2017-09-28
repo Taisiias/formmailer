@@ -29,9 +29,10 @@ async function formHandler(
 
     winston.debug(`Contnent-type: ${req.headers["content-type"]}`);
 
-    post = req.headers["content-type"] === "application/json" ||
-            req.headers["content-type"] === "application/javascript" ?
-        JSON.parse(bodyStr) : post = qs.parse(bodyStr);
+    const isAjax = req.headers["content-type"] === "application/json" ||
+        req.headers["content-type"] === "application/javascript";
+
+    post = isAjax ? JSON.parse(bodyStr) : qs.parse(bodyStr);
 
     winston.debug(`Request body: ${JSON.stringify(post)}`);
 
@@ -85,9 +86,14 @@ async function formHandler(
         recepients,
         userMessage);
 
-    const redirectUrl = post._redirect || THANKS_URL_PATH;
-    winston.debug(`Redirecting to ${redirectUrl}`);
-    res.writeHead(303, { Location: redirectUrl });
+    if (isAjax) {
+        res.setHeader("content-type", "application/json");
+        res.write(JSON.stringify({result: "OK"}));
+    } else {
+        const redirectUrl = post._redirect || THANKS_URL_PATH;
+        winston.debug(`Redirecting to ${redirectUrl}`);
+        res.writeHead(303, { Location: redirectUrl });
+    }
     res.end();
 }
 
