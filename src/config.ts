@@ -74,7 +74,7 @@ export function readConfig(path: string): Config {
         }
         json = JSON.parse(fileContent);
         /* tslint:disable:no-any */
-        const mergedObject: { [k: string]: any } = Object.assign(DefaultConfigObject, json);
+        const mergedObject: { [k: string]: any } = {...DefaultConfigObject, ...json};
 
         if (!mergedObject.hasOwnProperty("recipientEmails") && !mergedObject.recipientEmails) {
             throw new Error(`Property recipientEmails is missing.`);

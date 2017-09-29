@@ -23,21 +23,17 @@ async function formHandler(
     key: string,
     req: http.IncomingMessage,
     res: http.ServerResponse,
+    isAjax: boolean,
 ): Promise<void> {
     const bodyStr = await readReadable(req, config.maxHttpRequestSize);
     let post: { [k: string]: string };
 
     winston.debug(`Contnent-type: ${req.headers["content-type"]}`);
 
-    const isAjax = req.headers["content-type"] === "application/json" ||
-        req.headers["content-type"] === "application/javascript";
-
     post = isAjax ? JSON.parse(bodyStr) : qs.parse(bodyStr);
 
     winston.debug(`Request body: ${JSON.stringify(post)}`);
-
     const remoteAddress = req.connection.remoteAddress || "unknown remote address";
-
     await checkCaptcha(
         post["g-recaptcha-response"],
         config.requireReCaptchaResponse,
@@ -88,7 +84,7 @@ async function formHandler(
 
     if (isAjax) {
         res.setHeader("content-type", "application/json");
-        res.write(JSON.stringify({result: "OK"}));
+        res.write(JSON.stringify({ result: "OK" }));
     } else {
         const redirectUrl = post._redirect || THANKS_URL_PATH;
         winston.debug(`Redirecting to ${redirectUrl}`);
@@ -113,6 +109,7 @@ async function requestHandler(
     req: http.IncomingMessage,
     res: http.ServerResponse,
     fileServer: ns.Server,
+    isAjax: boolean,
 ): Promise<void> {
     winston.debug(`Incoming request: ${req.url} (method: ${req.method})`);
     // Set CORS headers
@@ -143,7 +140,7 @@ async function requestHandler(
             }
         }
 
-        await formHandler(config, key, req, res);
+        await formHandler(config, key, req, res, isAjax);
     } else if (urlPathName.pathname === THANKS_URL_PATH) {
         await fileServer.serveFile("thanks.html", 200, {}, req, res);
     } else {
@@ -151,22 +148,49 @@ async function requestHandler(
     }
 }
 
+function isAjaxRequest(req: http.IncomingMessage): boolean {
+    return req.headers["content-type"] === "application/json" ||
+        req.headers["content-type"] === "application/javascript";
+}
+
+async function errorHandler(
+    err: Error,
+    req: http.IncomingMessage,
+    res: http.ServerResponse,
+    fileServer: ns.Server,
+    isAjax: boolean,
+): Promise<void> {
+    winston.warn(`Error in Connection Handler: ${err}`);
+    if (isAjax) {
+        if (err instanceof NotFoundError) {
+            res.statusCode = 404;
+        } else if (err instanceof RecaptchaFailure) {
+            res.statusCode = 502;
+        }
+        res.setHeader("content-type", "application/json");
+        res.write(JSON.stringify({ result: "error", description: err.message }));
+        res.end();
+        return;
+    }
+    if (err instanceof NotFoundError) {
+        await fileServer.serveFile("error404.html", 404, {}, req, res);
+        return;
+    }
+    if (err instanceof RecaptchaFailure) {
+        res.end();
+        return;
+    }
+    await fileServer.serveFile("error502.html", 502, {}, req, res);
+}
+
 export function constructConnectionHandler(
     config: Config,
     fileServer: ns.Server,
 ): (req: http.IncomingMessage, res: http.ServerResponse) => void {
     return (req: http.IncomingMessage, res: http.ServerResponse) => {
-        requestHandler(config, req, res, fileServer).catch(async (err) => {
-            winston.warn(`Error in Connection Handler: ${err}`);
-            if (err instanceof NotFoundError) {
-                await fileServer.serveFile("error404.html", 404, {}, req, res);
-                return;
-            }
-            if (err instanceof RecaptchaFailure) {
-                res.end();
-                return;
-            }
-            await fileServer.serveFile("error502.html", 502, {}, req, res);
+        const isAjax = isAjaxRequest(req);
+        requestHandler(config, req, res, fileServer, isAjax).catch(async (err) => {
+            errorHandler(err, req, res, fileServer, isAjax);
         });
     };
 }
