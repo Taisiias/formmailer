@@ -24,28 +24,22 @@ const THANKS_URL_PATH = "/thanks";
 const SUBMIT_URL_PATH = "/submit";
 class NotFoundError extends Error {
 }
-function formHandler(config, key, req, res) {
+function formHandler(config, key, req, res, isAjax) {
     return __awaiter(this, void 0, void 0, function* () {
         const bodyStr = yield stream_1.readReadable(req, config.maxHttpRequestSize);
-        let post;
-        if (req.rawHeaders.indexOf("application/json")) {
-            post = JSON.parse(bodyStr);
-            winston.debug(`JSON: ${post}`);
-        }
-        else {
-            post = qs.parse(bodyStr);
-        }
+        const post = isAjax ? JSON.parse(bodyStr) : qs.parse(bodyStr);
+        winston.debug(`Request body: ${JSON.stringify(post)}`);
         const remoteAddress = req.connection.remoteAddress || "unknown remote address";
         yield captcha_1.checkCaptcha(post["g-recaptcha-response"], config.requireReCaptchaResponse, remoteAddress, config.reCaptchaSecret);
         let userMessage = yield message_1.constructUserMessage(post);
-        winston.debug(`User Message: ${userMessage}`);
-        const refererUrl = post._formurl || req.headers.referer || "Unspecified URL";
+        winston.debug(`User message: ${userMessage}`);
+        const refererUrl = getRefererUrl(post, req);
         const formName = post._formname ? `Submitted form: ${post._formname}\n` : "";
         const template = fs.readFileSync(EMAIL_TEMPLATE_PATH).toString();
         const templateData = {
+            formName,
             incomingIp: req.connection.remoteAddress,
             refererUrl,
-            formName,
             userMessage,
         };
         userMessage = mst.render(template, templateData);
@@ -59,14 +53,25 @@ function formHandler(config, key, req, res) {
         }
         const renderedSubject = mst.render(subject, { refererUrl, formName });
         yield send_1.sendEmail(config, recepients, renderedSubject, userMessage);
-        database_1.insertEmail(config.databaseFileName, req.connection.remoteAddress, bodyStr, refererUrl, formName, recepients, userMessage);
-        const redirectUrl = post._redirect || THANKS_URL_PATH;
-        winston.debug(`Redirecting to ${redirectUrl}`);
-        res.writeHead(303, { Location: redirectUrl });
+        database_1.insertEmail(config.databaseFileName, remoteAddress, bodyStr, refererUrl, formName, recepients, userMessage);
+        if (isAjax) {
+            res.setHeader("content-type", "application/json");
+            res.write(JSON.stringify({ result: "OK" }));
+        }
+        else {
+            const redirectUrl = post._redirect || THANKS_URL_PATH;
+            winston.debug(`Redirecting to ${redirectUrl}`);
+            res.writeHead(303, { Location: redirectUrl });
+        }
         res.end();
     });
 }
-function requestHandler(config, req, res, fileServer) {
+function getRefererUrl(post, req) {
+    const headerRefererUrl = (req.headers.referer instanceof Array) ?
+        req.headers.referer[0] : req.headers.referer;
+    return post._formurl || headerRefererUrl || "Unspecified URL";
+}
+function requestHandler(config, req, res, fileServer, isAjax) {
     return __awaiter(this, void 0, void 0, function* () {
         winston.debug(`Incoming request: ${req.url} (method: ${req.method})`);
         // Set CORS headers
@@ -80,9 +85,9 @@ function requestHandler(config, req, res, fileServer) {
             return;
         }
         const urlPathName = url.parse(req.url, true);
-        if (urlPathName.pathname
-            && urlPathName.pathname.toString().startsWith(SUBMIT_URL_PATH)
-            && req.method === "POST") {
+        if (urlPathName.pathname &&
+            urlPathName.pathname.toString().startsWith(SUBMIT_URL_PATH) &&
+            req.method === "POST") {
             let key = "";
             winston.debug(`Provided urlPathName: "${urlPathName.pathname}"`);
             key = urlPathName.pathname.slice(urlPathName.pathname.lastIndexOf("/submit") + 8);
@@ -95,30 +100,52 @@ function requestHandler(config, req, res, fileServer) {
                     throw new NotFoundError(`Target form "${key}" doesn't exist in config.`);
                 }
             }
-            yield formHandler(config, key, req, res);
+            yield formHandler(config, key, req, res, isAjax);
         }
         else if (urlPathName.pathname === THANKS_URL_PATH) {
-            fileServer.serveFile("thanks.html", 200, {}, req, res);
+            yield fileServer.serveFile("thanks.html", 200, {}, req, res);
         }
         else {
             throw new NotFoundError(`Incorrect request: ${urlPathName.pathname} (${req.method})`);
         }
     });
 }
+function isAjaxRequest(req) {
+    return req.headers["content-type"] === "application/json" ||
+        req.headers["content-type"] === "application/javascript";
+}
+function errorHandler(err, req, res, fileServer, isAjax) {
+    return __awaiter(this, void 0, void 0, function* () {
+        winston.warn(`Error in Connection Handler: ${err}`);
+        if (isAjax) {
+            if (err instanceof NotFoundError) {
+                res.statusCode = 404;
+            }
+            else if (err instanceof captcha_1.RecaptchaFailure) {
+                res.statusCode = 502;
+            }
+            res.setHeader("content-type", "application/json");
+            res.write(JSON.stringify({ result: "error", description: err.message }));
+            res.end();
+            return;
+        }
+        if (err instanceof NotFoundError) {
+            yield fileServer.serveFile("error404.html", 404, {}, req, res);
+            return;
+        }
+        if (err instanceof captcha_1.RecaptchaFailure) {
+            res.end();
+            return;
+        }
+        yield fileServer.serveFile("error502.html", 502, {}, req, res);
+    });
+}
 function constructConnectionHandler(config, fileServer) {
     return (req, res) => {
-        requestHandler(config, req, res, fileServer).catch((err) => {
-            winston.warn(`Error in Connection Handler: ${err}`);
-            if (err instanceof NotFoundError) {
-                fileServer.serveFile("error404.html", 404, {}, req, res);
-                return;
-            }
-            if (err instanceof captcha_1.RecaptchaFailure) {
-                res.end();
-                return;
-            }
-            fileServer.serveFile("error502.html", 502, {}, req, res);
-        });
+        const isAjax = isAjaxRequest(req);
+        requestHandler(config, req, res, fileServer, isAjax).catch((err) => __awaiter(this, void 0, void 0, function* () {
+            errorHandler(err, req, res, fileServer, isAjax);
+        }));
     };
 }
 exports.constructConnectionHandler = constructConnectionHandler;

@@ -148,9 +148,6 @@
     function makeRequest() {
         var httpRequest = new XMLHttpRequest();
 
-        httpRequest.onreadystatechange = function () {
-            console.log("Ready");
-        };
         httpRequest.onload = ajaxSuccess;
 
         var userName = document.getElementById("ajaxTextbox").value;
@@ -160,8 +157,7 @@
     }
 
     function ajaxSuccess() {
-        var res = JSON.parse(this.responseText);
-        alert(res.result);
+        alert(this.responseText);
     };
 
 </script>

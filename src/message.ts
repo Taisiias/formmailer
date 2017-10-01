@@ -1,6 +1,6 @@
 import * as he from "he";
 
-export async function constructUserMessage(post: { [k: string]: string }): Promise<string> {
+export async function constructFieldsValuesStr(post: { [k: string]: string }): Promise<string> {
     let userMessage = "";
     for (const name in post) {
         if (!name.startsWith("_") && name !== "g-recaptcha-response") {
