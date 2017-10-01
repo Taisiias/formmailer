@@ -17,7 +17,7 @@ export function createDatabaseAndTables(databaseFileName: string): void {
     db.close();
 }
 
-export async function insertEmail(
+export async function saveEmailToDB(
     databaseFileName: string,
     ip: string,
     post: string,

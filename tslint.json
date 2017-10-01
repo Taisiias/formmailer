@@ -31,7 +31,8 @@
         "prefer-const": true,
         "interface-name": [ false ],
         "max-classes-per-file": [ false ],
-        "no-namespace": false
+        "no-namespace": false,
+        "no-trailing-whitespace": true
 
         //  "completed-docs": [true, "classes", "functions", "methods"],
    }

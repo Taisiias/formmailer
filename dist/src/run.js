@@ -19,8 +19,7 @@ function run() {
                 timestamp: true,
             })],
     });
-    let cmdArgs;
-    cmdArgs = yargs.usage("FormMailer server. Usage: $0 [-c <config file>]")
+    const args = yargs.usage("FormMailer server. Usage: $0 [-c <config file>]")
         .options("config", {
         alias: "c",
         default: DEFAULT_CONFIG_PATH,
@@ -33,7 +32,7 @@ function run() {
         .epilog("Support: https://github.com/Taisiias/formmailer")
         .strict()
         .argv;
-    const config = config_1.readConfig(cmdArgs.config);
+    const config = config_1.readConfig(args.config);
     winston.level = config.logLevel;
     const fileServer = new ns.Server(config.assetsFolder);
     database_1.createDatabaseAndTables(config.databaseFileName);
