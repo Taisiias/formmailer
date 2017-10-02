@@ -4,7 +4,7 @@
   "description": "HTTP server that emails data submitted on static website forms.",
   "main": "index.js",
   "scripts": {
-    "test": "tsc && tslint ./src/**/*",
+    "test": "tsc && tslint --project tsconfig.json --type-check ./src/**/*",
     "build": "tsc",
     "start": "tsc && node ./build/src/index.js",
     "live": "tsc && concurrently --kill-others --names \"FM,SMTP,HTTP\" -c \"blue.bold,green.bold,grey.bold\" \"yarn dev-formmailer\" \"yarn dev-smtp-server\" \"yarn dev-static-http\"",
