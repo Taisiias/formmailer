@@ -2,27 +2,35 @@ import { Config } from "../config";
 
 export function getSubject(
     config: Config,
-    key: string,
-): string | undefined {
-    const value = config.formTargets[key];
-    if (!value) { return undefined; }
-    if (!(typeof value === "string") && !(value instanceof Array)) {
-        return value.subject;
+    formTargetKey: string,
+): string {
+    if (!formTargetKey) {
+        return config.subject;
     }
-    return undefined;
+
+    const currentFormSettings = config.formTargets[formTargetKey];
+    if (!currentFormSettings ||
+        (typeof currentFormSettings === "string") ||
+        (currentFormSettings instanceof Array)) {
+        return config.subject;
+    } else {
+        return currentFormSettings.subject || config.subject;
+    }
 }
 
 export function getRecipients(
     config: Config,
-    key: string,
-): string[] | undefined {
-    const value = config.formTargets[key];
-    if (!value) { return undefined; }
+    formTargetKey: string,
+): string | string[] {
+    if (!formTargetKey) {
+        return config.recipientEmails;
+    }
+    const currentFormSettings = config.formTargets[formTargetKey];
+    if (!currentFormSettings) { return config.recipientEmails; }
 
-    if (typeof value === "string") { return [value]; }
-    if (value instanceof Array) { return value; }
+    if (typeof currentFormSettings === "string" || currentFormSettings instanceof Array) {
+        return currentFormSettings;
+    }
 
-    const targetRecipient = value.recipient;
-    if (typeof targetRecipient === "string") { return [targetRecipient]; }
-    return targetRecipient;
+    return currentFormSettings.recipient;
 }

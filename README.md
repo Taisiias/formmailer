@@ -201,7 +201,7 @@ On the next run FormMailer should start HTTPS server, along with HTTP. If you wi
 
 ### AJAX Resquest Support
 
-AJAX request can be sent to Formmailer. In this case the user will get AJAX response with `application/json` content-type instead of redirect. If the request is successful `{ result: "OK" }` JSON will be returned.
+AJAX request can be sent to Formmailer. In this case after the email is sent the user will get AJAX response with `application/json` content-type instead of redirect. If the request is successful `{ result: "OK" }` will be returned.
 If an error occurred `{ result: "error", description: "error message" }` will be returned.
  
 

@@ -1,6 +1,6 @@
-import { Config } from "./config";
-import winston = require("winston");
 import * as nodemailer from "nodemailer";
+import winston = require("winston");
+import { Config } from "./config";
 
 export async function sendEmail(
     config: Config,
