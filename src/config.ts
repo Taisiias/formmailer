@@ -29,9 +29,8 @@ export interface FormTargetData {
     subject?: string;
 }
 
-const DefaultConfigObject = {
+const DefaultConfigObject: Config = {
     assetsFolder: "./assets",
-    certPath: "",
     databaseFileName: "./formmailer.db",
     enableHttp: true,
     enableHttps: true,
@@ -39,12 +38,14 @@ const DefaultConfigObject = {
     fromEmail: "formmailer@localhost",
     httpListenIP: "0.0.0.0",
     httpListenPort: 3000,
+    httpsCertificatePath: "",
     httpsListenIP: "0.0.0.0",
     httpsListenPort: 443,
-    keyPath: "",
+    httpsPrivateKeyPath: "",
     logLevel: "info",
     maxHttpRequestSize: 1e6,
     reCaptchaSecret: "",
+    recipientEmails: [],
     redirectFieldName: "_redirect",
     requireReCaptchaResponse: false,
     smtpHost: "localhost",
