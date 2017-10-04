@@ -199,11 +199,11 @@ In the configuration file add private key (`.pem`) path into `httpsPrivateKeyPat
 
 On the next run FormMailer should start HTTPS server, along with HTTP. If you wish to disable HTTP, change `enableHttp` config setting to `false`.
 
-### AJAX Resquest Support
+### JSON Resquests
 
-AJAX request can be sent to Formmailer. In this case after the email is sent the user will get AJAX response with `application/json` content-type instead of redirect. If the request is successful `{ result: "OK" }` will be returned.
-If an error occurred `{ result: "error", description: "error message" }` will be returned.
- 
+FormMailer accepts JSON requests, distingushing them by `content-type: application/json` HTTP header. FormMailer expects JSON to contain an object. Properties of this object along with their values will be listed in the email. Other behaviour is similar to requests with `content-type: application/x-www-form-urlencoded`, i. e. special fields with names starting with `_` will be ignored and `g-recaptcha-response` field will be used for reCAPTCHA authentication.
+
+If email was sent successfully, JSON response `{ result: "ok" }` will be returned. Or `{ result: "error", description: "error details description" }`, in case of an error.
 
 ## Deploying
 
