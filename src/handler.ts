@@ -5,9 +5,10 @@ import winston = require("winston");
 
 import { RecaptchaFailure } from "./captcha";
 import { Config } from "./config";
-import { formHandler, NotFoundError, THANKS_URL_PATH } from "./form";
+import { formHandler, NotFoundError } from "./form";
 
 const SUBMIT_URL_PATH = "/submit";
+export const THANKS_URL_PATH = "/thanks";
 
 async function routeRequest(
     config: Config,
@@ -68,19 +69,19 @@ export function constructConnectionHandler(
     return (req: http.IncomingMessage, res: http.ServerResponse) => {
         winston.debug(`Incoming request: ${req.url} (method: ${req.method})`);
 
-        const isAjax = isAjaxRequest(req);
-        if (isAjax) {
-            // set CORS headers
-            res.setHeader("Access-Control-Allow-Origin", "*");
-            res.setHeader("Access-Control-Request-Method", "*");
-            res.setHeader("Access-Control-Allow-Methods", "OPTIONS, GET, POST");
-            res.setHeader("Access-Control-Allow-Headers", "content-type");
-            if (req.method === "OPTIONS") {
-                res.writeHead(200);
-                res.end();
-                return;
-            }
+        // set CORS headers
+        res.setHeader("Access-Control-Allow-Origin", "*");
+        res.setHeader("Access-Control-Request-Method", "*");
+        res.setHeader("Access-Control-Allow-Methods", "OPTIONS, GET, POST");
+        res.setHeader("Access-Control-Allow-Headers", "content-type");
+        if (req.method === "OPTIONS") {
+            res.writeHead(200);
+            res.end();
+            return;
         }
+
+        const isAjax = isAjaxRequest(req);
+
         routeRequest(config, req, res, fileServer, isAjax).catch(async (err) => {
             errorHandler(err, req, res, fileServer, isAjax);
         });

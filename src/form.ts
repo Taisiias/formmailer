@@ -7,12 +7,13 @@ import { checkCaptcha } from "./captcha";
 import { Config } from "./config";
 import { saveEmailToDB } from "./database";
 import { getRecipients, getSubject } from "./form-target/helpers";
+import { THANKS_URL_PATH } from "./handler";
 import { constructFieldsValuesStr } from "./message";
 import { sendEmail } from "./send";
 import { readReadable } from "./stream";
 
 const EMAIL_TEMPLATE_PATH = "./assets/email-template.mst";
-export const THANKS_URL_PATH = "/thanks";
+
 export class NotFoundError extends Error { }
 
 export async function formHandler(
