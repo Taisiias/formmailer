@@ -45,6 +45,11 @@ async function errorHandler(
 
     if (isAjax) {
         res.statusCode = err instanceof NotFoundError ? 404 : 502;
+        // TODO: extract CORS headers to function
+        res.setHeader("Access-Control-Allow-Origin", "*");
+        res.setHeader("Access-Control-Request-Method", "*");
+        res.setHeader("Access-Control-Allow-Methods", "OPTIONS, GET, POST");
+        res.setHeader("Access-Control-Allow-Headers", "content-type");
         res.setHeader("content-type", "application/json");
         res.write(JSON.stringify({ result: "error", description: err.message }));
         res.end();
@@ -70,11 +75,11 @@ export function constructConnectionHandler(
         winston.debug(`Incoming request: ${req.url} (method: ${req.method})`);
 
         // set CORS headers
-        res.setHeader("Access-Control-Allow-Origin", "*");
-        res.setHeader("Access-Control-Request-Method", "*");
-        res.setHeader("Access-Control-Allow-Methods", "OPTIONS, GET, POST");
-        res.setHeader("Access-Control-Allow-Headers", "content-type");
         if (req.method === "OPTIONS") {
+            res.setHeader("Access-Control-Allow-Origin", "*");
+            res.setHeader("Access-Control-Request-Method", "*");
+            res.setHeader("Access-Control-Allow-Methods", "OPTIONS, GET, POST");
+            res.setHeader("Access-Control-Allow-Headers", "content-type");
             res.writeHead(200);
             res.end();
             return;

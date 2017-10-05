@@ -79,8 +79,12 @@ export async function formHandler(
 
     // preparing response
     if (isAjax) {
+        res.setHeader("Access-Control-Allow-Origin", "*");
+        res.setHeader("Access-Control-Request-Method", "*");
+        res.setHeader("Access-Control-Allow-Methods", "OPTIONS, GET, POST");
+        res.setHeader("Access-Control-Allow-Headers", "content-type");
         res.setHeader("content-type", "application/json");
-        res.write(JSON.stringify({ result: "OK" }));
+        res.write(JSON.stringify({ result: "ok" }));
     } else {
         const redirectUrl = postedData._redirect || THANKS_URL_PATH;
         winston.debug(`Redirecting to ${redirectUrl}`);
