@@ -7,8 +7,8 @@ const PORT = 2500;
 const SMTPServer = smtp.SMTPServer;
 const server = new SMTPServer({
     authOptional: true,
-    onConnect,
     onClose,
+    onConnect,
     onData,
 });
 function onConnect(session, callback) {
@@ -18,13 +18,13 @@ function onConnect(session, callback) {
 function onClose(session) {
     console.log(`Closing connection to ${session.remoteAddress}`);
 }
-function onData(stream, session, callback) {
+function onData(dataStream, session, callback) {
     console.log(`Incoming message from ${session.remoteAddress}:`);
     let buf = "";
-    stream.on("data", (s) => {
+    dataStream.on("data", (s) => {
         buf += s;
     });
-    stream.on("end", () => {
+    dataStream.on("end", () => {
         console.log(buf.split("\n").map((s) => "> " + s).join("\n"));
         callback();
     });

@@ -25,7 +25,7 @@ function createDatabaseAndTables(databaseFileName) {
     db.close();
 }
 exports.createDatabaseAndTables = createDatabaseAndTables;
-function insertEmail(databaseFileName, ip, post, referrer, formName, toEmail, sentMessage) {
+function saveEmailToDB(databaseFileName, ip, post, referrer, formName, toEmail, sentMessage) {
     return __awaiter(this, void 0, void 0, function* () {
         const db = new sqlite3.Database(databaseFileName);
         db.run(`INSERT INTO formmailer_data (date, referrer, form_name, post, user_message, to_email, ip)
@@ -40,4 +40,4 @@ function insertEmail(databaseFileName, ip, post, referrer, formName, toEmail, se
         db.close();
     });
 }
-exports.insertEmail = insertEmail;
+exports.saveEmailToDB = saveEmailToDB;

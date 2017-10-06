@@ -8,8 +8,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const winston = require("winston");
 const nodemailer = require("nodemailer");
+const winston = require("winston");
 function sendEmail(config, to, subject, text) {
     return __awaiter(this, void 0, void 0, function* () {
         const transporter = nodemailer.createTransport({

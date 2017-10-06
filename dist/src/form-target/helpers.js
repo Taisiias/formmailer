@@ -1,31 +1,31 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-function getSubject(config, key) {
-    const value = config.formTargets[key];
-    if (!value) {
-        return undefined;
+function getSubject(config, formTargetKey) {
+    if (!formTargetKey) {
+        return config.subject;
     }
-    if (!(typeof value === "string") && !(value instanceof Array)) {
-        return value.subject;
+    const currentFormSettings = config.formTargets[formTargetKey];
+    if (!currentFormSettings ||
+        (typeof currentFormSettings === "string") ||
+        (currentFormSettings instanceof Array)) {
+        return config.subject;
     }
-    return undefined;
+    else {
+        return currentFormSettings.subject || config.subject;
+    }
 }
 exports.getSubject = getSubject;
-function getRecipients(config, key) {
-    const value = config.formTargets[key];
-    if (!value) {
-        return undefined;
+function getRecipients(config, formTargetKey) {
+    if (!formTargetKey) {
+        return config.recipientEmails;
     }
-    if (typeof value === "string") {
-        return [value];
+    const currentFormSettings = config.formTargets[formTargetKey];
+    if (!currentFormSettings) {
+        return config.recipientEmails;
     }
-    if (value instanceof Array) {
-        return value;
+    if (typeof currentFormSettings === "string" || currentFormSettings instanceof Array) {
+        return currentFormSettings;
     }
-    const targetRecipient = value.recipient;
-    if (typeof targetRecipient === "string") {
-        return [targetRecipient];
-    }
-    return targetRecipient;
+    return currentFormSettings.recipient;
 }
 exports.getRecipients = getRecipients;

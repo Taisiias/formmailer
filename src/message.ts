@@ -5,6 +5,7 @@ export async function constructFieldsValuesStr(post: { [k: string]: string }): P
     for (const name in post) {
         if (!name.startsWith("_") && name !== "g-recaptcha-response") {
             let buf: string = he.decode(post[name]);
+            console.log(`Buf: ${buf}`);
             if (buf.includes("\n")) {
                 buf = "\n" + buf.split("\n").map((s) => "     " + s).join("\n");
             }
