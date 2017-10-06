@@ -8,6 +8,7 @@ import { Config } from "./config";
 import { saveEmailToDB } from "./database";
 import { getRecipients, getSubject } from "./form-target/helpers";
 import { THANKS_URL_PATH } from "./handler";
+import { setCorsHeaders } from "./header";
 import { constructFieldsValuesStr } from "./message";
 import { sendEmail } from "./send";
 import { readReadable } from "./stream";
@@ -79,10 +80,7 @@ export async function formHandler(
 
     // preparing response
     if (isAjax) {
-        res.setHeader("Access-Control-Allow-Origin", "*");
-        res.setHeader("Access-Control-Request-Method", "*");
-        res.setHeader("Access-Control-Allow-Methods", "OPTIONS, GET, POST");
-        res.setHeader("Access-Control-Allow-Headers", "content-type");
+        setCorsHeaders(res);
         res.setHeader("content-type", "application/json");
         res.write(JSON.stringify({ result: "ok" }));
     } else {

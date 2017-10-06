@@ -6,6 +6,7 @@ import winston = require("winston");
 import { RecaptchaFailure } from "./captcha";
 import { Config } from "./config";
 import { formHandler, NotFoundError } from "./form";
+import { setCorsHeaders } from "./header";
 
 const SUBMIT_URL_PATH = "/submit";
 export const THANKS_URL_PATH = "/thanks";
@@ -45,11 +46,7 @@ async function errorHandler(
 
     if (isAjax) {
         res.statusCode = err instanceof NotFoundError ? 404 : 502;
-        // TODO: extract CORS headers to function
-        res.setHeader("Access-Control-Allow-Origin", "*");
-        res.setHeader("Access-Control-Request-Method", "*");
-        res.setHeader("Access-Control-Allow-Methods", "OPTIONS, GET, POST");
-        res.setHeader("Access-Control-Allow-Headers", "content-type");
+        setCorsHeaders(res);
         res.setHeader("content-type", "application/json");
         res.write(JSON.stringify({ result: "error", description: err.message }));
         res.end();
@@ -76,10 +73,7 @@ export function constructConnectionHandler(
 
         // set CORS headers
         if (req.method === "OPTIONS") {
-            res.setHeader("Access-Control-Allow-Origin", "*");
-            res.setHeader("Access-Control-Request-Method", "*");
-            res.setHeader("Access-Control-Allow-Methods", "OPTIONS, GET, POST");
-            res.setHeader("Access-Control-Allow-Headers", "content-type");
+            setCorsHeaders(res);
             res.writeHead(200);
             res.end();
             return;
