@@ -2,6 +2,10 @@ import * as fs from "fs";
 
 export interface Config {
     assetsFolder: string;
+    auth?: {
+        user: string,
+        pass: string,
+    };
     httpsCertificatePath: string;
     databaseFileName: string;
     enableHttp: boolean;
