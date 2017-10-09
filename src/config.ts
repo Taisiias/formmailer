@@ -23,6 +23,7 @@ export interface Config {
     recipientEmails: string | string[];
     redirectFieldName: string;
     requireReCaptchaResponse: boolean;
+    secure: boolean;
     smtpHost: string;
     smtpPort: number;
     subject: string;
@@ -52,6 +53,7 @@ const DefaultConfigObject: Config = {
     recipientEmails: [],
     redirectFieldName: "_redirect",
     requireReCaptchaResponse: false,
+    secure: false,
     smtpHost: "localhost",
     smtpPort: 25,
     subject: "Form submitted on {{{refererUrl}}}",
