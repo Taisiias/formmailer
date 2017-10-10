@@ -8,11 +8,7 @@ export async function sendEmail(
     subject: string,
     text: string,
 ): Promise<void> {
-    const transporter = nodemailer.createTransport({
-        host: config.smtpHost,
-        port: config.smtpPort,
-        tls: { rejectUnauthorized: false },
-    });
+    const transporter = nodemailer.createTransport(config.smtpOptions);
 
     const emailMessage = {
         from: config.fromEmail,

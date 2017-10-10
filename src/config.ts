@@ -1,4 +1,6 @@
+import * as deepMerge from "deepmerge";
 import * as fs from "fs";
+import * as smtpTransport from "nodemailer-smtp-transport";
 
 export interface Config {
     assetsFolder: string;
@@ -10,7 +12,7 @@ export interface Config {
     databaseFileName: string;
     enableHttp: boolean;
     enableHttps: boolean;
-    formTargets: {[k: string]: string | string [] | FormTargetData };
+    formTargets: { [k: string]: string | string[] | FormTargetData };
     fromEmail: string;
     httpListenIP: string;
     httpsListenIP: string;
@@ -24,13 +26,12 @@ export interface Config {
     redirectFieldName: string;
     requireReCaptchaResponse: boolean;
     secure: boolean;
-    smtpHost: string;
-    smtpPort: number;
+    smtpOptions: smtpTransport.SmtpOptions;
     subject: string;
 }
 
 export interface FormTargetData {
-    recipient: string | string [];
+    recipient: string | string[];
     subject?: string;
 }
 
@@ -54,8 +55,11 @@ const DefaultConfigObject: Config = {
     redirectFieldName: "_redirect",
     requireReCaptchaResponse: false,
     secure: false,
-    smtpHost: "localhost",
-    smtpPort: 25,
+    smtpOptions: {
+        host: "localhost",
+        port: 25,
+        tls: { rejectUnauthorized: false },
+    },
     subject: "Form submitted on {{{refererUrl}}}",
 };
 
@@ -81,7 +85,7 @@ export function readConfig(path: string): Config {
         }
         json = JSON.parse(fileContent);
         /* tslint:disable:no-any */
-        const mergedObject: { [k: string]: any } = {...DefaultConfigObject, ...json};
+        const mergedObject: { [k: string]: any } = deepMerge(DefaultConfigObject, json);
 
         if (!mergedObject.hasOwnProperty("recipientEmails") && !mergedObject.recipientEmails) {
             throw new Error(`Property recipientEmails is missing.`);

@@ -3,7 +3,7 @@
     "title": "Configuration file schema",
     "type": "object",
     "properties": {
-        "certPath": {
+        "httpsCertificatePath": {
             "description": "Path to the certificate",
             "type": "string"
         },
@@ -42,6 +42,43 @@
                 "array"
             ]
         },
+        "smtpOptions": {
+            "description": "Nodemailer SMTP options",
+            "type": "object",
+            "properties": {
+                "port": {
+                    "description": "SMTP Port",
+                    "type": "integer"
+                },
+                "host": {
+                    "description": "SMTP Host",
+                    "type": "string"
+                },
+                "tls": {
+                    "description": "Defines additional node.js TLSSocket options to be passed to the socket constructor",
+                    "type": "object",
+                    "properties": {
+                        "rejectUnauthorized": {
+                            "description": "If not false, the server certificate is verified against the list of supplied CAs",
+                            "type": "boolean"
+                        }
+                    }
+                },
+                "auth": {
+                    "description": "Defines authentication data",
+                    "type": "object",
+                    "properties": {
+                        "user": {
+                            "description": "User name",
+                            "type": "string"
+                        },
+                        "pass": {
+                            "description": "The password for the user if normal login is used"
+                        }
+                    }
+                }
+            }
+        },
         "formTargets": {
             "description": "Form keys",
             "type": "object",
@@ -55,7 +92,10 @@
                                     "type": "string"
                                 },
                                 "recipient": {
-                                    "type": ["array", "string"]
+                                    "type": [
+                                        "array",
+                                        "string"
+                                    ]
                                 }
                             }
                         },
@@ -81,7 +121,7 @@
             "description": "Maximum HTTP Request Size",
             "type": "string"
         },
-        "keyPath": {
+        "httpsPrivateKeyPath": {
             "description": "Path to the certificate private key",
             "type": "string"
         },
@@ -100,14 +140,6 @@
         "requireReCaptchaResponse": {
             "description": "Determines if g-recaptcha-response should be checked in POST",
             "type": "boolean"
-        },
-        "smtpPort": {
-            "description": "SMTP Port",
-            "type": "integer"
-        },
-        "smtpHost": {
-            "description": "SMTP Host",
-            "type": "string"
         }
     },
     "required": [

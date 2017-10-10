@@ -12,11 +12,8 @@ const nodemailer = require("nodemailer");
 const winston = require("winston");
 function sendEmail(config, to, subject, text) {
     return __awaiter(this, void 0, void 0, function* () {
-        const transporter = nodemailer.createTransport({
-            host: config.smtpHost,
-            port: config.smtpPort,
-            tls: { rejectUnauthorized: false },
-        });
+        winston.debug(`Host: ${config.smtpOptions.tls}`);
+        const transporter = nodemailer.createTransport(config.smtpOptions);
         const emailMessage = {
             from: config.fromEmail,
             subject,

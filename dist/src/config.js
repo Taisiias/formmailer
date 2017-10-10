@@ -20,8 +20,12 @@ const DefaultConfigObject = {
     recipientEmails: [],
     redirectFieldName: "_redirect",
     requireReCaptchaResponse: false,
-    smtpHost: "localhost",
-    smtpPort: 25,
+    secure: false,
+    smtpOptions: {
+        host: "localhost",
+        port: 25,
+        tls: { rejectUnauthorized: false },
+    },
     subject: "Form submitted on {{{refererUrl}}}",
 };
 function readConfig(path) {

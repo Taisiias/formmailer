@@ -114,6 +114,7 @@ Option  | Description | Default
 `httpsCertificatePath` | Path to HTTPS certificate. Specify to enable HTTPS. | ""
 `smtpHost` | SMTP server host name or IP. | `"localhost"`
 `smtpPort` | SMTP server port. | `25`
+`smtpOptions` | Nodemailer `smtpTransport.SmtpOptions` object. See https://nodemailer.com/smtp/ for details. | `{host: "localhost", port: 25, tls: { rejectUnauthorized: false }}`
 `logLevel` | How detailed logging should be (`error`, `warn`, `info`, `verbose`, `debug`, `silly`). | `"info"`
 `maxHttpRequestSize` | Maximum allowed size of HTTP requests, in bytes. | `1000000`
 `redirectFieldName` | Name of the HTML input that contains redirect URL address. | `"_redirect"`

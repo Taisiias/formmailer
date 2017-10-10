@@ -1,8 +1,6 @@
 {
     "recipientEmails" : "root@localhost",
     "fromEmail": "formmailer@localhost",
-    "smtpHost": "localhost",
-    "smtpPort": 2500,
     "httpListenIP": "0.0.0.0",
     "httpListenPort": 3000,
     "httpsListenPort": 3001,
@@ -17,5 +15,9 @@
             "subject": "Purchase inquiry submitted"
         }
     },
-    "logLevel": "debug"
+    "logLevel": "debug",
+    "smtpOptions": {
+        "host": "localhost",
+        "port": 2500
+    }
 }
