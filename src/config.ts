@@ -4,10 +4,6 @@ import * as smtpTransport from "nodemailer-smtp-transport";
 
 export interface Config {
     assetsFolder: string;
-    auth?: {
-        user: string,
-        pass: string,
-    };
     httpsCertificatePath: string;
     databaseFileName: string;
     enableHttp: boolean;
@@ -25,7 +21,6 @@ export interface Config {
     recipientEmails: string | string[];
     redirectFieldName: string;
     requireReCaptchaResponse: boolean;
-    secure: boolean;
     smtpOptions: smtpTransport.SmtpOptions;
     subject: string;
 }
@@ -54,7 +49,6 @@ const DefaultConfigObject: Config = {
     recipientEmails: [],
     redirectFieldName: "_redirect",
     requireReCaptchaResponse: false,
-    secure: false,
     smtpOptions: {
         host: "localhost",
         port: 25,

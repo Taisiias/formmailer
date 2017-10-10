@@ -72,8 +72,6 @@ FormMailer also:
     {
         "recipientEmails" : "root@localhost",
         "fromEmail": "formmailer@localhost",
-        "smtpHost": "localhost",
-        "smtpPort": 25,
         "httpListenIP": "0.0.0.0",
         "httpListenPort": 3000
     }
