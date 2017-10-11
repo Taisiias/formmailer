@@ -12,6 +12,7 @@ export async function sendEmail(
 
     const emailMessage = {
         from: config.fromEmail,
+        html: "<h1>HTML email</h1>",
         subject,
         text,
         to,
