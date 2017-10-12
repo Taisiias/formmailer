@@ -1,0 +1,11 @@
+<div>
+    <h3>Submitted user form was received by FormMailer server, see details below.</h3>
+</div>
+<div>
+
+Referrer page: <strong>{{{refererUrl}}}</strong>
+<strong>{{formName}}</strong>
+{{fieldsValuesStr}}
+
+Submitter IP address: <strong>{{incomingIp}}</strong>
+</div>

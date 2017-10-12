@@ -13,7 +13,8 @@ import { constructFieldsValuesStr } from "./message";
 import { sendEmail } from "./send";
 import { readReadable } from "./stream";
 
-const EMAIL_TEMPLATE_PATH = "./assets/email-template.mst";
+const PLAIN_TEXT_EMAIL_TEMPLATE_PATH = "./assets/plain-text-email-template.mst";
+const HTML_EMAIL_TEMPLATE_PATH = "./assets/html-email-template.mst";
 
 export class NotFoundError extends Error { }
 
@@ -58,14 +59,16 @@ export async function formHandler(
     // rendering email contents
     const fieldsValuesStr = await constructFieldsValuesStr(postedData);
     winston.debug(`Fields: ${fieldsValuesStr}`);
-    const template = fs.readFileSync(EMAIL_TEMPLATE_PATH).toString();
+    const plainTextEmailTemplate = fs.readFileSync(PLAIN_TEXT_EMAIL_TEMPLATE_PATH).toString();
+    const htmlEmailTemplate = fs.readFileSync(HTML_EMAIL_TEMPLATE_PATH).toString();
     const templateData = {
         fieldsValuesStr,
         formName,
         incomingIp,
         refererUrl,
     };
-    const emailMessage = mst.render(template, templateData);
+    const plainTextEmailMessage = mst.render(plainTextEmailTemplate, templateData);
+    const htmlEmailMessage = mst.render(htmlEmailTemplate, templateData);
 
     // getting email subject and recepients
     const subject = getSubject(config, formTargetKey);
@@ -74,9 +77,9 @@ export async function formHandler(
     const renderedSubject = mst.render(subject, { refererUrl, formName });
 
     // sending and saving email
-    await sendEmail(config, recepients, renderedSubject, emailMessage);
+    await sendEmail(config, recepients, renderedSubject, plainTextEmailMessage, htmlEmailMessage);
     saveEmailToDB(config.databaseFileName, incomingIp, bodyStr, refererUrl, formName,
-                  recepients, emailMessage);
+                  recepients, plainTextEmailMessage);
 
     // preparing response
     if (isAjax) {

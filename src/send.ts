@@ -7,12 +7,13 @@ export async function sendEmail(
     to: string | string[],
     subject: string,
     text: string,
+    html: string,
 ): Promise<void> {
     const transporter = nodemailer.createTransport(config.smtpOptions);
 
     const emailMessage = {
         from: config.fromEmail,
-        html: "<h1>HTML email</h1>",
+        html,
         subject,
         text,
         to,
