@@ -1,11 +1,21 @@
 <div>
     <h3>Submitted user form was received by FormMailer server, see details below.</h3>
 </div>
+
 <div>
+<p>Referrer page: <strong>{{{refererUrl}}}</strong></p>
+</div>
 
-Referrer page: <strong>{{{refererUrl}}}</strong>
-<strong>{{formName}}</strong>
-{{fieldsValuesStr}}
+<div>
+<p><strong>{{formName}}</strong></p>
+</div>
 
-Submitter IP address: <strong>{{incomingIp}}</strong>
+<div>
+{{#mustacheTemplateData}}
+<p><span>{{key}}:</span><pre>{{htmlValue}}</pre></p>
+{{/mustacheTemplateData}}
+</div>
+
+<div>
+<p>Submitter IP address: <strong>{{incomingIp}}</strong></p>
 </div>

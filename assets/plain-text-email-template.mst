@@ -2,6 +2,10 @@ Submitted user form was received by FormMailer server, see details below.
 
 Referrer page: {{{refererUrl}}}
 {{formName}}
-{{fieldsValuesStr}}
+
+{{#mustacheTemplateData}}
+{{key}}: {{textValue}}
+{{/mustacheTemplateData}}
+
 
 Submitter IP address: {{incomingIp}}

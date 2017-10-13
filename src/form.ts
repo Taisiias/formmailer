@@ -9,7 +9,7 @@ import { saveEmailToDB } from "./database";
 import { getRecipients, getSubject } from "./form-target/helpers";
 import { THANKS_URL_PATH } from "./handler";
 import { setCorsHeaders } from "./header";
-import { constructFieldsValuesStr } from "./message";
+import { constructFieldsArrayForMustache } from "./message";
 import { sendEmail } from "./send";
 import { readReadable } from "./stream";
 
@@ -57,16 +57,22 @@ export async function formHandler(
         config.reCaptchaSecret);
 
     // rendering email contents
-    const fieldsValuesStr = await constructFieldsValuesStr(postedData);
-    winston.debug(`Fields: ${fieldsValuesStr}`);
+    // const fieldsValuesStr = await constructFieldsValuesStr(postedData);
+    const mustacheTemplateData = constructFieldsArrayForMustache(postedData);
+    // winston.debug(`Fields: ${fieldsValuesStr}`);
+
     const plainTextEmailTemplate = fs.readFileSync(PLAIN_TEXT_EMAIL_TEMPLATE_PATH).toString();
     const htmlEmailTemplate = fs.readFileSync(HTML_EMAIL_TEMPLATE_PATH).toString();
+
+    winston.debug(mustacheTemplateData.length.toString());
+
     const templateData = {
-        fieldsValuesStr,
         formName,
         incomingIp,
+        mustacheTemplateData,
         refererUrl,
     };
+
     const plainTextEmailMessage = mst.render(plainTextEmailTemplate, templateData);
     const htmlEmailMessage = mst.render(htmlEmailTemplate, templateData);
 
@@ -78,6 +84,7 @@ export async function formHandler(
 
     // sending and saving email
     await sendEmail(config, recepients, renderedSubject, plainTextEmailMessage, htmlEmailMessage);
+
     saveEmailToDB(config.databaseFileName, incomingIp, bodyStr, refererUrl, formName,
                   recepients, plainTextEmailMessage);
 
