@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const deepMerge = require("deepmerge");
 const fs = require("fs");
 const DefaultConfigObject = {
     assetsFolder: "./assets",
@@ -20,7 +21,6 @@ const DefaultConfigObject = {
     recipientEmails: [],
     redirectFieldName: "_redirect",
     requireReCaptchaResponse: false,
-    secure: false,
     smtpOptions: {
         host: "localhost",
         port: 25,
@@ -47,7 +47,7 @@ function readConfig(path) {
         }
         json = JSON.parse(fileContent);
         /* tslint:disable:no-any */
-        const mergedObject = Object.assign({}, DefaultConfigObject, json);
+        const mergedObject = deepMerge(DefaultConfigObject, json);
         if (!mergedObject.hasOwnProperty("recipientEmails") && !mergedObject.recipientEmails) {
             throw new Error(`Property recipientEmails is missing.`);
         }

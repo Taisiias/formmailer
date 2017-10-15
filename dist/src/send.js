@@ -10,12 +10,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const nodemailer = require("nodemailer");
 const winston = require("winston");
-function sendEmail(config, to, subject, text) {
+function sendEmail(config, to, subject, text, html) {
     return __awaiter(this, void 0, void 0, function* () {
-        winston.debug(`Host: ${config.smtpOptions.tls}`);
         const transporter = nodemailer.createTransport(config.smtpOptions);
         const emailMessage = {
             from: config.fromEmail,
+            html,
             subject,
             text,
             to,
