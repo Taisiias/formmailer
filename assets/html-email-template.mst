@@ -12,7 +12,7 @@
 
 <div>
 {{#mustacheTemplateData}}
-<p><span>{{key}}:</span><pre>{{htmlValue}}</pre></p>
+<p><span>{{key}}:</span><span style="white-space: pre-wrap">{{htmlValue}}</span></p>
 {{/mustacheTemplateData}}
 </div>
 
