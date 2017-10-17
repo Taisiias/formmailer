@@ -14,7 +14,7 @@ import { sendEmail } from "./send";
 import { readReadable } from "./stream";
 
 const PLAIN_TEXT_EMAIL_TEMPLATE_PATH = "./assets/plain-text-email-template.mst";
-const HTML_EMAIL_TEMPLATE_PATH = "./assets/html-email-template.mst";
+const HTML_EMAIL_TEMPLATE_PATH = "./assets/html-email-template.html";
 
 export class NotFoundError extends Error { }
 
