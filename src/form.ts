@@ -64,8 +64,6 @@ export async function formHandler(
     const plainTextEmailTemplate = fs.readFileSync(PLAIN_TEXT_EMAIL_TEMPLATE_PATH).toString();
     const htmlEmailTemplate = fs.readFileSync(HTML_EMAIL_TEMPLATE_PATH).toString();
 
-    winston.debug(mustacheTemplateData.length.toString());
-
     const templateData = {
         formName,
         incomingIp,

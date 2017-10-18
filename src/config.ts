@@ -6,6 +6,7 @@ export interface Config {
     assetsFolder: string;
     httpsCertificatePath: string;
     databaseFileName: string;
+    enableHtmlEmail: boolean;
     enableHttp: boolean;
     enableHttps: boolean;
     formTargets: { [k: string]: string | string[] | FormTargetData };
@@ -33,6 +34,7 @@ export interface FormTargetData {
 const DefaultConfigObject: Config = {
     assetsFolder: "./assets",
     databaseFileName: "./formmailer.db",
+    enableHtmlEmail: true,
     enableHttp: true,
     enableHttps: true,
     formTargets: {},

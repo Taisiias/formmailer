@@ -11,6 +11,11 @@
             "description": "Path to SQLite database",
             "type": "string"
         },
+        "enableHtmlEmail": {
+            "description": "Determines if HTML email should be sent",
+            "type": "boolean",
+            "default": true
+        },
         "enableHttp": {
             "description": "Determines if HTTP is enabled",
             "type": "boolean"
