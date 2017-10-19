@@ -57,9 +57,7 @@ export async function formHandler(
         config.reCaptchaSecret);
 
     // rendering email contents
-    // const fieldsValuesStr = await constructFieldsValuesStr(postedData);
     const mustacheTemplateData = constructFieldsArrayForMustache(postedData);
-    // winston.debug(`Fields: ${fieldsValuesStr}`);
 
     const plainTextEmailTemplate = fs.readFileSync(PLAIN_TEXT_EMAIL_TEMPLATE_PATH).toString();
     const htmlEmailTemplate = fs.readFileSync(HTML_EMAIL_TEMPLATE_PATH).toString();

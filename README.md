@@ -52,7 +52,7 @@ FormMailer service deployed on your domain `http://myformmailer.mydomain.com/` w
 FormMailer also:
 
 * supports HTTPS.
-* supports [Mustache.JS](https://github.com/janl/mustache.js) templates for email body and subject.
+* supports plain text and HTML [Mustache.JS](https://github.com/janl/mustache.js) templates for email body and subject.
 * saves all received data (and sent emails) to the local SQLite database.
 * understands reCAPTCHA.
 
@@ -122,6 +122,7 @@ Option  | Description | Default
 `assetsFolder` | Path to the folder containing static assets. | `"./assets"`
 `databaseFileName` | Path to the SQLite database file. | `"./formmailer.db"`
 `formTargets` | See details in [Sending different forms to different recipients](#sending-different-forms-to-different-recipients)| { }
+`enableHtmlEmail` | Enabling sending out HTML emails | `true`
 
 ## Optional features
 
@@ -203,6 +204,20 @@ On the next run FormMailer should start HTTPS server, along with HTTP. If you wi
 FormMailer accepts JSON requests, distingushing them by `content-type: application/json` HTTP header. FormMailer expects JSON to contain an object. Properties of this object along with their values will be listed in the email. Other behaviour is similar to requests with `content-type: application/x-www-form-urlencoded`, i. e. special fields with names starting with `_` will be ignored and `g-recaptcha-response` field will be used for reCAPTCHA authentication.
 
 If email was sent successfully, JSON response `{ result: "ok" }` will be returned. Or `{ result: "error", description: "error details description" }`, in case of an error.
+
+### Plain text and HTML templates for email subject and body
+
+FormMailer is using [Mustache.JS](https://github.com/janl/mustache.js) templates for email body and subject. Email can be sent both as plain text and as HTML. Sending out HTML emails cab be turned off by setting `enableHtmlEmail` to `false` in config.
+Path to plain text email template is `./assets/plain-text-email-template.mst`.
+Path to HTML template is `./assets/html-email-template.html`.
+Template contains the following fields:
+
+Field  | Description
+--------|-------------
+`formName` | _formname form POST request
+`incomingIp` | Request connection remote address
+`mustacheTemplateData` | Data contained in POST request
+`refererUrl` | Referrer URL from POST request
 
 ## Deploying
 
