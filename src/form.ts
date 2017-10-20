@@ -46,14 +46,14 @@ export async function formHandler(
     winston.debug(`Request body: ${JSON.stringify(postedData)}`);
 
     // gathering information
-    const incomingIp = req.connection.remoteAddress || "unknown remote address";
+    const senderIpAddress = req.connection.remoteAddress || "unknown remote address";
     const refererUrl = getRefererUrl(postedData, req);
     const formName = postedData._formname ? `Submitted form: ${postedData._formname}\n` : "";
 
     await checkCaptcha(
         postedData["g-recaptcha-response"],
         config.requireReCaptchaResponse,
-        incomingIp,
+        senderIpAddress,
         config.reCaptchaSecret);
 
     // rendering email contents
@@ -64,9 +64,9 @@ export async function formHandler(
 
     const templateData = {
         formName,
-        incomingIp,
         mustacheTemplateData,
         refererUrl,
+        senderIpAddress,
     };
 
     const plainTextEmailMessage = mst.render(plainTextEmailTemplate, templateData);
@@ -81,7 +81,7 @@ export async function formHandler(
     // sending and saving email
     await sendEmail(config, recepients, renderedSubject, plainTextEmailMessage, htmlEmailMessage);
 
-    saveEmailToDB(config.databaseFileName, incomingIp, bodyStr, refererUrl, formName,
+    saveEmailToDB(config.databaseFileName, senderIpAddress, bodyStr, refererUrl, formName,
                   recepients, plainTextEmailMessage);
 
     // preparing response

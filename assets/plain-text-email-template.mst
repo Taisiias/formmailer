@@ -8,4 +8,4 @@ Referrer page: {{{refererUrl}}}
 {{/mustacheTemplateData}}
 
 
-Submitter IP address: {{incomingIp}}
+Submitter IP address: {{senderIpAddress}}

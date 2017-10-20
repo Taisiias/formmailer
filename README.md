@@ -52,9 +52,11 @@ FormMailer service deployed on your domain `http://myformmailer.mydomain.com/` w
 FormMailer also:
 
 * supports HTTPS.
-* supports plain text and HTML [Mustache.JS](https://github.com/janl/mustache.js) templates for email body and subject.
+* supports plain text and HTML emails.
+* [Mustache.JS](https://github.com/janl/mustache.js) templates for email body and subject.
 * saves all received data (and sent emails) to the local SQLite database.
 * understands reCAPTCHA.
+* supports `application/json` and `application/x-www-form-urlencoded` content types.
 
 ## Running
 
@@ -205,17 +207,22 @@ FormMailer accepts JSON requests, distingushing them by `content-type: applicati
 
 If email was sent successfully, JSON response `{ result: "ok" }` will be returned. Or `{ result: "error", description: "error details description" }`, in case of an error.
 
-### Plain text and HTML templates for email subject and body
+### Email templates
 
-FormMailer is using [Mustache.JS](https://github.com/janl/mustache.js) templates for email body and subject. Email can be sent both as plain text and as HTML. Sending out HTML emails cab be turned off by setting `enableHtmlEmail` to `false` in config.
+FormMailer is using [Mustache.JS](https://github.com/janl/mustache.js) templates for email body and subject. Email can be sent both as plain text and as HTML. Sending out HTML emails can be turned off by setting `enableHtmlEmail` to `false` in the config.
+
 Path to plain text email template is `./assets/plain-text-email-template.mst`.
-Path to HTML template is `./assets/html-email-template.html`.
-Template contains the following fields:
 
-Field  | Description
+Path to HTML template is `./assets/html-email-template.html`.
+
+Subject template can be edited in `subject` FormMailer setting.
+
+Template contains the following variables:
+
+Variable  | Description
 --------|-------------
 `formName` | _formname form POST request
-`incomingIp` | Request connection remote address
+`incomingIp` | Sender IP address
 `mustacheTemplateData` | Data contained in POST request
 `refererUrl` | Referrer URL from POST request
 
