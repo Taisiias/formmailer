@@ -15,7 +15,7 @@ function sendEmail(config, to, subject, text, html) {
         const transporter = nodemailer.createTransport(config.smtpOptions);
         const emailMessage = {
             from: config.fromEmail,
-            html,
+            html: config.enableHtmlEmail ? html : "",
             subject,
             text,
             to,

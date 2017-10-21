@@ -21,7 +21,7 @@ const message_1 = require("./message");
 const send_1 = require("./send");
 const stream_1 = require("./stream");
 const PLAIN_TEXT_EMAIL_TEMPLATE_PATH = "./assets/plain-text-email-template.mst";
-const HTML_EMAIL_TEMPLATE_PATH = "./assets/html-email-template.mst";
+const HTML_EMAIL_TEMPLATE_PATH = "./assets/html-email-template.html";
 class NotFoundError extends Error {
 }
 exports.NotFoundError = NotFoundError;
@@ -45,22 +45,19 @@ function formHandler(config, pathname, req, res, isAjax) {
         const postedData = isAjax ? JSON.parse(bodyStr) : qs.parse(bodyStr);
         winston.debug(`Request body: ${JSON.stringify(postedData)}`);
         // gathering information
-        const incomingIp = req.connection.remoteAddress || "unknown remote address";
+        const senderIpAddress = req.connection.remoteAddress || "unknown remote address";
         const refererUrl = getRefererUrl(postedData, req);
         const formName = postedData._formname ? `Submitted form: ${postedData._formname}\n` : "";
-        yield captcha_1.checkCaptcha(postedData["g-recaptcha-response"], config.requireReCaptchaResponse, incomingIp, config.reCaptchaSecret);
+        yield captcha_1.checkCaptcha(postedData["g-recaptcha-response"], config.requireReCaptchaResponse, senderIpAddress, config.reCaptchaSecret);
         // rendering email contents
-        // const fieldsValuesStr = await constructFieldsValuesStr(postedData);
         const mustacheTemplateData = message_1.constructFieldsArrayForMustache(postedData);
-        // winston.debug(`Fields: ${fieldsValuesStr}`);
         const plainTextEmailTemplate = fs.readFileSync(PLAIN_TEXT_EMAIL_TEMPLATE_PATH).toString();
         const htmlEmailTemplate = fs.readFileSync(HTML_EMAIL_TEMPLATE_PATH).toString();
-        winston.debug(mustacheTemplateData.length.toString());
         const templateData = {
             formName,
-            incomingIp,
             mustacheTemplateData,
             refererUrl,
+            senderIpAddress,
         };
         const plainTextEmailMessage = mst.render(plainTextEmailTemplate, templateData);
         const htmlEmailMessage = mst.render(htmlEmailTemplate, templateData);
@@ -70,7 +67,7 @@ function formHandler(config, pathname, req, res, isAjax) {
         const renderedSubject = mst.render(subject, { refererUrl, formName });
         // sending and saving email
         yield send_1.sendEmail(config, recepients, renderedSubject, plainTextEmailMessage, htmlEmailMessage);
-        database_1.saveEmailToDB(config.databaseFileName, incomingIp, bodyStr, refererUrl, formName, recepients, plainTextEmailMessage);
+        database_1.saveEmailToDB(config.databaseFileName, senderIpAddress, bodyStr, refererUrl, formName, recepients, plainTextEmailMessage);
         // preparing response
         if (isAjax) {
             header_1.setCorsHeaders(res);

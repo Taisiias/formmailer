@@ -5,6 +5,7 @@ const fs = require("fs");
 const DefaultConfigObject = {
     assetsFolder: "./assets",
     databaseFileName: "./formmailer.db",
+    enableHtmlEmail: true,
     enableHttp: true,
     enableHttps: true,
     formTargets: {},
