@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
 - Nodemailer `smtpTransport.SmtpOptions` config setting.
-- Supporting HTML emails.
+- HTML emails support.
 
 ### Deleted
 - `smtpPort` config setting.
