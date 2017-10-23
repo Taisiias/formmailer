@@ -1,5 +1,5 @@
 import * as he from "he";
-import winston = require("winston");
+// import winston = require("winston");
 
 export interface MustacheTemplateObject {
     key: string;
@@ -7,19 +7,20 @@ export interface MustacheTemplateObject {
 }
 
 export function constructFieldsArrayForMustache(
-    post: { [k: string]: string }): MustacheTemplateObject[] {
+    post: { [k: string]: string },
+): MustacheTemplateObject[] {
     const resultingArray: MustacheTemplateObject[] = [];
     for (const name in post) {
-        if (!name.startsWith("_") && name !== "g-recaptcha-response") {
-            const buf: MustacheTemplateObject = { key: "", textValue: "" };
-            buf.key = name;
-            buf.textValue = he.decode(post[name]);
-            winston.debug(`MustacheTemplateObject: ${buf.key} = ${buf.textValue}`);
-            if (buf.textValue.includes("\n")) {
-                buf.textValue = "\n" + buf.textValue.split("\n").map((s) => "     " + s).join("\n");
-            }
-            resultingArray.push(buf);
+        if (name.startsWith("_") || name === "g-recaptcha-response") { continue; }
+
+        const buf: MustacheTemplateObject = { key: "", textValue: "" };
+        buf.key = name;
+        buf.textValue = he.decode(post[name]);
+
+        if (buf.textValue.includes("\n")) {
+            buf.textValue = "\n" + buf.textValue.split("\n").map((s) => "     " + s).join("\n");
         }
+        resultingArray.push(buf);
     }
     return resultingArray;
 }

@@ -53,7 +53,7 @@ FormMailer also:
 
 * supports HTTPS.
 * supports plain text and HTML emails.
-* [Mustache.JS](https://github.com/janl/mustache.js) templates for email body and subject.
+* uses [Mustache.JS](https://github.com/janl/mustache.js) templates for email body and subject.
 * saves all received data (and sent emails) to the local SQLite database.
 * understands reCAPTCHA.
 * supports `application/json` and `application/x-www-form-urlencoded` content types.
@@ -124,7 +124,7 @@ Option  | Description | Default
 `assetsFolder` | Path to the folder containing static assets. | `"./assets"`
 `databaseFileName` | Path to the SQLite database file. | `"./formmailer.db"`
 `formTargets` | See details in [Sending different forms to different recipients](#sending-different-forms-to-different-recipients)| { }
-`enableHtmlEmail` | Enabling sending out HTML emails | `true`
+`enableHtmlEmail` | Enables sending out HTML versions of emails. | `true`
 
 ## Optional features
 
@@ -215,16 +215,16 @@ Path to plain text email template is `./assets/plain-text-email-template.mst`.
 
 Path to HTML template is `./assets/html-email-template.html`.
 
-Subject template can be edited in `subject` FormMailer setting.
+Subject text template can be changed in the `subject` configuration setting.
 
-Template contains the following variables:
+All templates may include following variables:
 
-Variable  | Description
+Variable | Description
 --------|-------------
-`formName` | _formname form POST request
-`incomingIp` | Sender IP address
-`mustacheTemplateData` | Data contained in POST request
-`refererUrl` | Referrer URL from POST request
+`formName` | Name of the form (provided by `_formname` special form field).
+`incomingIp` | Sender IP address.
+`mustacheTemplateData` | User-submitted data (key: `key`, value: `textValue`).
+`refererUrl` | Referer URL (from HTTP request headers).
 
 ## Deploying
 
