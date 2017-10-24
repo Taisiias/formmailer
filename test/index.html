@@ -144,6 +144,24 @@
     </div>
 </div>
 
+<h3>
+    <div>
+        Test Form 7: Automatic reCAPTCHA
+    </div>
+    <div>
+        https://localhost:3000/recaptcha/
+    </div>
+</h3>
+<form id="recaptcha-demo-form" action="http://localhost:3000/recaptcha" method="post">
+    <div>
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="user_name">
+    </div>
+    <div class="button">
+        <button type="submit">Send your message</button>
+    </div>
+</form>
+
 <script>
     function makeRequest() {
         var httpRequest = new XMLHttpRequest();

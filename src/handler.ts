@@ -19,12 +19,18 @@ async function routeRequest(
     isAjax: boolean,
 ): Promise<void> {
     const parsedUrl = url.parse(req.url as string, true);
+    winston.debug(`${parsedUrl}`);
     if (parsedUrl.pathname &&
         parsedUrl.pathname.toString().startsWith(SUBMIT_URL_PATH) &&
         req.method === "POST") {
         await formHandler(config, parsedUrl.pathname, req, res, isAjax);
     } else if (parsedUrl.pathname === THANKS_URL_PATH) {
         await fileServer.serveFile("thanks.html", 200, {}, req, res);
+    } else if (parsedUrl.pathname === "/recaptcha") {
+        // res.end("asdf");
+        winston.debug("hi from recaptcha");
+        await fileServer.serveFile("recaptcha.html", 200, {}, req, res);
+
     } else {
         throw new NotFoundError(`Incorrect request: ${parsedUrl.pathname} (${req.method})`);
     }
@@ -80,7 +86,7 @@ export function constructConnectionHandler(
         }
 
         const isAjax = isAjaxRequest(req);
-
+        winston.debug("!!!");
         routeRequest(config, req, res, fileServer, isAjax).catch(async (err) => {
             errorHandler(err, req, res, fileServer, isAjax);
         });
