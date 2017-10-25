@@ -144,25 +144,37 @@
     </div>
 </div>
 
-<h3>
-    <div>
-        Test Form 7: Automatic reCAPTCHA
-    </div>
-    <div>
-        https://localhost:3000/recaptcha/
-    </div>
-</h3>
-<form id="recaptcha-demo-form" action="http://localhost:3000/recaptcha" method="post">
+<div>
+    <h3>
+        <div>
+            Test Form 7: Automatic reCAPTCHA
+        </div>
+        <div>
+            http://localhost:3000/recaptcha/
+        </div>
+    </h3>
     <div>
         <label for="name">Name:</label>
-        <input type="text" id="name" name="user_name">
+        <input type="text" id="recaptchaUserNameTextbox">
     </div>
     <div class="button">
-        <button type="submit">Send your message</button>
+        <button type="submit" onclick="makeRequestWithRecaptcha()">Send your message</button>
     </div>
-</form>
+</div>
+
 
 <script>
+    function makeRequestWithRecaptcha() {
+        var httpRequest = new XMLHttpRequest();
+
+        httpRequest.onload = ajaxSuccess;
+
+        var userName = document.getElementById("recaptchaUserNameTextbox").value;
+        httpRequest.open("POST", "http://localhost:3000/autorecaptcha/", true);
+        httpRequest.setRequestHeader('Content-Type', 'application/json');
+        httpRequest.send(JSON.stringify({ "user_name": userName }));
+    }
+
     function makeRequest() {
         var httpRequest = new XMLHttpRequest();
 

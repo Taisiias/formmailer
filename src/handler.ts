@@ -7,6 +7,7 @@ import { RecaptchaFailure } from "./captcha";
 import { Config } from "./config";
 import { formHandler, NotFoundError } from "./form";
 import { setCorsHeaders } from "./header";
+import { readReadable } from "./stream"; // REMOVE THIS!
 
 const SUBMIT_URL_PATH = "/submit";
 export const THANKS_URL_PATH = "/thanks";
@@ -19,17 +20,24 @@ async function routeRequest(
     isAjax: boolean,
 ): Promise<void> {
     const parsedUrl = url.parse(req.url as string, true);
-    winston.debug(`${parsedUrl}`);
+    winston.debug(`Pathname: ${parsedUrl.pathname}`);
     if (parsedUrl.pathname &&
         parsedUrl.pathname.toString().startsWith(SUBMIT_URL_PATH) &&
         req.method === "POST") {
+        winston.debug(`Calling formHandler...`);
         await formHandler(config, parsedUrl.pathname, req, res, isAjax);
     } else if (parsedUrl.pathname === THANKS_URL_PATH) {
         await fileServer.serveFile("thanks.html", 200, {}, req, res);
-    } else if (parsedUrl.pathname === "/recaptcha") {
-        // res.end("asdf");
+    } else if (parsedUrl.pathname === "/autorecaptcha/") {
         winston.debug("hi from recaptcha");
-        await fileServer.serveFile("recaptcha.html", 200, {}, req, res);
+        const bodyStr = await readReadable(req, config.maxHttpRequestSize);
+        const postedData: { [k: string]: string } = JSON.parse(bodyStr);
+        winston.debug(`Request body: ${JSON.stringify(postedData)}`);
+        // res.writeHead(303, { Location: "/recaptcha" });
+        // res.write(JSON.stringify({ postedData }));
+        res.write(JSON.stringify({ postedData }));
+        res.end();
+        // await fileServer.serveFile("recaptcha.html", 200, {}, req, res);
 
     } else {
         throw new NotFoundError(`Incorrect request: ${parsedUrl.pathname} (${req.method})`);
@@ -86,7 +94,7 @@ export function constructConnectionHandler(
         }
 
         const isAjax = isAjaxRequest(req);
-        winston.debug("!!!");
+
         routeRequest(config, req, res, fileServer, isAjax).catch(async (err) => {
             errorHandler(err, req, res, fileServer, isAjax);
         });
