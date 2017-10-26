@@ -1,5 +1,4 @@
 import * as he from "he";
-// import winston = require("winston");
 
 export interface MustacheTemplateObject {
     key: string;

@@ -1,13 +1,14 @@
 import * as http from "http";
 import * as ns from "node-static";
 import * as url from "url";
+
 import winston = require("winston");
 
 import { RecaptchaFailure } from "./captcha";
 import { Config } from "./config";
 import { formHandler, NotFoundError } from "./form";
 import { setCorsHeaders } from "./header";
-import { readReadable } from "./stream"; // REMOVE THIS!
+import { isAjaxRequest, parseRequestData } from "./request";
 
 const SUBMIT_URL_PATH = "/submit";
 export const THANKS_URL_PATH = "/thanks";
@@ -29,24 +30,13 @@ async function routeRequest(
     } else if (parsedUrl.pathname === THANKS_URL_PATH) {
         await fileServer.serveFile("thanks.html", 200, {}, req, res);
     } else if (parsedUrl.pathname === "/autorecaptcha/") {
-        winston.debug("hi from recaptcha");
-        const bodyStr = await readReadable(req, config.maxHttpRequestSize);
-        const postedData: { [k: string]: string } = JSON.parse(bodyStr);
-        winston.debug(`Request body: ${JSON.stringify(postedData)}`);
-        // res.writeHead(303, { Location: "/recaptcha" });
-        // res.write(JSON.stringify({ postedData }));
-        res.write(JSON.stringify({ postedData }));
+        winston.debug("hi from autorecaptcha");
+        const [parsedRequestData] = await parseRequestData(req, config.maxHttpRequestSize);
+        res.write(JSON.stringify(parsedRequestData));
         res.end();
-        // await fileServer.serveFile("recaptcha.html", 200, {}, req, res);
-
     } else {
         throw new NotFoundError(`Incorrect request: ${parsedUrl.pathname} (${req.method})`);
     }
-}
-
-function isAjaxRequest(req: http.IncomingMessage): boolean {
-    return req.headers["content-type"] === "application/json" ||
-        req.headers["content-type"] === "application/javascript";
 }
 
 async function errorHandler(

@@ -1,7 +1,6 @@
 import * as fs from "fs";
 import * as http from "http";
 import * as mst from "mustache";
-import * as qs from "querystring";
 import winston = require("winston");
 import { checkCaptcha } from "./captcha";
 import { Config } from "./config";
@@ -10,8 +9,8 @@ import { getRecipients, getSubject } from "./form-target/helpers";
 import { THANKS_URL_PATH } from "./handler";
 import { setCorsHeaders } from "./header";
 import { constructFieldsArrayForMustache } from "./message";
+import { parseRequestData} from "./request";
 import { sendEmail } from "./send";
-import { readReadable } from "./stream";
 
 const PLAIN_TEXT_EMAIL_TEMPLATE_PATH = "./assets/plain-text-email-template.mst";
 const HTML_EMAIL_TEMPLATE_PATH = "./assets/html-email-template.html";
@@ -41,8 +40,7 @@ export async function formHandler(
     }
 
     // getting posted data from the request
-    const bodyStr = await readReadable(req, config.maxHttpRequestSize);
-    const postedData: { [k: string]: string } = isAjax ? JSON.parse(bodyStr) : qs.parse(bodyStr);
+    const [postedData, bodyStr] = await parseRequestData(req, config.maxHttpRequestSize);
     winston.debug(`Request body: ${JSON.stringify(postedData)}`);
 
     // gathering information
