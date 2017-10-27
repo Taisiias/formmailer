@@ -1,4 +1,6 @@
+import * as fs from "fs";
 import * as http from "http";
+import * as mst from "mustache";
 import * as ns from "node-static";
 import * as url from "url";
 
@@ -31,8 +33,16 @@ async function routeRequest(
         await fileServer.serveFile("thanks.html", 200, {}, req, res);
     } else if (parsedUrl.pathname === "/autorecaptcha/") {
         winston.debug("hi from autorecaptcha");
+
         const [parsedRequestData] = await parseRequestData(req, config.maxHttpRequestSize);
-        res.write(JSON.stringify(parsedRequestData));
+        winston.debug(`Parsed Request Data ${JSON.stringify(parsedRequestData)}`);
+
+        const htmlTemplate = fs.readFileSync("./assets/recaptcha.html").toString();
+        const templateData = {
+            parsedRequestData: "asdf",
+        };
+        const htmlToRender = mst.render(htmlTemplate, templateData);
+        res.write(JSON.stringify(htmlToRender));
         res.end();
     } else {
         throw new NotFoundError(`Incorrect request: ${parsedUrl.pathname} (${req.method})`);
