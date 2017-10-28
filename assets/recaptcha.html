@@ -1,5 +1,28 @@
 <html>
-<p>
-    <strong>{{{parsedRequestData}}}</strong>
-</p>
+
+<head>
+    <script type='text/javascript'>
+        function makeRequest() {
+
+            var httpRequest = new XMLHttpRequest();
+
+            httpRequest.onload = ajaxSuccess;
+
+            httpRequest.open("POST", "http://localhost:3000/submit/", true);
+            httpRequest.setRequestHeader('Content-Type', 'application/json');
+            let data = {{{parsedRequestData}}};
+            httpRequest.send(JSON.stringify(data));
+        };
+
+        function ajaxSuccess() {
+            alert(this.responseText);
+        };
+
+        window.onload = makeRequest();
+    </script>
+</head>
+
+<body>
+</body>
+
 </html>

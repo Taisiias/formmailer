@@ -39,10 +39,11 @@ async function routeRequest(
 
         const htmlTemplate = fs.readFileSync("./assets/recaptcha.html").toString();
         const templateData = {
-            parsedRequestData: "asdf",
+            parsedRequestData: JSON.stringify(parsedRequestData),
         };
-        const htmlToRender = mst.render(htmlTemplate, templateData);
-        res.write(JSON.stringify(htmlToRender));
+        winston.debug(`Template Data: ${templateData}`);
+        const renderedHtml = mst.render(htmlTemplate, templateData);
+        res.write(renderedHtml);
         res.end();
     } else {
         throw new NotFoundError(`Incorrect request: ${parsedUrl.pathname} (${req.method})`);
