@@ -10,7 +10,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs");
 const mst = require("mustache");
-const qs = require("querystring");
 const winston = require("winston");
 const captcha_1 = require("./captcha");
 const database_1 = require("./database");
@@ -18,8 +17,8 @@ const helpers_1 = require("./form-target/helpers");
 const handler_1 = require("./handler");
 const header_1 = require("./header");
 const message_1 = require("./message");
+const request_1 = require("./request");
 const send_1 = require("./send");
-const stream_1 = require("./stream");
 const PLAIN_TEXT_EMAIL_TEMPLATE_PATH = "./assets/plain-text-email-template.mst";
 const HTML_EMAIL_TEMPLATE_PATH = "./assets/html-email-template.html";
 class NotFoundError extends Error {
@@ -41,8 +40,7 @@ function formHandler(config, pathname, req, res, isAjax) {
             }
         }
         // getting posted data from the request
-        const bodyStr = yield stream_1.readReadable(req, config.maxHttpRequestSize);
-        const postedData = isAjax ? JSON.parse(bodyStr) : qs.parse(bodyStr);
+        const [postedData, bodyStr] = yield request_1.parseRequestData(req, config.maxHttpRequestSize);
         winston.debug(`Request body: ${JSON.stringify(postedData)}`);
         // gathering information
         const senderIpAddress = req.connection.remoteAddress || "unknown remote address";
