@@ -79,7 +79,7 @@ export function readConfig(path: string): Config {
         if (fileContent === "") {
             throw new Error(`Config file is empty`);
         }
-        json = JSON.parse(fileContent);
+        json = JSON.parse(fileContent) as Config;
         /* tslint:disable:no-any */
         const mergedObject: { [k: string]: any } = deepMerge(DefaultConfigObject, json);
 

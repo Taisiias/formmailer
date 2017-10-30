@@ -4,7 +4,7 @@
   "description": "HTTP server that emails data submitted on static website forms.",
   "main": "index.js",
   "scripts": {
-    "test": "tsc && tslint --project tsconfig.json --type-check ./src/**/*",
+    "test": "tsc && tslint --project tsconfig.json",
     "build": "tsc",
     "start": "tsc && node ./build/src/index.js",
     "live": "tsc && concurrently --kill-others --names \"FM,SMTP,HTTP\" -c \"blue.bold,green.bold,grey.bold\" \"yarn dev-formmailer\" \"yarn dev-smtp-server\" \"yarn dev-static-http\"",
@@ -39,9 +39,9 @@
     "@types/node": "^8.0.30",
     "@types/node-static": "^0.7.0",
     "@types/nodemailer": "^3.1.3",
+    "@types/nodemailer-smtp-transport": "^2.7.4",
     "@types/request": "^2.0.3",
     "@types/request-promise": "^4.1.37",
-    "@types/smtp-server": "^1.15.2",
     "@types/sqlite3": "^3.1.0",
     "@types/winston": "^2.3.4",
     "@types/yargs": "^8.0.2",
@@ -51,6 +51,7 @@
     "mustache": "^2.3.0",
     "node-static": "^0.7.10",
     "nodemailer": "^4.0.1",
+    "nodemailer-smtp-transport": "^2.7.4",
     "querystring": "^0.2.0",
     "request": "^2.81.0",
     "request-promise": "^4.2.1",
@@ -61,11 +62,12 @@
     "yargs": "^9.0.1"
   },
   "devDependencies": {
+    "@types/smtp-server": "^3.3.0",
     "concurrently": "^3.5.0",
     "http-server": "^0.10.0",
     "nodemon": "^1.11.0",
-    "smtp-server": "^3.0.1",
+    "smtp-server": "^3.3.0",
     "ts-node": "^3.3.0",
-    "tslint": "^5.7.0"
+    "tslint": "^5.8.0"
   }
 }

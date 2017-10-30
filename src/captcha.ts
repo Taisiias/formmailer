@@ -24,7 +24,8 @@ export async function verifyGoogleCaptcha(
         method: "POST",
         uri: "https://google.com/recaptcha/api/siteverify",
     };
-    const body: RecaptchaResponse = await rp(options);
+    // tslint:disable-next-line:await-promise
+    const body = (await rp(options)) as RecaptchaResponse;
     return body.success;
 }
 

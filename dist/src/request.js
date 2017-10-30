@@ -14,7 +14,9 @@ function parseRequestData(req, maxHttpRequestSize) {
     return __awaiter(this, void 0, void 0, function* () {
         const bodyStr = yield stream_1.readReadable(req, maxHttpRequestSize);
         const isAjax = isAjaxRequest(req);
-        const postedData = isAjax ? JSON.parse(bodyStr) : qs.parse(bodyStr);
+        const postedData = isAjax ?
+            JSON.parse(bodyStr) :
+            qs.parse(bodyStr);
         return [postedData, bodyStr];
     });
 }

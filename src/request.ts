@@ -8,7 +8,10 @@ export async function parseRequestData(
 ): Promise<[{ [k: string]: string }, string]> {
     const bodyStr = await readReadable(req, maxHttpRequestSize);
     const isAjax = isAjaxRequest(req);
-    const postedData: { [k: string]: string } = isAjax ? JSON.parse(bodyStr) : qs.parse(bodyStr);
+    const postedData: { [k: string]: string } = isAjax ?
+        JSON.parse(bodyStr) as { [k: string]: string } :
+        qs.parse(bodyStr) as { [k: string]: string };
+
     return [postedData, bodyStr];
 }
 

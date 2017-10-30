@@ -65,7 +65,7 @@ function formHandler(config, pathname, req, res, isAjax) {
         const renderedSubject = mst.render(subject, { refererUrl, formName });
         // sending and saving email
         yield send_1.sendEmail(config, recepients, renderedSubject, plainTextEmailMessage, htmlEmailMessage);
-        database_1.saveEmailToDB(config.databaseFileName, senderIpAddress, bodyStr, refererUrl, formName, recepients, plainTextEmailMessage);
+        yield database_1.saveEmailToDB(config.databaseFileName, senderIpAddress, bodyStr, refererUrl, formName, recepients, plainTextEmailMessage);
         // preparing response
         if (isAjax) {
             header_1.setCorsHeaders(res);

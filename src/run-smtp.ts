@@ -14,19 +14,19 @@ const server = new SMTPServer({
     onData,
 });
 
-function onConnect(session: smtp.Session, callback: (err?: Error) => void): void {
+function onConnect(session: smtp.SMTPServerSession, callback: (err?: Error) => void): void {
     console.log(`Incoming connection from ${session.remoteAddress}`);
     callback();
 }
 
-function onClose(session: smtp.Session): void {
+function onClose(session: smtp.SMTPServerSession): void {
     console.log(`Closing connection to ${session.remoteAddress}`);
 }
 
 function onData(
     dataStream: stream.PassThrough,
-    session: smtp.Session,
-    callback: (err?: Error) => {},
+    session: smtp.SMTPServerSession,
+    callback: (err?: Error) => void,
 ): void {
     console.log(`Incoming message from ${session.remoteAddress}:`);
     let buf = "";

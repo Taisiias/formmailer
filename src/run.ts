@@ -33,7 +33,7 @@ function run(): void {
         .epilog("Support: https://github.com/Taisiias/formmailer")
         .strict()
         .argv;
-    const config = readConfig(args.config);
+    const config = readConfig(args.config as string);
 
     winston.level = config.logLevel;
 
@@ -67,7 +67,7 @@ export function runAndReport(): void {
     try {
         run();
     } catch (e) {
-        winston.error(e.message);
+        winston.error((e as Error).message as string);
         return process.exit(1);
     }
 }

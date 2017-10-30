@@ -1,7 +1,7 @@
 import * as stream from "stream";
 
-export function readReadable(s: stream.Readable, maxRequestSize: number): Promise<string> {
-    return new Promise((resolve, reject) => {
+export async function readReadable(s: stream.Readable, maxRequestSize: number): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
         let bodyStr = "";
         s.on("data", (chunk) => {
             bodyStr += chunk.toString();

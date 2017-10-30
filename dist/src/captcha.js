@@ -24,7 +24,8 @@ function verifyGoogleCaptcha(remoteip, response, secret) {
             method: "POST",
             uri: "https://google.com/recaptcha/api/siteverify",
         };
-        const body = yield rp(options);
+        // tslint:disable-next-line:await-promise
+        const body = (yield rp(options));
         return body.success;
     });
 }

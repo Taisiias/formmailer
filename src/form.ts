@@ -9,7 +9,7 @@ import { getRecipients, getSubject } from "./form-target/helpers";
 import { THANKS_URL_PATH } from "./handler";
 import { setCorsHeaders } from "./header";
 import { constructFieldsArrayForMustache } from "./message";
-import { parseRequestData} from "./request";
+import { parseRequestData } from "./request";
 import { sendEmail } from "./send";
 
 const PLAIN_TEXT_EMAIL_TEMPLATE_PATH = "./assets/plain-text-email-template.mst";
@@ -79,8 +79,9 @@ export async function formHandler(
     // sending and saving email
     await sendEmail(config, recepients, renderedSubject, plainTextEmailMessage, htmlEmailMessage);
 
-    saveEmailToDB(config.databaseFileName, senderIpAddress, bodyStr, refererUrl, formName,
-                  recepients, plainTextEmailMessage);
+    await saveEmailToDB(
+        config.databaseFileName, senderIpAddress, bodyStr, refererUrl, formName,
+        recepients, plainTextEmailMessage);
 
     // preparing response
     if (isAjax) {

@@ -30,7 +30,7 @@ async function routeRequest(
         winston.debug(`Calling formHandler...`);
         await formHandler(config, parsedUrl.pathname, req, res, isAjax);
     } else if (parsedUrl.pathname === THANKS_URL_PATH) {
-        await fileServer.serveFile("thanks.html", 200, {}, req, res);
+        fileServer.serveFile("thanks.html", 200, {}, req, res);
     } else if (parsedUrl.pathname === "/autorecaptcha/") {
         winston.debug("hi from autorecaptcha");
 
@@ -69,14 +69,14 @@ async function errorHandler(
     }
 
     if (err instanceof NotFoundError) {
-        await fileServer.serveFile("error404.html", 404, {}, req, res);
+        fileServer.serveFile("error404.html", 404, {}, req, res);
         return;
     }
     if (err instanceof RecaptchaFailure) {
         res.end();
         return;
     }
-    await fileServer.serveFile("error502.html", 502, {}, req, res);
+    fileServer.serveFile("error502.html", 502, {}, req, res);
 }
 
 export function constructConnectionHandler(
@@ -96,8 +96,8 @@ export function constructConnectionHandler(
 
         const isAjax = isAjaxRequest(req);
 
-        routeRequest(config, req, res, fileServer, isAjax).catch(async (err) => {
-            errorHandler(err, req, res, fileServer, isAjax);
+        routeRequest(config, req, res, fileServer, isAjax).catch(async (err: Error) => {
+            await errorHandler(err, req, res, fileServer, isAjax);
         });
     };
 }

@@ -29,7 +29,7 @@ function routeRequest(config, req, res, fileServer, isAjax) {
             yield form_1.formHandler(config, parsedUrl.pathname, req, res, isAjax);
         }
         else if (parsedUrl.pathname === exports.THANKS_URL_PATH) {
-            yield fileServer.serveFile("thanks.html", 200, {}, req, res);
+            fileServer.serveFile("thanks.html", 200, {}, req, res);
         }
         else if (parsedUrl.pathname === "/autorecaptcha/") {
             winston.debug("hi from autorecaptcha");
@@ -61,14 +61,14 @@ function errorHandler(err, req, res, fileServer, isAjax) {
             return;
         }
         if (err instanceof form_1.NotFoundError) {
-            yield fileServer.serveFile("error404.html", 404, {}, req, res);
+            fileServer.serveFile("error404.html", 404, {}, req, res);
             return;
         }
         if (err instanceof captcha_1.RecaptchaFailure) {
             res.end();
             return;
         }
-        yield fileServer.serveFile("error502.html", 502, {}, req, res);
+        fileServer.serveFile("error502.html", 502, {}, req, res);
     });
 }
 function constructConnectionHandler(config, fileServer) {
@@ -83,7 +83,7 @@ function constructConnectionHandler(config, fileServer) {
         }
         const isAjax = request_1.isAjaxRequest(req);
         routeRequest(config, req, res, fileServer, isAjax).catch((err) => __awaiter(this, void 0, void 0, function* () {
-            errorHandler(err, req, res, fileServer, isAjax);
+            yield errorHandler(err, req, res, fileServer, isAjax);
         }));
     };
 }
