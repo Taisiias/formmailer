@@ -2,15 +2,18 @@
 
 <head>
     <script type='text/javascript'>
-        function makeRequest() {
+        const DATA = {{{parsedRequestData}}};
 
+        var onSubmit = function (token) {
+            console.log('token = ' + token);
             var httpRequest = new XMLHttpRequest();
 
             httpRequest.onload = ajaxSuccess;
 
             httpRequest.open("POST", "http://localhost:3000/submit/", true);
             httpRequest.setRequestHeader('Content-Type', 'application/json');
-            let data = {{{parsedRequestData}}};
+            let data = DATA;
+            data["g-recaptcha-response"] = token;
             httpRequest.send(JSON.stringify(data));
         };
 
@@ -18,11 +21,20 @@
             alert(this.responseText);
         };
 
-        window.onload = makeRequest();
+        window.onload = function() {
+            grecaptcha.execute();
+        }
     </script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 
 <body>
+    <div id='recaptcha'
+        class="g-recaptcha"
+        data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
+        data-callback="onSubmit"
+        data-size="invisible">
+    </div>
 </body>
 
 </html>
