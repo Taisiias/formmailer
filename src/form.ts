@@ -9,7 +9,7 @@ import { getRecipients, getSubject } from "./form-target/helpers";
 import { THANKS_URL_PATH } from "./handler";
 import { setCorsHeaders } from "./header";
 import { constructFieldsArrayForMustache } from "./message";
-import { parseRequestData } from "./request";
+import { isAjaxRequest, parseRequestData } from "./request";
 import { sendEmail } from "./send";
 
 const PLAIN_TEXT_EMAIL_TEMPLATE_PATH = "./assets/plain-text-email-template.mst";
@@ -22,7 +22,6 @@ export async function formHandler(
     pathname: string,
     req: http.IncomingMessage,
     res: http.ServerResponse,
-    isAjax: boolean,
 ): Promise<void> {
 
     // getting form target key if there is one
@@ -84,6 +83,7 @@ export async function formHandler(
         recepients, plainTextEmailMessage);
 
     // preparing response
+    const isAjax = isAjaxRequest(req);
     if (isAjax) {
         setCorsHeaders(res);
         res.setHeader("content-type", "application/json");

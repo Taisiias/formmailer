@@ -20,7 +20,6 @@ async function routeRequest(
     req: http.IncomingMessage,
     res: http.ServerResponse,
     fileServer: ns.Server,
-    isAjax: boolean,
 ): Promise<void> {
     const parsedUrl = url.parse(req.url as string, true);
     winston.debug(`Pathname: ${parsedUrl.pathname}`);
@@ -28,11 +27,10 @@ async function routeRequest(
         parsedUrl.pathname.toString().startsWith(SUBMIT_URL_PATH) &&
         req.method === "POST") {
         winston.debug(`Calling formHandler...`);
-        await formHandler(config, parsedUrl.pathname, req, res, isAjax);
+        await formHandler(config, parsedUrl.pathname, req, res);
     } else if (parsedUrl.pathname === THANKS_URL_PATH) {
         fileServer.serveFile("thanks.html", 200, {}, req, res);
     } else if (parsedUrl.pathname === "/autorecaptcha/") {
-        winston.debug("hi from autorecaptcha");
 
         const [parsedRequestData] = await parseRequestData(req, config.maxHttpRequestSize);
         winston.debug(`Parsed Request Data ${JSON.stringify(parsedRequestData)}`);
@@ -40,6 +38,7 @@ async function routeRequest(
         const htmlTemplate = fs.readFileSync("./assets/recaptcha.html").toString();
         const templateData = {
             parsedRequestData: JSON.stringify(parsedRequestData),
+            thanksPageUrl: parsedRequestData._redirect || THANKS_URL_PATH,
         };
         winston.debug(`Template Data: ${templateData}`);
         const renderedHtml = mst.render(htmlTemplate, templateData);
@@ -55,10 +54,9 @@ async function errorHandler(
     req: http.IncomingMessage,
     res: http.ServerResponse,
     fileServer: ns.Server,
-    isAjax: boolean,
 ): Promise<void> {
     winston.warn(`Error in Connection Handler: ${err}`);
-
+    const isAjax = isAjaxRequest(req);
     if (isAjax) {
         res.statusCode = err instanceof NotFoundError ? 404 : 502;
         setCorsHeaders(res);
@@ -94,10 +92,8 @@ export function constructConnectionHandler(
             return;
         }
 
-        const isAjax = isAjaxRequest(req);
-
-        routeRequest(config, req, res, fileServer, isAjax).catch(async (err: Error) => {
-            await errorHandler(err, req, res, fileServer, isAjax);
+        routeRequest(config, req, res, fileServer).catch(async (err: Error) => {
+            await errorHandler(err, req, res, fileServer);
         });
     };
 }
