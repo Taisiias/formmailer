@@ -19,6 +19,7 @@ export interface Config {
     httpsPrivateKeyPath: string;
     maxHttpRequestSize: number;
     reCaptchaSecret: string;
+    reCaptchaSiteKey: string;
     recipientEmails: string | string[];
     redirectFieldName: string;
     requireReCaptchaResponse: boolean;
@@ -48,6 +49,7 @@ const DefaultConfigObject: Config = {
     logLevel: "info",
     maxHttpRequestSize: 1e6,
     reCaptchaSecret: "",
+    reCaptchaSiteKey: "",
     recipientEmails: [],
     redirectFieldName: "_redirect",
     requireReCaptchaResponse: false,

@@ -138,6 +138,10 @@
             "description": "Page to be redirected after the form is submitted.",
             "type": "string"
         },
+        "reCaptchaSiteKey": {
+            "description": "Recaptcha Data Site Key from HTML input.",
+            "type": "string"
+        },
         "reCaptchaSecret": {
             "description": "Recaptcha Site Key",
             "type": "string"

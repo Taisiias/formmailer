@@ -37,6 +37,7 @@ async function routeRequest(
 
         const htmlTemplate = fs.readFileSync("./assets/recaptcha.html").toString();
         const templateData = {
+            dataSiteKey: config.reCaptchaSiteKey,
             parsedRequestData: JSON.stringify(parsedRequestData),
             thanksPageUrl: parsedRequestData._redirect || THANKS_URL_PATH,
         };

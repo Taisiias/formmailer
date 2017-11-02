@@ -1,4 +1,5 @@
 {
+    "reCaptchaSiteKey": "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI",
     "recipientEmails" : "root@localhost",
     "fromEmail": "formmailer@localhost",
     "httpListenIP": "0.0.0.0",
