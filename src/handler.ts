@@ -12,6 +12,7 @@ import { formHandler, NotFoundError } from "./form";
 import { setCorsHeaders } from "./header";
 import { isAjaxRequest, parseRequestData } from "./request";
 
+const AUTORECAPTCHA_PATH = "/autorecaptcha/";
 const SUBMIT_URL_PATH = "/submit";
 export const THANKS_URL_PATH = "/thanks";
 
@@ -30,8 +31,7 @@ async function routeRequest(
         await formHandler(config, parsedUrl.pathname, req, res);
     } else if (parsedUrl.pathname === THANKS_URL_PATH) {
         fileServer.serveFile("thanks.html", 200, {}, req, res);
-    } else if (parsedUrl.pathname === "/autorecaptcha/") {
-
+    } else if (parsedUrl.pathname && parsedUrl.pathname.toString().startsWith(AUTORECAPTCHA_PATH)) {
         const [parsedRequestData] = await parseRequestData(req, config.maxHttpRequestSize);
         winston.debug(`Parsed Request Data ${JSON.stringify(parsedRequestData)}`);
 
@@ -39,9 +39,9 @@ async function routeRequest(
         const templateData = {
             dataSiteKey: config.reCaptchaSiteKey,
             parsedRequestData: JSON.stringify(parsedRequestData),
+            submitUrl: SUBMIT_URL_PATH,
             thanksPageUrl: parsedRequestData._redirect || THANKS_URL_PATH,
         };
-        winston.debug(`Template Data: ${templateData}`);
         const renderedHtml = mst.render(htmlTemplate, templateData);
         res.write(renderedHtml);
         res.end();

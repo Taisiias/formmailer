@@ -4,6 +4,7 @@
     <script type='text/javascript'>
         const THANKS_PAGE = "{{{thanksPageUrl}}}";
         const DATA = {{{parsedRequestData}}};
+        const SUBMIT_URL = "{{{submitUrl}}}"
 
         var onSubmit = function (token) {
             console.log('token = ' + token);
@@ -11,7 +12,7 @@
 
             httpRequest.onload = ajaxSuccess;
 
-            httpRequest.open("POST", "http://localhost:3000/submit/", true);
+            httpRequest.open("POST", SUBMIT_URL, true);
             httpRequest.setRequestHeader('Content-Type', 'application/json');
             let data = DATA;
             data["g-recaptcha-response"] = token;
