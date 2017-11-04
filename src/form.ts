@@ -49,7 +49,7 @@ export async function formHandler(
 
     await checkCaptcha(
         postedData["g-recaptcha-response"],
-        config.requireReCaptchaResponse,
+        config.disableRecaptcha,
         senderIpAddress,
         config.reCaptchaSecret);
 

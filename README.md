@@ -120,7 +120,7 @@ Option  | Description | Default
 `redirectFieldName` | Name of the HTML input that contains redirect URL address. | `"_redirect"`
 `subject` | Email subject field content. Special entry `{{{referrerUrl}}}` will be changed to the address of the webpage from where the form is submitted. | `"Form submitted on {{{referrerUrl}}}"`
 `reCaptchaSecret` | Site secret reCAPTCHA key. No captcha checks will be performed if this value is not set. | `""`
-`requireReCaptchaResponse` | If true, receiver handler should always check g-recaptcha-response to be present in POST. | `false`
+`disableRecaptcha` | If true, receiver handler should always check g-recaptcha-response to be present in POST. | `false`
 `assetsFolder` | Path to the folder containing static assets. | `"./assets"`
 `databaseFileName` | Path to the SQLite database file. | `"./formmailer.db"`
 `formTargets` | See details in [Sending different forms to different recipients](#sending-different-forms-to-different-recipients)| { }

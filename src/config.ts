@@ -22,7 +22,7 @@ export interface Config {
     reCaptchaSiteKey: string;
     recipientEmails: string | string[];
     redirectFieldName: string;
-    requireReCaptchaResponse: boolean;
+    disableRecaptcha: boolean;
     smtpOptions: smtpTransport.SmtpOptions;
     subject: string;
 }
@@ -35,6 +35,7 @@ export interface FormTargetData {
 const DefaultConfigObject: Config = {
     assetsFolder: "./assets",
     databaseFileName: "./formmailer.db",
+    disableRecaptcha: false,
     enableHtmlEmail: true,
     enableHttp: true,
     enableHttps: true,
@@ -52,7 +53,6 @@ const DefaultConfigObject: Config = {
     reCaptchaSiteKey: "",
     recipientEmails: [],
     redirectFieldName: "_redirect",
-    requireReCaptchaResponse: false,
     smtpOptions: {
         host: "localhost",
         port: 25,
@@ -87,11 +87,6 @@ export function readConfig(path: string): Config {
 
         if (!mergedObject.hasOwnProperty("recipientEmails") && !mergedObject.recipientEmails) {
             throw new Error(`Property recipientEmails is missing.`);
-        }
-
-        if (mergedObject.requireReCaptchaResponse && !mergedObject.reCaptchaSecret) {
-            throw new Error(`requireReCaptchaResponse is set to true but
-                                reCaptchaSecret is not provided`);
         }
 
         cf = mergedObject as Config;
