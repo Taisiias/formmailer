@@ -5,6 +5,7 @@ const fs = require("fs");
 const DefaultConfigObject = {
     assetsFolder: "./assets",
     databaseFileName: "./formmailer.db",
+    disableRecaptcha: false,
     enableHtmlEmail: true,
     enableHttp: true,
     enableHttps: true,
@@ -19,9 +20,9 @@ const DefaultConfigObject = {
     logLevel: "info",
     maxHttpRequestSize: 1e6,
     reCaptchaSecret: "",
+    reCaptchaSiteKey: "",
     recipientEmails: [],
     redirectFieldName: "_redirect",
-    requireReCaptchaResponse: false,
     smtpOptions: {
         host: "localhost",
         port: 25,
@@ -51,10 +52,6 @@ function readConfig(path) {
         const mergedObject = deepMerge(DefaultConfigObject, json);
         if (!mergedObject.hasOwnProperty("recipientEmails") && !mergedObject.recipientEmails) {
             throw new Error(`Property recipientEmails is missing.`);
-        }
-        if (mergedObject.requireReCaptchaResponse && !mergedObject.reCaptchaSecret) {
-            throw new Error(`requireReCaptchaResponse is set to true but
-                                reCaptchaSecret is not provided`);
         }
         cf = mergedObject;
     }

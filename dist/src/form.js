@@ -24,7 +24,7 @@ const HTML_EMAIL_TEMPLATE_PATH = "./assets/html-email-template.html";
 class NotFoundError extends Error {
 }
 exports.NotFoundError = NotFoundError;
-function formHandler(config, pathname, req, res, isAjax) {
+function formHandler(config, pathname, req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         // getting form target key if there is one
         let formTargetKey = "";
@@ -46,7 +46,7 @@ function formHandler(config, pathname, req, res, isAjax) {
         const senderIpAddress = req.connection.remoteAddress || "unknown remote address";
         const refererUrl = getRefererUrl(postedData, req);
         const formName = postedData._formname ? `Submitted form: ${postedData._formname}\n` : "";
-        yield captcha_1.checkCaptcha(postedData["g-recaptcha-response"], config.requireReCaptchaResponse, senderIpAddress, config.reCaptchaSecret);
+        yield captcha_1.checkCaptcha(postedData["g-recaptcha-response"], config.disableRecaptcha, senderIpAddress, config.reCaptchaSecret);
         // rendering email contents
         const mustacheTemplateData = message_1.constructFieldsArrayForMustache(postedData);
         const plainTextEmailTemplate = fs.readFileSync(PLAIN_TEXT_EMAIL_TEMPLATE_PATH).toString();
@@ -67,6 +67,7 @@ function formHandler(config, pathname, req, res, isAjax) {
         yield send_1.sendEmail(config, recepients, renderedSubject, plainTextEmailMessage, htmlEmailMessage);
         yield database_1.saveEmailToDB(config.databaseFileName, senderIpAddress, bodyStr, refererUrl, formName, recepients, plainTextEmailMessage);
         // preparing response
+        const isAjax = request_1.isAjaxRequest(req);
         if (isAjax) {
             header_1.setCorsHeaders(res);
             res.setHeader("content-type", "application/json");

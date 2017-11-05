@@ -16,9 +16,10 @@ const captcha_1 = require("./captcha");
 const form_1 = require("./form");
 const header_1 = require("./header");
 const request_1 = require("./request");
+const AUTORECAPTCHA_PATH = "/autorecaptcha/";
 const SUBMIT_URL_PATH = "/submit";
 exports.THANKS_URL_PATH = "/thanks";
-function routeRequest(config, req, res, fileServer, isAjax) {
+function routeRequest(config, req, res, fileServer) {
     return __awaiter(this, void 0, void 0, function* () {
         const parsedUrl = url.parse(req.url, true);
         winston.debug(`Pathname: ${parsedUrl.pathname}`);
@@ -26,20 +27,21 @@ function routeRequest(config, req, res, fileServer, isAjax) {
             parsedUrl.pathname.toString().startsWith(SUBMIT_URL_PATH) &&
             req.method === "POST") {
             winston.debug(`Calling formHandler...`);
-            yield form_1.formHandler(config, parsedUrl.pathname, req, res, isAjax);
+            yield form_1.formHandler(config, parsedUrl.pathname, req, res);
         }
         else if (parsedUrl.pathname === exports.THANKS_URL_PATH) {
             fileServer.serveFile("thanks.html", 200, {}, req, res);
         }
-        else if (parsedUrl.pathname === "/autorecaptcha/") {
-            winston.debug("hi from autorecaptcha");
+        else if (parsedUrl.pathname && parsedUrl.pathname.toString().startsWith(AUTORECAPTCHA_PATH)) {
             const [parsedRequestData] = yield request_1.parseRequestData(req, config.maxHttpRequestSize);
             winston.debug(`Parsed Request Data ${JSON.stringify(parsedRequestData)}`);
             const htmlTemplate = fs.readFileSync("./assets/recaptcha.html").toString();
             const templateData = {
+                dataSiteKey: config.reCaptchaSiteKey,
                 parsedRequestData: JSON.stringify(parsedRequestData),
+                submitUrl: SUBMIT_URL_PATH,
+                thanksPageUrl: parsedRequestData._redirect || exports.THANKS_URL_PATH,
             };
-            winston.debug(`Template Data: ${templateData}`);
             const renderedHtml = mst.render(htmlTemplate, templateData);
             res.write(renderedHtml);
             res.end();
@@ -49,9 +51,10 @@ function routeRequest(config, req, res, fileServer, isAjax) {
         }
     });
 }
-function errorHandler(err, req, res, fileServer, isAjax) {
+function errorHandler(err, req, res, fileServer) {
     return __awaiter(this, void 0, void 0, function* () {
         winston.warn(`Error in Connection Handler: ${err}`);
+        const isAjax = request_1.isAjaxRequest(req);
         if (isAjax) {
             res.statusCode = err instanceof form_1.NotFoundError ? 404 : 502;
             header_1.setCorsHeaders(res);
@@ -81,9 +84,8 @@ function constructConnectionHandler(config, fileServer) {
             res.end();
             return;
         }
-        const isAjax = request_1.isAjaxRequest(req);
-        routeRequest(config, req, res, fileServer, isAjax).catch((err) => __awaiter(this, void 0, void 0, function* () {
-            yield errorHandler(err, req, res, fileServer, isAjax);
+        routeRequest(config, req, res, fileServer).catch((err) => __awaiter(this, void 0, void 0, function* () {
+            yield errorHandler(err, req, res, fileServer);
         }));
     };
 }
