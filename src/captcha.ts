@@ -31,27 +31,20 @@ export async function verifyGoogleCaptcha(
 
 export async function checkCaptcha(
     postReCaptchaResponse: string,
-    requireReCaptchaResponse: boolean,
+    disableRecaptcha: boolean,
     remoteAddress: string,
     reCaptchaSecret: string,
 ): Promise<void> {
-    if (!reCaptchaSecret) {
+    if (!reCaptchaSecret || disableRecaptcha) {
         return;
     }
 
-    if (requireReCaptchaResponse && !postReCaptchaResponse) {
-        throw new RecaptchaFailure(
-            `requireReCaptchaResponse is set to true but g-recaptcha-response is missing in POST`);
-    }
-
-    if (postReCaptchaResponse) {
-        const notSpam = await verifyGoogleCaptcha(
-            remoteAddress,
-            postReCaptchaResponse,
-            reCaptchaSecret,
-        );
-        if (!notSpam) {
-            throw new RecaptchaFailure(`reCAPTCHA failure.`);
-        }
+    const notSpam = await verifyGoogleCaptcha(
+        remoteAddress,
+        postReCaptchaResponse,
+        reCaptchaSecret,
+    );
+    if (!notSpam) {
+        throw new RecaptchaFailure(`reCAPTCHA failure.`);
     }
 }

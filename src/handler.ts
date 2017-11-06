@@ -1,6 +1,4 @@
-import * as fs from "fs";
 import * as http from "http";
-import * as mst from "mustache";
 import * as ns from "node-static";
 import * as url from "url";
 
@@ -8,12 +6,11 @@ import winston = require("winston");
 
 import { RecaptchaFailure } from "./captcha";
 import { Config } from "./config";
-import { formHandler, NotFoundError } from "./form";
+import { NotFoundError, submitHandler } from "./form";
 import { setCorsHeaders } from "./header";
-import { isAjaxRequest, parseRequestData } from "./request";
+import { isAjaxRequest } from "./request";
 
-const AUTORECAPTCHA_PATH = "/autorecaptcha/";
-const SUBMIT_URL_PATH = "/submit";
+export const SUBMIT_URL_PATH = "/submit";
 export const THANKS_URL_PATH = "/thanks";
 
 async function routeRequest(
@@ -28,23 +25,9 @@ async function routeRequest(
         parsedUrl.pathname.toString().startsWith(SUBMIT_URL_PATH) &&
         req.method === "POST") {
         winston.debug(`Calling formHandler...`);
-        await formHandler(config, parsedUrl.pathname, req, res);
+        await submitHandler(config, parsedUrl.pathname, req, res);
     } else if (parsedUrl.pathname === THANKS_URL_PATH) {
         fileServer.serveFile("thanks.html", 200, {}, req, res);
-    } else if (parsedUrl.pathname && parsedUrl.pathname.toString().startsWith(AUTORECAPTCHA_PATH)) {
-        const [parsedRequestData] = await parseRequestData(req, config.maxHttpRequestSize);
-        winston.debug(`Parsed Request Data ${JSON.stringify(parsedRequestData)}`);
-
-        const htmlTemplate = fs.readFileSync("./assets/recaptcha.html").toString();
-        const templateData = {
-            dataSiteKey: config.reCaptchaSiteKey,
-            parsedRequestData: JSON.stringify(parsedRequestData),
-            submitUrl: SUBMIT_URL_PATH,
-            thanksPageUrl: parsedRequestData._redirect || THANKS_URL_PATH,
-        };
-        const renderedHtml = mst.render(htmlTemplate, templateData);
-        res.write(renderedHtml);
-        res.end();
     } else {
         throw new NotFoundError(`Incorrect request: ${parsedUrl.pathname} (${req.method})`);
     }
