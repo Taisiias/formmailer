@@ -24,7 +24,6 @@ async function routeRequest(
     if (parsedUrl.pathname &&
         parsedUrl.pathname.toString().startsWith(SUBMIT_URL_PATH) &&
         req.method === "POST") {
-        winston.debug(`Calling formHandler...`);
         await submitHandler(config, parsedUrl.pathname, req, res);
     } else if (parsedUrl.pathname === THANKS_URL_PATH) {
         fileServer.serveFile("thanks.html", 200, {}, req, res);

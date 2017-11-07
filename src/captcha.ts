@@ -26,7 +26,7 @@ export async function verifyGoogleCaptcha(
     };
     // tslint:disable-next-line:await-promise
     const body = (await rp(options)) as RecaptchaResponse;
-    return body.success;
+    return !body.success;
 }
 
 export async function checkCaptcha(
@@ -39,12 +39,12 @@ export async function checkCaptcha(
         return;
     }
 
-    const notSpam = await verifyGoogleCaptcha(
+    const isSpam = await verifyGoogleCaptcha(
         remoteAddress,
         postReCaptchaResponse,
         reCaptchaSecret,
     );
-    if (!notSpam) {
+    if (isSpam) {
         throw new RecaptchaFailure(`reCAPTCHA failure.`);
     }
 }

@@ -25,7 +25,12 @@ export async function submitHandler(
 ): Promise<void> {
     const [parsedRequestData, bodyStr] = await parseRequestData(req, config.maxHttpRequestSize);
     winston.debug(`Parsed Request Data ${JSON.stringify(parsedRequestData)}`);
+
+    // gathering information
     const senderIpAddress = req.connection.remoteAddress || "unknown remote address";
+    const refererUrl = getRefererUrl(parsedRequestData, req);
+
+    const isAjax = isAjaxRequest(req);
 
     if (!config.disableRecaptcha && config.reCaptchaSecret) {
         if (parsedRequestData["g-recaptcha-response"]) {
@@ -40,31 +45,40 @@ export async function submitHandler(
                 throw new RecaptchaFailure(
                     `reCaptcha is enabled but site-key is not provided`);
             }
-            const htmlTemplate = fs.readFileSync("./assets/recaptcha.html").toString();
-            const templateData = {
-                dataSiteKey: config.reCaptchaSiteKey,
-                parsedRequestData: JSON.stringify(parsedRequestData),
-                submitUrl: SUBMIT_URL_PATH,
-                thanksPageUrl: parsedRequestData._redirect || THANKS_URL_PATH,
-            };
-            winston.debug(`Rendering Automatic reCaptcha page.`);
-            const renderedHtml = mst.render(htmlTemplate, templateData);
-            res.write(renderedHtml);
-            res.end();
-            return;
+            return renderAutamaticRecaptchaPage(config, parsedRequestData, res);
         }
     }
-    await formHandler(config, pathname, req, res, parsedRequestData, bodyStr, senderIpAddress);
+    await formHandler(
+        config, pathname, isAjax, res, parsedRequestData, bodyStr, senderIpAddress, refererUrl);
+}
+
+function renderAutamaticRecaptchaPage(
+    config: Config,
+    postedData: { [k: string]: string },
+    res: http.ServerResponse,
+): void {
+    const htmlTemplate = fs.readFileSync("./assets/recaptcha.html").toString();
+    const templateData = {
+        dataSiteKey: config.reCaptchaSiteKey,
+        parsedRequestData: JSON.stringify(postedData),
+        submitUrl: SUBMIT_URL_PATH,
+        thanksPageUrl: postedData._redirect || THANKS_URL_PATH,
+    };
+    winston.debug(`Rendering Automatic reCaptcha page.`);
+    const renderedHtml = mst.render(htmlTemplate, templateData);
+    res.write(renderedHtml);
+    res.end();
 }
 
 export async function formHandler(
     config: Config,
     pathname: string,
-    req: http.IncomingMessage,
+    isAjax: boolean,
     res: http.ServerResponse,
     postedData: { [k: string]: string },
     bodyStr: string,
     senderIpAddress: string,
+    refererUrl: string,
 ): Promise<void> {
 
     // getting form target key if there is one
@@ -81,13 +95,7 @@ export async function formHandler(
         }
     }
 
-    // getting posted data from the request
-    winston.debug(`Request body...`);
-    // const [postedData, bodyStr] = await parseRequestData(req, config.maxHttpRequestSize);
-    winston.debug(`Request body: ${JSON.stringify(postedData)}`);
-
     // gathering information
-    const refererUrl = getRefererUrl(postedData, req);
     const formName = postedData._formname ? `Submitted form: ${postedData._formname}\n` : "";
 
     // rendering email contents
@@ -120,7 +128,6 @@ export async function formHandler(
         recepients, plainTextEmailMessage);
 
     // preparing response
-    const isAjax = isAjaxRequest(req);
     if (isAjax) {
         setCorsHeaders(res);
         res.setHeader("content-type", "application/json");
