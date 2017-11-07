@@ -45,7 +45,8 @@ export async function submitHandler(
                 throw new RecaptchaFailure(
                     `reCaptcha is enabled but site-key is not provided`);
             }
-            return renderAutamaticRecaptchaPage(config, parsedRequestData, res);
+            renderAutamaticRecaptchaPage(config, parsedRequestData, res);
+            return;
         }
     }
     await formHandler(
