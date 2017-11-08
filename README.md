@@ -102,29 +102,30 @@ Default configuration file location is `./config.json`. You can provide differen
 
 Option  | Description | Default
 --------|-------------|--------
-`recipientEmails` | E-mail recipient address. String or array of strings (for multiple recepients). | Required field.
-`fromEmail` | E-mail address that will be provided in `From:` email header. | `"formmailer@localhost"`
+`assetsFolder` | Path to the folder containing static assets. | `"./assets"`
+`databaseFileName` | Path to the SQLite database file. | `"./formmailer.db"`
+`disableRecaptcha` | If true, receiver handler should not check `g-recaptcha-response` field even if site key is provided. | `false`
+`enableHtmlEmail` | Enables sending out HTML versions of emails. | `true`
 `enableHttp` | Determines if HTTP should be enabled | true
 `enableHttps` | Determines if HTTPS should be enabled | true
+`formTargets` | See details in [Sending different forms to different recipients](#sending-different-forms-to-different-recipients)| { }
+`fromEmail` | E-mail address that will be provided in `From:` email header. | `"formmailer@localhost"`
 `httpListenIP` | IP address to listen HTTP requests from. | `"0.0.0.0"` (all IP addresses)
 `httpListenPort` | Port to listen HTTP requests from. | `3000`
 `httpsListenIP` | IP address to listen HTTPS requests from. | `"0.0.0.0"` (all IP addresses)
 `httpsListenPort` | Port to listen HTTPS requests from. | `443`
 `httpsPrivateKeyPath` | Path to HTTPS private key. Specify to enable HTTPS. | ""
 `httpsCertificatePath` | Path to HTTPS certificate. Specify to enable HTTPS. | ""
+`logLevel` | How detailed logging should be (`error`, `warn`, `info`, `verbose`, `debug`, `silly`). | `"info"`
+`maxHttpRequestSize` | Maximum allowed size of HTTP requests, in bytes. | `1000000`
+`reCaptchaSecret` | Site secret reCAPTCHA key. No captcha checks will be performed if this value is not set. | `""`
+`reCaptchaSiteKey` | Public reCaptcha site key. | `""`
+`recipientEmails` | E-mail recipient address. String or array of strings (for multiple recepients). | Required field.
+`redirectFieldName` | Name of the HTML input that contains redirect URL address. | `"_redirect"`
 `smtpHost` | SMTP server host name or IP. | `"localhost"`
 `smtpPort` | SMTP server port. | `25`
 `smtpOptions` | [Nodemailer options](https://nodemailer.com/smtp/) object. | `{host: "localhost", port: 25, tls: { rejectUnauthorized: false }}`
-`logLevel` | How detailed logging should be (`error`, `warn`, `info`, `verbose`, `debug`, `silly`). | `"info"`
-`maxHttpRequestSize` | Maximum allowed size of HTTP requests, in bytes. | `1000000`
-`redirectFieldName` | Name of the HTML input that contains redirect URL address. | `"_redirect"`
 `subject` | Email subject field content. Special entry `{{{referrerUrl}}}` will be changed to the address of the webpage from where the form is submitted. | `"Form submitted on {{{referrerUrl}}}"`
-`reCaptchaSecret` | Site secret reCAPTCHA key. No captcha checks will be performed if this value is not set. | `""`
-`disableRecaptcha` | If true, receiver handler should not check g-recaptcha-response even if site key is provided. | `false`
-`assetsFolder` | Path to the folder containing static assets. | `"./assets"`
-`databaseFileName` | Path to the SQLite database file. | `"./formmailer.db"`
-`formTargets` | See details in [Sending different forms to different recipients](#sending-different-forms-to-different-recipients)| { }
-`enableHtmlEmail` | Enables sending out HTML versions of emails. | `true`
 
 ## Optional features
 
@@ -144,22 +145,27 @@ Input name | Meaning
 `_formurl` | Value will replace referrer in emails.
 `_formname` | Value will show up in emails. Should help to identify which form was submitted if there are several on the page.
 
-### reCAPTCHA installation
+### reCAPTCHA
 
-To set up reCAPTCHA checking:
+By default, Formmailer automatically checks reCAPTCHA if both `dataSiteKey` and `reCaptchaSecret` are present in config. reCAPTCHA check can be disabled by setting `disableRecaptcha` option to false.
+
+#### Automatic reCAPTCHA
+
+If `g-recaptcha-response` field is present in post, Formmailer will immediately start reCAPTCHA check. If not, `recaptcha.html` page will be rendered and will be submitted itself with post data recieved from your initial page along with `g-recaptcha-response` field.
+
+#### Manual reCAPTCHA
+
+To send `g-recaptcha-response` with your post you will need to set up reCAPTCHA checking on your website:
 
 1. Sign up for reCAPTCHA (https://www.google.com/recaptcha/admin), get site key and secret key.
 
 2. Write secret key value into `reCaptchaSecret` option in your config file.
 
-3. Set configuration option `requireReCaptchaResponse` to true.
-
-4. Set up reCAPTCHA integration on your static site HTML form.
+3. Set up reCAPTCHA integration on your static site HTML form.
 
     Refer to the link below on how to setup reCAPTCHA on the client side.
 
     https://developers.google.com/recaptcha/docs/display
-
 
 ### Sending different forms to different recipients
 
