@@ -9,7 +9,7 @@ interface RecaptchaResponse {
 
 export class RecaptchaFailure extends Error { }
 
-export async function verifyGoogleCaptcha(
+async function checkIfSpam(
     remoteip: string,
     response: string,
     secret: string,
@@ -29,8 +29,8 @@ export async function verifyGoogleCaptcha(
     return !body.success;
 }
 
-export async function checkCaptcha(
-    postReCaptchaResponse: string,
+export async function processReCaptcha(
+    gRecaptchaResponse: string,
     disableRecaptcha: boolean,
     remoteAddress: string,
     reCaptchaSecret: string,
@@ -39,11 +39,12 @@ export async function checkCaptcha(
         return;
     }
 
-    const isSpam = await verifyGoogleCaptcha(
+    const isSpam = await checkIfSpam(
         remoteAddress,
-        postReCaptchaResponse,
+        gRecaptchaResponse,
         reCaptchaSecret,
     );
+
     if (isSpam) {
         throw new RecaptchaFailure(`reCAPTCHA failure.`);
     }

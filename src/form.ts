@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as http from "http";
 import * as mst from "mustache";
 import winston = require("winston");
-import { checkCaptcha, RecaptchaFailure } from "./captcha";
+import { processReCaptcha, RecaptchaFailure } from "./captcha";
 import { Config } from "./config";
 import { saveEmailToDB } from "./database";
 import { getRecipients, getSubject } from "./form-target/helpers";
@@ -32,9 +32,10 @@ export async function submitHandler(
 
     const isAjax = isAjaxRequest(req);
 
+    // TODO: separate recaptcha logic into separate function.
     if (!config.disableRecaptcha && config.reCaptchaSecret) {
         if (parsedRequestData["g-recaptcha-response"]) {
-            await checkCaptcha(
+            await processReCaptcha(
                 parsedRequestData["g-recaptcha-response"],
                 config.disableRecaptcha,
                 senderIpAddress,
@@ -45,15 +46,16 @@ export async function submitHandler(
                 throw new RecaptchaFailure(
                     `reCaptcha is enabled but site-key is not provided`);
             }
-            renderAutamaticRecaptchaPage(config, parsedRequestData, res);
+            renderAutomaticRecaptchaPage(config, parsedRequestData, res);
             return;
         }
     }
+    // TODO: join with formHandler() and refactor.
     await formHandler(
         config, pathname, isAjax, res, parsedRequestData, bodyStr, senderIpAddress, refererUrl);
 }
 
-function renderAutamaticRecaptchaPage(
+function renderAutomaticRecaptchaPage(
     config: Config,
     postedData: { [k: string]: string },
     res: http.ServerResponse,
@@ -71,7 +73,7 @@ function renderAutamaticRecaptchaPage(
     res.end();
 }
 
-export async function formHandler(
+async function formHandler(
     config: Config,
     pathname: string,
     isAjax: boolean,

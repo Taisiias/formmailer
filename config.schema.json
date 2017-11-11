@@ -139,15 +139,15 @@
             "type": "string"
         },
         "reCaptchaSiteKey": {
-            "description": "Recaptcha Data Site Key from HTML input.",
+            "description": "Recaptcha Site Key.",
             "type": "string"
         },
         "reCaptchaSecret": {
-            "description": "Recaptcha Site Key",
+            "description": "Recaptcha Secret Key",
             "type": "string"
         },
         "disableRecaptcha": {
-            "description": "Determines if g-recaptcha-response should be checked in POST",
+            "description": "Determines if g-recaptcha-response checking should be disabled.",
             "type": "boolean"
         }
     },

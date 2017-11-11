@@ -6,8 +6,7 @@
         const DATA = {{{parsedRequestData}}};
         const SUBMIT_URL = "{{{submitUrl}}}"
 
-        var onSubmit = function (token) {
-            console.log('token = ' + token);
+        var onRecaptchaCheck = function (token) {
             var httpRequest = new XMLHttpRequest();
 
             httpRequest.onload = ajaxSuccess;
@@ -20,7 +19,6 @@
         };
 
         function ajaxSuccess() {
-            console.log(THANKS_PAGE);
             window.location.replace(THANKS_PAGE);
         };
 
@@ -35,7 +33,7 @@
     <div id='recaptcha'
         class="g-recaptcha"
         data-sitekey="{{{dataSiteKey}}}"
-        data-callback="onSubmit"
+        data-callback="onRecaptchaCheck"
         data-size="invisible">
     </div>
 </body>
