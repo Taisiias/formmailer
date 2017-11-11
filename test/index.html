@@ -165,16 +165,16 @@
 
 
 <script>
-    function makeRequestWithRecaptcha() {
-        var httpRequest = new XMLHttpRequest();
-
-        httpRequest.onload = ajaxSuccess;
-
-        var userName = document.getElementById("recaptchaUserNameTextbox").value;
-        httpRequest.open("POST", "http://localhost:3000/submit/", true);
-        httpRequest.setRequestHeader('Content-Type', 'application/json');
-        httpRequest.send(JSON.stringify({ "user_name": userName }));
-    }
+    //    function makeRequestWithRecaptcha() {
+    //        var httpRequest = new XMLHttpRequest();
+    //
+    //        httpRequest.onload = ajaxSuccess;
+    //
+    //        var userName = document.getElementById("recaptchaUserNameTextbox").value;
+    //        httpRequest.open("POST", "http://localhost:3000/submit/", true);
+    //        httpRequest.setRequestHeader('Content-Type', 'application/json');
+    //        httpRequest.send(JSON.stringify({ "user_name": userName }));
+    //    }
 
     function makeRequest() {
         var httpRequest = new XMLHttpRequest();

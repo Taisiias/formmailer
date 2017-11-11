@@ -12,7 +12,7 @@ const rp = require("request-promise");
 class RecaptchaFailure extends Error {
 }
 exports.RecaptchaFailure = RecaptchaFailure;
-function verifyGoogleCaptcha(remoteip, response, secret) {
+function checkIfSpam(remoteip, response, secret) {
     return __awaiter(this, void 0, void 0, function* () {
         const options = {
             form: {
@@ -26,24 +26,18 @@ function verifyGoogleCaptcha(remoteip, response, secret) {
         };
         // tslint:disable-next-line:await-promise
         const body = (yield rp(options));
-        return body.success;
+        return !body.success;
     });
 }
-exports.verifyGoogleCaptcha = verifyGoogleCaptcha;
-function checkCaptcha(postReCaptchaResponse, requireReCaptchaResponse, remoteAddress, reCaptchaSecret) {
+function processReCaptcha(gRecaptchaResponse, disableRecaptcha, remoteAddress, reCaptchaSecret) {
     return __awaiter(this, void 0, void 0, function* () {
-        if (!reCaptchaSecret) {
+        if (!reCaptchaSecret || disableRecaptcha) {
             return;
         }
-        if (requireReCaptchaResponse && !postReCaptchaResponse) {
-            throw new RecaptchaFailure(`requireReCaptchaResponse is set to true but g-recaptcha-response is missing in POST`);
-        }
-        if (postReCaptchaResponse) {
-            const notSpam = yield verifyGoogleCaptcha(remoteAddress, postReCaptchaResponse, reCaptchaSecret);
-            if (!notSpam) {
-                throw new RecaptchaFailure(`reCAPTCHA failure.`);
-            }
+        const isSpam = yield checkIfSpam(remoteAddress, gRecaptchaResponse, reCaptchaSecret);
+        if (isSpam) {
+            throw new RecaptchaFailure(`reCAPTCHA failure.`);
         }
     });
 }
-exports.checkCaptcha = checkCaptcha;
+exports.processReCaptcha = processReCaptcha;
