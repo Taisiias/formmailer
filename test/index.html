@@ -2,11 +2,6 @@
 
 <head>
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-    <script>
-        function onSubmit(token) {
-            document.getElementById("demo-form").submit();
-        }
-    </script>
 </head>
 <h3>
     <div>
@@ -69,9 +64,10 @@
         <label for="name">Name:</label>
         <input type="text" id="name" name="user_name">
     </div>
-    <div class="button">
-        <button class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" data-callback="onSubmit" type="submit">Send your message</button>
-    </div>
+    <div class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"></div>
+    <br/>
+    <input type="submit" value="Submit">
+  </form>
     <input type="hidden" name="_formname" value="Sales form">
 </form>
 
