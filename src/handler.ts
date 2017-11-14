@@ -4,10 +4,10 @@ import * as url from "url";
 
 import winston = require("winston");
 
-import { RecaptchaFailure } from "./captcha";
 import { Config } from "./config";
 import { NotFoundError, submitHandler } from "./form";
 import { setCorsHeaders } from "./header";
+import { RecaptchaFailure } from "./recaptcha";
 import { isAjaxRequest } from "./request";
 
 export const SUBMIT_URL_PATH = "/submit";

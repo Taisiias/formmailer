@@ -2,13 +2,13 @@ import * as fs from "fs";
 import * as http from "http";
 import * as mst from "mustache";
 import winston = require("winston");
-import { processReCaptcha, RecaptchaFailure } from "./captcha";
 import { Config } from "./config";
 import { saveEmailToDB } from "./database";
 import { getRecipients, getSubject } from "./form-target/helpers";
-import { SUBMIT_URL_PATH, THANKS_URL_PATH } from "./handler";
+import { THANKS_URL_PATH } from "./handler";
 import { setCorsHeaders } from "./header";
 import { constructFieldsArrayForMustache } from "./message";
+import { reCaptchaProcessed } from "./recaptcha";
 import { isAjaxRequest, parseRequestData } from "./request";
 import { sendEmail } from "./send";
 
@@ -32,57 +32,9 @@ export async function submitHandler(
 
     const isAjax = isAjaxRequest(req);
 
-    // TODO: separate recaptcha logic into separate function.
-    if (!config.disableRecaptcha && config.reCaptchaSecret) {
-        if (parsedRequestData["g-recaptcha-response"]) {
-            await processReCaptcha(
-                parsedRequestData["g-recaptcha-response"],
-                config.disableRecaptcha,
-                senderIpAddress,
-                config.reCaptchaSecret);
-        } else {
+    const reCaptchaPassed = reCaptchaProcessed(config, parsedRequestData, senderIpAddress, res);
 
-            if (!config.reCaptchaSiteKey) {
-                throw new RecaptchaFailure(
-                    `reCaptcha is enabled but site-key is not provided`);
-            }
-            renderAutomaticRecaptchaPage(config, parsedRequestData, res);
-            return;
-        }
-    }
-    // TODO: join with formHandler() and refactor.
-    await formHandler(
-        config, pathname, isAjax, res, parsedRequestData, bodyStr, senderIpAddress, refererUrl);
-}
-
-function renderAutomaticRecaptchaPage(
-    config: Config,
-    postedData: { [k: string]: string },
-    res: http.ServerResponse,
-): void {
-    const htmlTemplate = fs.readFileSync("./assets/recaptcha.html").toString();
-    const templateData = {
-        dataSiteKey: config.reCaptchaSiteKey,
-        parsedRequestData: JSON.stringify(postedData),
-        submitUrl: SUBMIT_URL_PATH,
-        thanksPageUrl: postedData._redirect || THANKS_URL_PATH,
-    };
-    winston.debug(`Rendering Automatic reCaptcha page.`);
-    const renderedHtml = mst.render(htmlTemplate, templateData);
-    res.write(renderedHtml);
-    res.end();
-}
-
-async function formHandler(
-    config: Config,
-    pathname: string,
-    isAjax: boolean,
-    res: http.ServerResponse,
-    postedData: { [k: string]: string },
-    bodyStr: string,
-    senderIpAddress: string,
-    refererUrl: string,
-): Promise<void> {
+    if (!reCaptchaPassed) { return; }
 
     // getting form target key if there is one
     let formTargetKey = "";
@@ -99,10 +51,11 @@ async function formHandler(
     }
 
     // gathering information
-    const formName = postedData._formname ? `Submitted form: ${postedData._formname}\n` : "";
+    const formName = parsedRequestData._formname ?
+        `Submitted form: ${parsedRequestData._formname}\n` : "";
 
     // rendering email contents
-    const mustacheTemplateData = constructFieldsArrayForMustache(postedData);
+    const mustacheTemplateData = constructFieldsArrayForMustache(parsedRequestData);
 
     const plainTextEmailTemplate = fs.readFileSync(PLAIN_TEXT_EMAIL_TEMPLATE_PATH).toString();
     const htmlEmailTemplate = fs.readFileSync(HTML_EMAIL_TEMPLATE_PATH).toString();
@@ -136,7 +89,7 @@ async function formHandler(
         res.setHeader("content-type", "application/json");
         res.write(JSON.stringify({ result: "ok" }));
     } else {
-        const redirectUrl = postedData._redirect || THANKS_URL_PATH;
+        const redirectUrl = parsedRequestData._redirect || THANKS_URL_PATH;
         winston.debug(`Redirecting to ${redirectUrl}`);
         res.writeHead(303, { Location: redirectUrl });
     }
