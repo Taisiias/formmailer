@@ -8,7 +8,7 @@ import { getRecipients, getSubject } from "./form-target/helpers";
 import { THANKS_URL_PATH } from "./handler";
 import { setCorsHeaders } from "./header";
 import { constructFieldsArrayForMustache } from "./message";
-import { reCaptchaProcessed } from "./recaptcha";
+import { processReCaptcha } from "./recaptcha";
 import { isAjaxRequest, parseRequestData } from "./request";
 import { sendEmail } from "./send";
 
@@ -28,13 +28,18 @@ export async function submitHandler(
 
     // gathering information
     const senderIpAddress = req.connection.remoteAddress || "unknown remote address";
+
+    const reCaptchaPassed = processReCaptcha(config, parsedRequestData, senderIpAddress, res);
+
+    if (!reCaptchaPassed) {
+        return;
+    }
+
     const refererUrl = getRefererUrl(parsedRequestData, req);
+    const formName = parsedRequestData._formname ?
+        `Submitted form: ${parsedRequestData._formname}\n` : "";
 
     const isAjax = isAjaxRequest(req);
-
-    const reCaptchaPassed = reCaptchaProcessed(config, parsedRequestData, senderIpAddress, res);
-
-    if (!reCaptchaPassed) { return; }
 
     // getting form target key if there is one
     let formTargetKey = "";
@@ -49,10 +54,6 @@ export async function submitHandler(
             throw new NotFoundError(`Target form "${formTargetKey}" doesn't exist in config.`);
         }
     }
-
-    // gathering information
-    const formName = parsedRequestData._formname ?
-        `Submitted form: ${parsedRequestData._formname}\n` : "";
 
     // rendering email contents
     const mustacheTemplateData = constructFieldsArrayForMustache(parsedRequestData);
