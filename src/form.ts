@@ -1,19 +1,14 @@
-import * as fs from "fs";
 import * as http from "http";
-import * as mst from "mustache";
 import winston = require("winston");
 import { Config } from "./config";
 import { saveEmailToDB } from "./database";
 import { getRecipients, getSubject } from "./form-target/helpers";
 import { THANKS_URL_PATH } from "./handler";
 import { setCorsHeaders } from "./header";
-import { constructFieldsArrayForMustache } from "./message";
+import { renderEmailContent, renderSubject } from "./message";
 import { processReCaptcha } from "./recaptcha";
 import { isAjaxRequest, parseRequestData } from "./request";
 import { sendEmail } from "./send";
-
-const PLAIN_TEXT_EMAIL_TEMPLATE_PATH = "./assets/plain-text-email-template.mst";
-const HTML_EMAIL_TEMPLATE_PATH = "./assets/html-email-template.html";
 
 export class NotFoundError extends Error { }
 
@@ -54,28 +49,14 @@ export async function submitHandler(
             throw new NotFoundError(`Target form "${formTargetKey}" doesn't exist in config.`);
         }
     }
-
-    // rendering email contents
-    const mustacheTemplateData = constructFieldsArrayForMustache(parsedRequestData);
-
-    const plainTextEmailTemplate = fs.readFileSync(PLAIN_TEXT_EMAIL_TEMPLATE_PATH).toString();
-    const htmlEmailTemplate = fs.readFileSync(HTML_EMAIL_TEMPLATE_PATH).toString();
-
-    const templateData = {
-        formName,
-        mustacheTemplateData,
-        refererUrl,
-        senderIpAddress,
-    };
-
-    const plainTextEmailMessage = mst.render(plainTextEmailTemplate, templateData);
-    const htmlEmailMessage = mst.render(htmlEmailTemplate, templateData);
+    const [plainTextEmailMessage, htmlEmailMessage] =
+        renderEmailContent(parsedRequestData, formName, refererUrl, senderIpAddress);
 
     // getting email subject and recepients
     const subject = getSubject(config, formTargetKey);
     const recepients = getRecipients(config, formTargetKey);
 
-    const renderedSubject = mst.render(subject, { refererUrl, formName });
+    const renderedSubject = renderSubject(subject, refererUrl, formName);
 
     // sending and saving email
     await sendEmail(config, recepients, renderedSubject, plainTextEmailMessage, htmlEmailMessage);
