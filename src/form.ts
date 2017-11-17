@@ -2,7 +2,7 @@ import * as http from "http";
 import winston = require("winston");
 import { Config } from "./config";
 import { saveEmailToDB } from "./database";
-import { getRecipients, getSubject } from "./form-target/helpers";
+import { getRecipients, getSubjectTemplate } from "./form-target/helpers";
 import { THANKS_URL_PATH } from "./handler";
 import { setCorsHeaders } from "./header";
 import { renderEmailContent, renderSubject } from "./message";
@@ -21,22 +21,21 @@ export async function submitHandler(
     const [parsedRequestData, bodyStr] = await parseRequestData(req, config.maxHttpRequestSize);
     winston.debug(`Parsed Request Data ${JSON.stringify(parsedRequestData)}`);
 
-    // gathering information
     const senderIpAddress = req.connection.remoteAddress || "unknown remote address";
 
-    const reCaptchaPassed = processReCaptcha(config, parsedRequestData, senderIpAddress, res);
-
-    if (!reCaptchaPassed) {
+    if (!processReCaptcha(config, parsedRequestData, senderIpAddress, res)) {
         return;
     }
 
     const refererUrl = getRefererUrl(parsedRequestData, req);
-    const formName = parsedRequestData._formname ?
+    const formNameStr = parsedRequestData._formname ?
         `Submitted form: ${parsedRequestData._formname}\n` : "";
 
+    // TODO: return from parseRequestData()
     const isAjax = isAjaxRequest(req);
 
     // getting form target key if there is one
+    // TODO: incapsulate into function.
     let formTargetKey = "";
     winston.debug(`Provided URL path name: "${pathname}"`);
     formTargetKey = pathname.slice(pathname.lastIndexOf("/submit") + 8);
@@ -49,20 +48,17 @@ export async function submitHandler(
             throw new NotFoundError(`Target form "${formTargetKey}" doesn't exist in config.`);
         }
     }
-    const [plainTextEmailMessage, htmlEmailMessage] =
-        renderEmailContent(parsedRequestData, formName, refererUrl, senderIpAddress);
 
-    // getting email subject and recepients
-    const subject = getSubject(config, formTargetKey);
+    // TODO: test form name displaying in subject.
+    const renderedSubject = renderSubject(
+        getSubjectTemplate(config, formTargetKey), refererUrl, formNameStr);
+    const [plainTextEmailMessage, htmlEmailMessage] =
+        renderEmailContent(parsedRequestData, formNameStr, refererUrl, senderIpAddress);
     const recepients = getRecipients(config, formTargetKey);
 
-    const renderedSubject = renderSubject(subject, refererUrl, formName);
-
-    // sending and saving email
     await sendEmail(config, recepients, renderedSubject, plainTextEmailMessage, htmlEmailMessage);
-
     await saveEmailToDB(
-        config.databaseFileName, senderIpAddress, bodyStr, refererUrl, formName,
+        config.databaseFileName, senderIpAddress, bodyStr, refererUrl, formNameStr,
         recepients, plainTextEmailMessage);
 
     // preparing response

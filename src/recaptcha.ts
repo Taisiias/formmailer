@@ -59,7 +59,7 @@ export async function processReCaptcha(
                 throw new RecaptchaFailure(
                     `reCaptcha is enabled but g-recaptcha-response is not provided in request`);
             }
-            renderAutomaticRecaptchaPage(config, parsedRequestData, res);
+            renderAutomaticRecaptchaPage(config.reCaptchaSiteKey, parsedRequestData, res);
             return false;
         }
     }
@@ -67,13 +67,13 @@ export async function processReCaptcha(
 }
 
 function renderAutomaticRecaptchaPage(
-    config: Config,
+    siteKey: string,
     postedData: { [k: string]: string },
     res: http.ServerResponse,
 ): void {
     const htmlTemplate = fs.readFileSync("./assets/recaptcha.html").toString();
     const templateData = {
-        dataSiteKey: config.reCaptchaSiteKey,
+        dataSiteKey: siteKey,
         parsedRequestData: JSON.stringify(postedData),
         submitUrl: SUBMIT_URL_PATH,
         thanksPageUrl: postedData._redirect || THANKS_URL_PATH,

@@ -54,9 +54,9 @@ export function renderEmailContent(
 }
 
 export function renderSubject(
-    subject: string,
+    subjectTemplate: string,
     refererUrl: string,
     formName: string,
 ): string {
-    return mst.render(subject, { refererUrl, formName });
+    return mst.render(subjectTemplate, { refererUrl, formName });
 }
