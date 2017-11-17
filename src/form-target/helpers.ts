@@ -1,6 +1,6 @@
 import { Config } from "../config";
 
-export function getSubject(
+export function getSubjectTemplate(
     config: Config,
     formTargetKey: string,
 ): string {

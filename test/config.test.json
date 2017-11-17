@@ -14,7 +14,7 @@
         "contact": "contact@mydomain.com",
         "sales": {
             "recipient": "sales@mydomain.com",
-            "subject": "Purchase inquiry submitted"
+            "subject": "Purchase inquiry submitted from {{formName}}"
         }
     },
     "logLevel": "debug",

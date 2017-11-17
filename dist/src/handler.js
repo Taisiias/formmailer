@@ -10,9 +10,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const url = require("url");
 const winston = require("winston");
-const captcha_1 = require("./captcha");
 const form_1 = require("./form");
 const header_1 = require("./header");
+const recaptcha_1 = require("./recaptcha");
 const request_1 = require("./request");
 exports.SUBMIT_URL_PATH = "/submit";
 exports.THANKS_URL_PATH = "/thanks";
@@ -49,7 +49,7 @@ function errorHandler(err, req, res, fileServer) {
             fileServer.serveFile("error404.html", 404, {}, req, res);
             return;
         }
-        if (err instanceof captcha_1.RecaptchaFailure) {
+        if (err instanceof recaptcha_1.RecaptchaFailure) {
             res.end();
             return;
         }
