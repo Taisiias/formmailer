@@ -35,19 +35,7 @@ export async function submitHandler(
     const isAjax = isAjaxRequest(req);
 
     // getting form target key if there is one
-    // TODO: incapsulate into function.
-    let formTargetKey = "";
-    winston.debug(`Provided URL path name: "${pathname}"`);
-    formTargetKey = pathname.slice(pathname.lastIndexOf("/submit") + 8);
-    if (formTargetKey.endsWith("/")) {
-        formTargetKey = formTargetKey.slice(0, formTargetKey.lastIndexOf("/"));
-    }
-    winston.debug(`Provided form target key: "${formTargetKey}"`);
-    if (formTargetKey) {
-        if (!config.formTargets.hasOwnProperty(formTargetKey)) {
-            throw new NotFoundError(`Target form "${formTargetKey}" doesn't exist in config.`);
-        }
-    }
+    const formTargetKey = getFormTargetKey(config, pathname);
 
     // TODO: test form name displaying in subject.
     const renderedSubject = renderSubject(
@@ -72,6 +60,25 @@ export async function submitHandler(
         res.writeHead(303, { Location: redirectUrl });
     }
     res.end();
+}
+
+function getFormTargetKey(
+    config: Config,
+    pathname: string,
+): string {
+    let formTargetKey = "";
+    winston.debug(`Provided URL path name: "${pathname}"`);
+    formTargetKey = pathname.slice(pathname.lastIndexOf("/submit") + 8);
+    if (formTargetKey.endsWith("/")) {
+        formTargetKey = formTargetKey.slice(0, formTargetKey.lastIndexOf("/"));
+    }
+    winston.debug(`Provided form target key: "${formTargetKey}"`);
+    if (formTargetKey) {
+        if (!config.formTargets.hasOwnProperty(formTargetKey)) {
+            throw new NotFoundError(`Target form "${formTargetKey}" doesn't exist in config.`);
+        }
+    }
+    return formTargetKey;
 }
 
 function getRefererUrl(
