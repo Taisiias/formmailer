@@ -7,7 +7,7 @@ import { THANKS_URL_PATH } from "./handler";
 import { setCorsHeaders } from "./header";
 import { renderEmailContent, renderSubject } from "./message";
 import { processReCaptcha } from "./recaptcha";
-import { isAjaxRequest, parseRequestData } from "./request";
+import { parseRequestData } from "./request";
 import { sendEmail } from "./send";
 
 export class NotFoundError extends Error { }
@@ -18,7 +18,8 @@ export async function submitHandler(
     req: http.IncomingMessage,
     res: http.ServerResponse,
 ): Promise<void> {
-    const [parsedRequestData, bodyStr] = await parseRequestData(req, config.maxHttpRequestSize);
+    const [parsedRequestData, bodyStr, isAjax] =
+         await parseRequestData(req, config.maxHttpRequestSize);
     winston.debug(`Parsed Request Data ${JSON.stringify(parsedRequestData)}`);
 
     const senderIpAddress = req.connection.remoteAddress || "unknown remote address";
@@ -30,9 +31,6 @@ export async function submitHandler(
     const refererUrl = getRefererUrl(parsedRequestData, req);
     const formNameStr = parsedRequestData._formname ?
         `Submitted form: ${parsedRequestData._formname}\n` : "";
-
-    // TODO: return from parseRequestData()
-    const isAjax = isAjaxRequest(req);
 
     // getting form target key if there is one
     const formTargetKey = getFormTargetKey(config, pathname);
