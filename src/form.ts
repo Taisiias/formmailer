@@ -24,14 +24,14 @@ export async function submitHandler(
 
     const senderIpAddress = req.connection.remoteAddress || "unknown remote address";
 
-    if (!processReCaptcha(config, parsedRequestData, senderIpAddress, res)) {
+    if (!await processReCaptcha(config, parsedRequestData, senderIpAddress, res)) {
         return;
     }
 
     const refererUrl = getRefererUrl(parsedRequestData, req);
     const formNameStr = parsedRequestData._formname ?
         `Submitted form: ${parsedRequestData._formname}\n` : "";
-
+    winston.debug(`formNameStr: ${formNameStr}`);
     // getting form target key if there is one
     const formTargetKey = getFormTargetKey(config, pathname);
 

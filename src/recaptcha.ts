@@ -44,7 +44,7 @@ export async function processReCaptcha(
 ): Promise<boolean> {
     if (!config.disableRecaptcha && config.reCaptchaSecret) {
         if (parsedRequestData["g-recaptcha-response"]) {
-
+            winston.debug(`g-recaptcha-response is present.`);
             const isSpam = await checkIfSpam(
                 senderIpAddress,
                 parsedRequestData["g-recaptcha-response"],
