@@ -29,22 +29,19 @@ export async function submitHandler(
     }
 
     const refererUrl = getRefererUrl(parsedRequestData, req);
-    const formNameStr = parsedRequestData._formname ?
-        `Submitted form: ${parsedRequestData._formname}\n` : "";
-    winston.debug(`formNameStr: ${formNameStr}`);
+
     // getting form target key if there is one
     const formTargetKey = getFormTargetKey(config, pathname);
 
-    // TODO: test form name displaying in subject.
     const renderedSubject = renderSubject(
-        getSubjectTemplate(config, formTargetKey), refererUrl, formNameStr);
+        getSubjectTemplate(config, formTargetKey), refererUrl, parsedRequestData._formname);
     const [plainTextEmailMessage, htmlEmailMessage] =
-        renderEmailContent(parsedRequestData, formNameStr, refererUrl, senderIpAddress);
+        renderEmailContent(parsedRequestData, refererUrl, senderIpAddress);
     const recepients = getRecipients(config, formTargetKey);
 
     await sendEmail(config, recepients, renderedSubject, plainTextEmailMessage, htmlEmailMessage);
     await saveEmailToDB(
-        config.databaseFileName, senderIpAddress, bodyStr, refererUrl, formNameStr,
+        config.databaseFileName, senderIpAddress, bodyStr, refererUrl, parsedRequestData._formname,
         recepients, plainTextEmailMessage);
 
     // preparing response

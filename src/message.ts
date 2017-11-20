@@ -31,7 +31,6 @@ export function constructFieldsArrayForMustache(
 
 export function renderEmailContent(
     parsedRequestData: { [k: string]: string },
-    formName: string,
     refererUrl: string,
     senderIpAddress: string,
 ): [string, string] {
@@ -40,6 +39,9 @@ export function renderEmailContent(
 
     const plainTextEmailTemplate = fs.readFileSync(PLAIN_TEXT_EMAIL_TEMPLATE_PATH).toString();
     const htmlEmailTemplate = fs.readFileSync(HTML_EMAIL_TEMPLATE_PATH).toString();
+
+    const formName = parsedRequestData._formname ?
+    `Submitted form: ${parsedRequestData._formname}\n` : "";
 
     const templateData = {
         formName,
