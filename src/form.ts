@@ -24,7 +24,7 @@ export async function submitHandler(
 
     const senderIpAddress = req.connection.remoteAddress || "unknown remote address";
 
-    if (!await processReCaptcha(config, parsedRequestData, senderIpAddress, res)) {
+    if (!await processReCaptcha(config, parsedRequestData, senderIpAddress, res, pathname)) {
         return;
     }
 

@@ -5,7 +5,7 @@ import * as rp from "request-promise";
 import winston = require("winston");
 import { Config } from "./config";
 
-import { SUBMIT_URL_PATH, THANKS_URL_PATH } from "./handler";
+import { THANKS_URL_PATH } from "./handler";
 
 interface RecaptchaResponse {
     success: boolean;
@@ -41,6 +41,7 @@ export async function processReCaptcha(
     parsedRequestData: { [k: string]: string },
     senderIpAddress: string,
     res: http.ServerResponse,
+    pathName: string,
 ): Promise<boolean> {
     if (!config.disableRecaptcha && config.reCaptchaSecret) {
         if (parsedRequestData["g-recaptcha-response"]) {
@@ -59,7 +60,7 @@ export async function processReCaptcha(
                 throw new RecaptchaFailure(
                     `reCaptcha is enabled but g-recaptcha-response is not provided in request`);
             }
-            renderAutomaticRecaptchaPage(config.reCaptchaSiteKey, parsedRequestData, res);
+            renderAutomaticRecaptchaPage(config.reCaptchaSiteKey, parsedRequestData, res, pathName);
             return false;
         }
     }
@@ -70,12 +71,13 @@ function renderAutomaticRecaptchaPage(
     siteKey: string,
     postedData: { [k: string]: string },
     res: http.ServerResponse,
+    pathName: string,
 ): void {
     const htmlTemplate = fs.readFileSync("./assets/recaptcha.html").toString();
     const templateData = {
         dataSiteKey: siteKey,
         parsedRequestData: JSON.stringify(postedData),
-        submitUrl: SUBMIT_URL_PATH,
+        submitUrl: pathName,
         thanksPageUrl: postedData._redirect || THANKS_URL_PATH,
     };
     winston.debug(`Rendering Automatic reCaptcha page.`);
