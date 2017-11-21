@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-function getSubject(config, formTargetKey) {
+function getSubjectTemplate(config, formTargetKey) {
     if (!formTargetKey) {
         return config.subject;
     }
@@ -14,7 +14,7 @@ function getSubject(config, formTargetKey) {
         return currentFormSettings.subject || config.subject;
     }
 }
-exports.getSubject = getSubject;
+exports.getSubjectTemplate = getSubjectTemplate;
 function getRecipients(config, formTargetKey) {
     if (!formTargetKey) {
         return config.recipientEmails;

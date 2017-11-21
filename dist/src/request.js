@@ -17,7 +17,7 @@ function parseRequestData(req, maxHttpRequestSize) {
         const postedData = isAjax ?
             JSON.parse(bodyStr) :
             qs.parse(bodyStr);
-        return [postedData, bodyStr];
+        return [postedData, bodyStr, isAjax];
     });
 }
 exports.parseRequestData = parseRequestData;

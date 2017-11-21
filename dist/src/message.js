@@ -22,11 +22,13 @@ function constructFieldsArrayForMustache(post) {
     return resultingArray;
 }
 exports.constructFieldsArrayForMustache = constructFieldsArrayForMustache;
-function renderEmailContent(parsedRequestData, formName, refererUrl, senderIpAddress) {
+function renderEmailContent(parsedRequestData, refererUrl, senderIpAddress) {
     // rendering email contents
     const mustacheTemplateData = constructFieldsArrayForMustache(parsedRequestData);
     const plainTextEmailTemplate = fs.readFileSync(PLAIN_TEXT_EMAIL_TEMPLATE_PATH).toString();
     const htmlEmailTemplate = fs.readFileSync(HTML_EMAIL_TEMPLATE_PATH).toString();
+    const formName = parsedRequestData._formname ?
+        `Submitted form: ${parsedRequestData._formname}\n` : "";
     const templateData = {
         formName,
         mustacheTemplateData,
@@ -38,7 +40,7 @@ function renderEmailContent(parsedRequestData, formName, refererUrl, senderIpAdd
     return [plainTextEmailMessage, htmlEmailMessage];
 }
 exports.renderEmailContent = renderEmailContent;
-function renderSubject(subject, refererUrl, formName) {
-    return mst.render(subject, { refererUrl, formName });
+function renderSubject(subjectTemplate, refererUrl, formName) {
+    return mst.render(subjectTemplate, { refererUrl, formName });
 }
 exports.renderSubject = renderSubject;

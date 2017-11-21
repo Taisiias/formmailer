@@ -80,9 +80,12 @@ function getRefererUrl(
     post: { [k: string]: string },
     req: http.IncomingMessage,
 ): string {
-    const headerRefererUrl: string =
-        (req.headers.referer instanceof Array) ?
-            req.headers.referer[0] : req.headers.referer as string;
-
-    return post._formurl || headerRefererUrl || "Unspecified URL";
+    const ref = req.headers.referer;
+    if (typeof ref === "undefined") {
+        return post._formurl || "Unspecified URL";
+    } else if (ref instanceof Array) {
+        return ref[0];
+    } else {
+        return ref;
+    }
 }

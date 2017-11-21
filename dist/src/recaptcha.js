@@ -33,10 +33,11 @@ function checkIfSpam(remoteip, response, secret) {
         return !body.success;
     });
 }
-function processReCaptcha(config, parsedRequestData, senderIpAddress, res) {
+function processReCaptcha(config, parsedRequestData, senderIpAddress, res, pathName) {
     return __awaiter(this, void 0, void 0, function* () {
         if (!config.disableRecaptcha && config.reCaptchaSecret) {
             if (parsedRequestData["g-recaptcha-response"]) {
+                winston.debug(`g-recaptcha-response is present.`);
                 const isSpam = yield checkIfSpam(senderIpAddress, parsedRequestData["g-recaptcha-response"], config.reCaptchaSecret);
                 if (isSpam) {
                     throw new RecaptchaFailure(`reCAPTCHA failure.`);
@@ -46,7 +47,7 @@ function processReCaptcha(config, parsedRequestData, senderIpAddress, res) {
                 if (!config.reCaptchaSiteKey) {
                     throw new RecaptchaFailure(`reCaptcha is enabled but g-recaptcha-response is not provided in request`);
                 }
-                renderAutomaticRecaptchaPage(config, parsedRequestData, res);
+                renderAutomaticRecaptchaPage(config.reCaptchaSiteKey, parsedRequestData, res, pathName);
                 return false;
             }
         }
@@ -54,12 +55,12 @@ function processReCaptcha(config, parsedRequestData, senderIpAddress, res) {
     });
 }
 exports.processReCaptcha = processReCaptcha;
-function renderAutomaticRecaptchaPage(config, postedData, res) {
+function renderAutomaticRecaptchaPage(siteKey, postedData, res, pathName) {
     const htmlTemplate = fs.readFileSync("./assets/recaptcha.html").toString();
     const templateData = {
-        dataSiteKey: config.reCaptchaSiteKey,
+        dataSiteKey: siteKey,
         parsedRequestData: JSON.stringify(postedData),
-        submitUrl: handler_1.SUBMIT_URL_PATH,
+        submitUrl: pathName,
         thanksPageUrl: postedData._redirect || handler_1.THANKS_URL_PATH,
     };
     winston.debug(`Rendering Automatic reCaptcha page.`);
