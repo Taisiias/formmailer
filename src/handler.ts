@@ -2,6 +2,9 @@ import * as http from "http";
 import * as ns from "node-static";
 import * as url from "url";
 
+import * as fs from "fs";
+import * as mst from "mustache";
+
 import winston = require("winston");
 
 import { Config } from "./config";
@@ -12,6 +15,7 @@ import { isAjaxRequest } from "./request";
 
 export const SUBMIT_URL_PATH = "/submit";
 export const THANKS_URL_PATH = "/thanks";
+const VIEW_URL_PATH = "/view";
 
 async function routeRequest(
     config: Config,
@@ -27,6 +31,15 @@ async function routeRequest(
         await submitHandler(config, parsedUrl.pathname, req, res);
     } else if (parsedUrl.pathname === THANKS_URL_PATH) {
         fileServer.serveFile("thanks.html", 200, {}, req, res);
+    } else if (parsedUrl.pathname === VIEW_URL_PATH) {
+        const htmlTemplate = fs.readFileSync("./assets/view.html").toString();
+        const templateData = {
+            name: "World",
+        };
+        winston.debug(`Rendering Automatic reCaptcha page.`);
+        const renderedHtml = mst.render(htmlTemplate, templateData);
+        res.write(renderedHtml);
+        res.end();
     } else {
         throw new NotFoundError(`Incorrect request: ${parsedUrl.pathname} (${req.method})`);
     }

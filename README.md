@@ -122,8 +122,6 @@ Option  | Description | Default
 `disableRecaptcha` | If true, receiver handler should not check `g-recaptcha-response` field even if site key is provided. | `false`
 `recipientEmails` | E-mail recipient address. String or array of strings (for multiple recepients). | Required field.
 `redirectFieldName` | Name of the HTML input that contains redirect URL address. | `"_redirect"`
-`smtpHost` | SMTP server host name or IP. | `"localhost"`
-`smtpPort` | SMTP server port. | `25`
 `smtpOptions` | [Nodemailer options](https://nodemailer.com/smtp/) object. | `{host: "localhost", port: 25, tls: { rejectUnauthorized: false }}`
 `subject` | Email subject field content. Special entry `{{{referrerUrl}}}` will be changed to the address of the webpage from where the form is submitted. | `"Form submitted on {{{referrerUrl}}}"`
 
