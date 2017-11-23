@@ -1,4 +1,8 @@
 import * as http from "http";
+
+import * as fs from "fs";
+import * as mst from "mustache";
+
 import winston = require("winston");
 import { Config } from "./config";
 import { saveEmailToDB } from "./database";
@@ -54,6 +58,19 @@ export async function submitHandler(
         winston.debug(`Redirecting to ${redirectUrl}`);
         res.writeHead(303, { Location: redirectUrl });
     }
+    res.end();
+}
+
+export function viewEmailHistory(
+    res: http.ServerResponse,
+): void {
+    const htmlTemplate = fs.readFileSync("./assets/view.html").toString();
+    const templateData = {
+        name: "World",
+    };
+    winston.debug(`Rendering Automatic reCaptcha page.`);
+    const renderedHtml = mst.render(htmlTemplate, templateData);
+    res.write(renderedHtml);
     res.end();
 }
 
