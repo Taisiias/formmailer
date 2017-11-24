@@ -5,7 +5,7 @@ import * as mst from "mustache";
 
 import winston = require("winston");
 import { Config } from "./config";
-import { saveEmailToDB } from "./database";
+import { FormmailerDataObject, saveEmailToDB, viewSentEmails } from "./database";
 import { getRecipients, getSubjectTemplate } from "./form-target/helpers";
 import { THANKS_URL_PATH } from "./handler";
 import { setCorsHeaders } from "./header";
@@ -63,12 +63,15 @@ export async function submitHandler(
 
 export function viewEmailHistory(
     res: http.ServerResponse,
+    config: Config,
 ): void {
     const htmlTemplate = fs.readFileSync("./assets/view.html").toString();
+
+    const formmailerData: FormmailerDataObject[] = viewSentEmails(config.databaseFileName);
     const templateData = {
-        name: "World",
+        name: formmailerData.length,
     };
-    winston.debug(`Rendering Automatic reCaptcha page.`);
+    winston.debug(`Rendering View sent emails page.`);
     const renderedHtml = mst.render(htmlTemplate, templateData);
     res.write(renderedHtml);
     res.end();
