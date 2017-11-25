@@ -52,20 +52,21 @@ export async function saveEmailToDB(
     db.close();
 }
 
-export function viewSentEmails(databaseFileName: string): FormmailerDataObject[] {
-    let resultArray: FormmailerDataObject[] = [];
-    const db = new sqlite3.Database(databaseFileName);
+export async function viewSentEmails(databaseFileName: string): Promise<FormmailerDataObject[]> {
+    return new Promise<FormmailerDataObject[]>((resolve, reject) => {
+        const db = new sqlite3.Database(databaseFileName);
 
-    db.all(
-        `SELECT date, referrer, form_name, post, user_message, to_email, ip
-         FROM formmailer_data`,
-        (err, rows) => {
-            if (err) {
-                winston.debug(err.message);
-                return;
-            }
-            resultArray = rows;
-        });
-    db.close();
-    return resultArray;
+        db.all(
+            `SELECT date, referrer, form_name, post, user_message, to_email, ip
+            FROM formmailer_data
+            ORDER by date DESC`,
+            (err, rows) => {
+                if (err) {
+                    reject(err);
+                }
+                winston.debug(`Rows length: ${rows.length}`);
+                resolve(rows as FormmailerDataObject[]);
+            });
+        db.close();
+    });
 }

@@ -1,3 +1,6 @@
 <html>
-    <p>Hello {{name}}!</p>
+    <p>Number of records: {{length}}</p>
+    {{#formmailerData}}
+    <p><span style="margin:10px; color: rgb(0, 0, 0);"><strong>{{date}}:</strong></span><span style="white-space: pre-wrap">{{user_message}}</span></p>
+    {{/formmailerData}}
 </html>

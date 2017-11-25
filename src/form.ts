@@ -61,15 +61,16 @@ export async function submitHandler(
     res.end();
 }
 
-export function viewEmailHistory(
+export async function viewEmailHistory(
     res: http.ServerResponse,
     config: Config,
-): void {
+): Promise<void> {
     const htmlTemplate = fs.readFileSync("./assets/view.html").toString();
 
-    const formmailerData: FormmailerDataObject[] = viewSentEmails(config.databaseFileName);
+    const formmailerData: FormmailerDataObject[] = await viewSentEmails(config.databaseFileName);
     const templateData = {
-        name: formmailerData.length,
+        formmailerData,
+        length: formmailerData.length,
     };
     winston.debug(`Rendering View sent emails page.`);
     const renderedHtml = mst.render(htmlTemplate, templateData);

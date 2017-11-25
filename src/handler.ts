@@ -29,7 +29,7 @@ async function routeRequest(
     } else if (parsedUrl.pathname === THANKS_URL_PATH) {
         fileServer.serveFile("thanks.html", 200, {}, req, res);
     } else if (parsedUrl.pathname === VIEW_URL_PATH) {
-        viewEmailHistory(res, config);
+        await viewEmailHistory(res, config);
     } else {
         throw new NotFoundError(`Incorrect request: ${parsedUrl.pathname} (${req.method})`);
     }
