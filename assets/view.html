@@ -1,6 +1,24 @@
-<html>
-    <p>Number of records: {{length}}</p>
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Hello, world!</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+  </head>
+  <body>
+    <h3>Number of records: {{length}}</h3>
     {{#formmailerData}}
-    <p><span style="margin:10px; color: rgb(0, 0, 0);"><strong>{{date}}:</strong></span><span style="white-space: pre-wrap">{{user_message}}</span></p>
+    <p>
+        <span style="margin:10px; color: rgb(0, 0, 0);">
+            <strong>{{date}}:</strong>
+        </span>
+        <span style="white-space: pre-wrap">{{user_message}}</span>
+    </p>
     {{/formmailerData}}
+
+    </body>
 </html>
