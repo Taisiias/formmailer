@@ -5,6 +5,8 @@ import * as rp from "request-promise";
 import winston = require("winston");
 import { Config } from "./config";
 
+import { getAssetFolderPath } from "./asset";
+
 import { THANKS_URL_PATH } from "./handler";
 
 interface RecaptchaResponse {
@@ -60,7 +62,8 @@ export async function processReCaptcha(
                 throw new RecaptchaFailure(
                     `reCaptcha is enabled but g-recaptcha-response is not provided in request`);
             }
-            renderAutomaticRecaptchaPage(config.reCaptchaSiteKey, parsedRequestData, res, pathName);
+            renderAutomaticRecaptchaPage(
+                config.reCaptchaSiteKey, parsedRequestData, res, pathName, config.assetsFolder);
             return false;
         }
     }
@@ -72,8 +75,11 @@ function renderAutomaticRecaptchaPage(
     postedData: { [k: string]: string },
     res: http.ServerResponse,
     pathName: string,
+    assetFolder: string,
 ): void {
-    const htmlTemplate = fs.readFileSync("./assets/recaptcha.html").toString();
+    const htmlTemplate =
+        fs.readFileSync(getAssetFolderPath(assetFolder, "recaptcha.html")).toString();
+
     const templateData = {
         dataSiteKey: siteKey,
         parsedRequestData: JSON.stringify(postedData),

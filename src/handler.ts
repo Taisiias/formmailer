@@ -1,5 +1,4 @@
 import * as http from "http";
-import * as ns from "node-static";
 import * as url from "url";
 
 import winston = require("winston");
@@ -9,6 +8,7 @@ import { NotFoundError, submitHandler, viewEmailHistory } from "./form";
 import { setCorsHeaders } from "./header";
 import { RecaptchaFailure } from "./recaptcha";
 import { isAjaxRequest } from "./request";
+import { StaticFileServer} from "./static-file-server";
 
 export const SUBMIT_URL_PATH = "/submit";
 export const THANKS_URL_PATH = "/thanks";
@@ -18,7 +18,7 @@ async function routeRequest(
     config: Config,
     req: http.IncomingMessage,
     res: http.ServerResponse,
-    fileServer: ns.Server,
+    staticFileServer: StaticFileServer,
 ): Promise<void> {
     const parsedUrl = url.parse(req.url as string, true);
     winston.debug(`Pathname: ${parsedUrl.pathname}`);
@@ -27,7 +27,7 @@ async function routeRequest(
         req.method === "POST") {
         await submitHandler(config, parsedUrl.pathname, req, res);
     } else if (parsedUrl.pathname === THANKS_URL_PATH) {
-        fileServer.serveFile("thanks.html", 200, {}, req, res);
+        staticFileServer.serveFile("thanks.html", 200, req, res);
     } else if (parsedUrl.pathname === VIEW_URL_PATH) {
         await viewEmailHistory(res, config);
     } else {
@@ -39,7 +39,7 @@ async function errorHandler(
     err: Error,
     req: http.IncomingMessage,
     res: http.ServerResponse,
-    fileServer: ns.Server,
+    staticFileServer: StaticFileServer,
 ): Promise<void> {
     winston.warn(`Error in Connection Handler: ${err}`);
     const isAjax = isAjaxRequest(req);
@@ -53,19 +53,19 @@ async function errorHandler(
     }
 
     if (err instanceof NotFoundError) {
-        fileServer.serveFile("error404.html", 404, {}, req, res);
+        staticFileServer.serveFile("error404.html", 404, req, res);
         return;
     }
     if (err instanceof RecaptchaFailure) {
         res.end();
         return;
     }
-    fileServer.serveFile("error502.html", 502, {}, req, res);
+    staticFileServer.serveFile("error502.html", 502, req, res);
 }
 
 export function constructConnectionHandler(
     config: Config,
-    fileServer: ns.Server,
+    staticFileServer: StaticFileServer,
 ): (req: http.IncomingMessage, res: http.ServerResponse) => void {
     return (req: http.IncomingMessage, res: http.ServerResponse) => {
         winston.debug(`Incoming request: ${req.url} (method: ${req.method})`);
@@ -78,8 +78,8 @@ export function constructConnectionHandler(
             return;
         }
 
-        routeRequest(config, req, res, fileServer).catch(async (err: Error) => {
-            await errorHandler(err, req, res, fileServer);
+        routeRequest(config, req, res, staticFileServer).catch(async (err: Error) => {
+            await errorHandler(err, req, res, staticFileServer);
         });
     };
 }

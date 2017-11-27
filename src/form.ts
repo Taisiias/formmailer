@@ -4,6 +4,7 @@ import * as fs from "fs";
 import * as mst from "mustache";
 
 import winston = require("winston");
+import { getAssetFolderPath} from "./asset";
 import { Config } from "./config";
 import { FormmailerDataObject, saveEmailToDB, viewSentEmails } from "./database";
 import { getRecipients, getSubjectTemplate } from "./form-target/helpers";
@@ -40,7 +41,7 @@ export async function submitHandler(
     const renderedSubject = renderSubject(
         getSubjectTemplate(config, formTargetKey), refererUrl, parsedRequestData._formname);
     const [plainTextEmailMessage, htmlEmailMessage] =
-        renderEmailContent(parsedRequestData, refererUrl, senderIpAddress);
+        renderEmailContent(parsedRequestData, refererUrl, senderIpAddress, config.assetsFolder);
     const recepients = getRecipients(config, formTargetKey);
 
     await sendEmail(config, recepients, renderedSubject, plainTextEmailMessage, htmlEmailMessage);
@@ -65,7 +66,8 @@ export async function viewEmailHistory(
     res: http.ServerResponse,
     config: Config,
 ): Promise<void> {
-    const htmlTemplate = fs.readFileSync("./assets/view.html").toString();
+    const htmlTemplate =
+        fs.readFileSync(getAssetFolderPath(config.assetsFolder, "view.html")).toString();
 
     const formmailerData: FormmailerDataObject[] = await viewSentEmails(config.databaseFileName);
     const templateData = {

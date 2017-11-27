@@ -13,8 +13,8 @@
 </head>
 
 <body>
-    <h3>Number of records: {{length}}</h3>
-    <table class="table table-striped">
+    <h5>Number of records: {{length}}</h5>
+    <table class="table table-striped" style="font-size:12px">
         <thead>
             <tr>
                 <th scope="col">Date</th>
@@ -29,7 +29,7 @@
             {{#formmailerData}}
             <tr>
                 <td>
-                    <strong>{{date}}</strong>
+                    <strong><nobr>{{date}}</nobr></strong>
                 </td>
                 <td>
                     {{referrer}}

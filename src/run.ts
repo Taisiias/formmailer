@@ -1,12 +1,12 @@
 import * as fs from "fs";
 import * as http from "http";
 import * as https from "https";
-import * as ns from "node-static";
 import winston = require("winston");
 import * as yargs from "yargs";
 import { readConfig } from "./config";
 import { createDatabaseAndTables } from "./database";
 import { constructConnectionHandler } from "./handler";
+import { StaticFileServer} from "./static-file-server";
 
 const DEFAULT_CONFIG_PATH = "./config.json";
 const STARTUP_LOG_LEVEL = "debug";
@@ -37,11 +37,11 @@ function run(): void {
 
     winston.level = config.logLevel;
 
-    const fileServer = new ns.Server(config.assetsFolder);
+    const staticFileServer = new StaticFileServer(config.assetsFolder);
     createDatabaseAndTables(config.databaseFileName);
 
     if (config.enableHttp) {
-        const httpServer = http.createServer(constructConnectionHandler(config, fileServer));
+        const httpServer = http.createServer(constructConnectionHandler(config, staticFileServer));
         httpServer.listen(config.httpListenPort, config.httpListenIP, () => {
             winston.info(
                 `HTTP server started (listening ${config.httpListenIP}:${config.httpListenPort})`);
@@ -54,7 +54,7 @@ function run(): void {
             key: fs.readFileSync(config.httpsPrivateKeyPath, "utf8"),
         };
         const httpsServer = https.createServer(
-            options, constructConnectionHandler(config, fileServer));
+            options, constructConnectionHandler(config, staticFileServer));
         httpsServer.listen(config.httpsListenPort, config.httpsListenIP, () => {
             winston.info(
                 `HTTPS server started ` +

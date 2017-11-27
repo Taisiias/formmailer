@@ -2,8 +2,10 @@ import * as fs from "fs";
 import * as he from "he";
 import * as mst from "mustache";
 
-const PLAIN_TEXT_EMAIL_TEMPLATE_PATH = "./assets/plain-text-email-template.mst";
-const HTML_EMAIL_TEMPLATE_PATH = "./assets/html-email-template.html";
+import { getAssetFolderPath } from "./asset";
+
+const PLAIN_TEXT_EMAIL_TEMPLATE_FILENAME = "plain-text-email-template.mst";
+const HTML_EMAIL_TEMPLATE_FILENAME = "html-email-template.html";
 
 export interface MustacheTemplateObject {
     key: string;
@@ -33,15 +35,20 @@ export function renderEmailContent(
     parsedRequestData: { [k: string]: string },
     refererUrl: string,
     senderIpAddress: string,
+    assetFolder: string,
 ): [string, string] {
     // rendering email contents
     const mustacheTemplateData = constructFieldsArrayForMustache(parsedRequestData);
 
-    const plainTextEmailTemplate = fs.readFileSync(PLAIN_TEXT_EMAIL_TEMPLATE_PATH).toString();
-    const htmlEmailTemplate = fs.readFileSync(HTML_EMAIL_TEMPLATE_PATH).toString();
+    const plainTextEmailTemplate =
+        fs.readFileSync(getAssetFolderPath(
+            assetFolder, PLAIN_TEXT_EMAIL_TEMPLATE_FILENAME)).toString();
+
+    const htmlEmailTemplate =
+        fs.readFileSync(getAssetFolderPath(assetFolder, HTML_EMAIL_TEMPLATE_FILENAME)).toString();
 
     const formName = parsedRequestData._formname ?
-    `Submitted form: ${parsedRequestData._formname}\n` : "";
+        `Submitted form: ${parsedRequestData._formname}\n` : "";
 
     const templateData = {
         formName,
