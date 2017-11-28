@@ -7,9 +7,7 @@ export function getAssetFolderPath(
     const packageAssetsFolderPath = `../../${__dirname}`;
     if (fs.existsSync(`${configAssetsFolderPath}/${fileName}`)) {
         return `${configAssetsFolderPath}/${fileName}`;
-    } else if (fs.existsSync(`${packageAssetsFolderPath}/${fileName}`)) {
-        return `${packageAssetsFolderPath}/${fileName}`;
     } else {
-        throw new Error ("Asset file not found.");
+        return `${packageAssetsFolderPath}/${fileName}`;
     }
 }
