@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import * as http from "http";
 import * as ns from "node-static";
+import * as path from "path";
 
 export class StaticFileServer {
     private packageAssetsFileServer: ns.Server;
@@ -9,7 +10,8 @@ export class StaticFileServer {
     private packageAssetsFolderPath: string;
 
     constructor(private configAssetsFolderPath: string) {
-        this.packageAssetsFolderPath = `../../${__dirname}`;
+        this.packageAssetsFolderPath = path.join(__dirname, "../../assets");
+
         this.configAssetsFileServer = new ns.Server(this.configAssetsFolderPath);
         this.packageAssetsFileServer = new ns.Server(this.packageAssetsFolderPath);
     }
