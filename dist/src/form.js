@@ -8,7 +8,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const fs = require("fs");
+const mst = require("mustache");
 const winston = require("winston");
+const asset_1 = require("./asset");
 const database_1 = require("./database");
 const helpers_1 = require("./form-target/helpers");
 const handler_1 = require("./handler");
@@ -32,7 +35,7 @@ function submitHandler(config, pathname, req, res) {
         // getting form target key if there is one
         const formTargetKey = getFormTargetKey(config, pathname);
         const renderedSubject = message_1.renderSubject(helpers_1.getSubjectTemplate(config, formTargetKey), refererUrl, parsedRequestData._formname);
-        const [plainTextEmailMessage, htmlEmailMessage] = message_1.renderEmailContent(parsedRequestData, refererUrl, senderIpAddress);
+        const [plainTextEmailMessage, htmlEmailMessage] = message_1.renderEmailContent(parsedRequestData, refererUrl, senderIpAddress, config.assetsFolder);
         const recepients = helpers_1.getRecipients(config, formTargetKey);
         yield send_1.sendEmail(config, recepients, renderedSubject, plainTextEmailMessage, htmlEmailMessage);
         yield database_1.saveEmailToDB(config.databaseFileName, senderIpAddress, bodyStr, refererUrl, parsedRequestData._formname, recepients, plainTextEmailMessage);
@@ -51,6 +54,21 @@ function submitHandler(config, pathname, req, res) {
     });
 }
 exports.submitHandler = submitHandler;
+function viewEmailHistory(res, config) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const htmlTemplate = fs.readFileSync(asset_1.getAssetFolderPath(config.assetsFolder, "view.html")).toString();
+        const formmailerData = yield database_1.viewSentEmails(config.databaseFileName);
+        const templateData = {
+            formmailerData,
+            length: formmailerData.length,
+        };
+        winston.debug(`Rendering View sent emails page.`);
+        const renderedHtml = mst.render(htmlTemplate, templateData);
+        res.write(renderedHtml);
+        res.end();
+    });
+}
+exports.viewEmailHistory = viewEmailHistory;
 function getFormTargetKey(config, pathname) {
     let formTargetKey = "";
     winston.debug(`Provided URL path name: "${pathname}"`);

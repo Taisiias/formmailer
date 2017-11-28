@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.6.1] - 2017-11-28
+### Added
+- Basic sent email history view.
+
+### Changed
+- Fix: using package assets if no user assets found.
+
 ## [0.6.0] - 2017-11-20
 ### Added
 - Automatic reCaptcha.
@@ -12,7 +19,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Deleted
 - `requireReCaptchaResponse` config setting.
-
 
 ## [0.5.0] - 2017-10-23
 ### Added

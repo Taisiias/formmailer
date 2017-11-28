@@ -3,12 +3,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs");
 const http = require("http");
 const https = require("https");
-const ns = require("node-static");
 const winston = require("winston");
 const yargs = require("yargs");
 const config_1 = require("./config");
 const database_1 = require("./database");
 const handler_1 = require("./handler");
+const static_file_server_1 = require("./static-file-server");
 const DEFAULT_CONFIG_PATH = "./config.json";
 const STARTUP_LOG_LEVEL = "debug";
 function run() {
@@ -34,10 +34,10 @@ function run() {
         .argv;
     const config = config_1.readConfig(args.config);
     winston.level = config.logLevel;
-    const fileServer = new ns.Server(config.assetsFolder);
+    const staticFileServer = new static_file_server_1.StaticFileServer(config.assetsFolder);
     database_1.createDatabaseAndTables(config.databaseFileName);
     if (config.enableHttp) {
-        const httpServer = http.createServer(handler_1.constructConnectionHandler(config, fileServer));
+        const httpServer = http.createServer(handler_1.constructConnectionHandler(config, staticFileServer));
         httpServer.listen(config.httpListenPort, config.httpListenIP, () => {
             winston.info(`HTTP server started (listening ${config.httpListenIP}:${config.httpListenPort})`);
         });
@@ -47,7 +47,7 @@ function run() {
             cert: fs.readFileSync(config.httpsCertificatePath, "utf8"),
             key: fs.readFileSync(config.httpsPrivateKeyPath, "utf8"),
         };
-        const httpsServer = https.createServer(options, handler_1.constructConnectionHandler(config, fileServer));
+        const httpsServer = https.createServer(options, handler_1.constructConnectionHandler(config, staticFileServer));
         httpsServer.listen(config.httpsListenPort, config.httpsListenIP, () => {
             winston.info(`HTTPS server started ` +
                 `(listening ${config.httpsListenIP}:${config.httpsListenPort})`);

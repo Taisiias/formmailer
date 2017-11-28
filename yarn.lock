@@ -59,13 +59,13 @@
     "@types/node" "*"
     "@types/nodemailer" "^3"
 
-"@types/nodemailer@*":
+"@types/nodemailer@*", "@types/nodemailer@^4.3.1":
   version "4.3.1"
   resolved "https://registry.yarnpkg.com/@types/nodemailer/-/nodemailer-4.3.1.tgz#e3985c1b7c7bbbb2a886108b89f1c7ce9a690654"
   dependencies:
     "@types/node" "*"
 
-"@types/nodemailer@^3", "@types/nodemailer@^3.1.3":
+"@types/nodemailer@^3":
   version "3.1.5"
   resolved "https://registry.yarnpkg.com/@types/nodemailer/-/nodemailer-3.1.5.tgz#fca70985f741354034e750967ab183e99562a9ee"
   dependencies:
@@ -1435,7 +1435,7 @@ nodemailer-wellknown@0.1.10:
   version "0.1.10"
   resolved "https://registry.yarnpkg.com/nodemailer-wellknown/-/nodemailer-wellknown-0.1.10.tgz#586db8101db30cb4438eb546737a41aad0cf13d5"
 
-nodemailer@^4.0.1, nodemailer@^4.1.2:
+nodemailer@^4.1.2, nodemailer@^4.4.0:
   version "4.4.0"
   resolved "https://registry.yarnpkg.com/nodemailer/-/nodemailer-4.4.0.tgz#571989e524a906fb83b1518f3e4c0d3140db24af"
 

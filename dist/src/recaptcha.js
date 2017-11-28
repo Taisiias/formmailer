@@ -12,6 +12,7 @@ const fs = require("fs");
 const mst = require("mustache");
 const rp = require("request-promise");
 const winston = require("winston");
+const asset_1 = require("./asset");
 const handler_1 = require("./handler");
 class RecaptchaFailure extends Error {
 }
@@ -47,7 +48,7 @@ function processReCaptcha(config, parsedRequestData, senderIpAddress, res, pathN
                 if (!config.reCaptchaSiteKey) {
                     throw new RecaptchaFailure(`reCaptcha is enabled but g-recaptcha-response is not provided in request`);
                 }
-                renderAutomaticRecaptchaPage(config.reCaptchaSiteKey, parsedRequestData, res, pathName);
+                renderAutomaticRecaptchaPage(config.reCaptchaSiteKey, parsedRequestData, res, pathName, config.assetsFolder);
                 return false;
             }
         }
@@ -55,8 +56,8 @@ function processReCaptcha(config, parsedRequestData, senderIpAddress, res, pathN
     });
 }
 exports.processReCaptcha = processReCaptcha;
-function renderAutomaticRecaptchaPage(siteKey, postedData, res, pathName) {
-    const htmlTemplate = fs.readFileSync("./assets/recaptcha.html").toString();
+function renderAutomaticRecaptchaPage(siteKey, postedData, res, pathName, assetFolder) {
+    const htmlTemplate = fs.readFileSync(asset_1.getAssetFolderPath(assetFolder, "recaptcha.html")).toString();
     const templateData = {
         dataSiteKey: siteKey,
         parsedRequestData: JSON.stringify(postedData),

@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const sqlite3 = require("sqlite3");
+const winston = require("winston");
 function createDatabaseAndTables(databaseFileName) {
     const db = new sqlite3.Database(databaseFileName);
     db.run(`
@@ -41,3 +42,21 @@ function saveEmailToDB(databaseFileName, ip, post, referrer, formName, toEmail, 
     });
 }
 exports.saveEmailToDB = saveEmailToDB;
+function viewSentEmails(databaseFileName) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((resolve, reject) => {
+            const db = new sqlite3.Database(databaseFileName);
+            db.all(`SELECT date, referrer, form_name, post, user_message, to_email, ip
+            FROM formmailer_data
+            ORDER by date DESC`, (err, rows) => {
+                if (err) {
+                    reject(err);
+                }
+                winston.debug(`Rows length: ${rows.length}`);
+                resolve(rows);
+            });
+            db.close();
+        });
+    });
+}
+exports.viewSentEmails = viewSentEmails;
