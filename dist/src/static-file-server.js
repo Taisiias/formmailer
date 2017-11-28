@@ -2,10 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs");
 const ns = require("node-static");
+const path = require("path");
 class StaticFileServer {
     constructor(configAssetsFolderPath) {
         this.configAssetsFolderPath = configAssetsFolderPath;
-        this.packageAssetsFolderPath = `../../${__dirname}`;
+        this.packageAssetsFolderPath = path.join(__dirname, "../../assets");
         this.configAssetsFileServer = new ns.Server(this.configAssetsFolderPath);
         this.packageAssetsFileServer = new ns.Server(this.packageAssetsFolderPath);
     }
