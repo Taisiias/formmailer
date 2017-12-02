@@ -3,7 +3,8 @@
 <head>
     <script type='text/javascript'>
         const THANKS_PAGE = "{{{thanksPageUrl}}}";
-        const DATA = {{{parsedRequestData}}};
+        const ERROR_PAGE = "{{{errorPageUrl}}}";
+        const DATA = {{{ parsedRequestData }}};
         const SUBMIT_URL = "{{{submitUrl}}}"
 
         var onRecaptchaCheck = function (token) {
@@ -19,10 +20,14 @@
         };
 
         function ajaxSuccess() {
-            window.location.replace(THANKS_PAGE);
+            if (JSON.parse(this.responseText).result === "error") {
+                window.location.replace(ERROR_PAGE);
+            } else {
+                window.location.replace(THANKS_PAGE);
+            }
         };
 
-        window.onload = function() {
+        window.onload = function () {
             grecaptcha.execute();
         }
     </script>
@@ -30,11 +35,7 @@
 </head>
 
 <body>
-    <div id='recaptcha'
-        class="g-recaptcha"
-        data-sitekey="{{{dataSiteKey}}}"
-        data-callback="onRecaptchaCheck"
-        data-size="invisible">
+    <div id='recaptcha' class="g-recaptcha" data-sitekey="{{{dataSiteKey}}}" data-callback="onRecaptchaCheck" data-size="invisible">
     </div>
 </body>
 

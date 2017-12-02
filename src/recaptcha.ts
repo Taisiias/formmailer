@@ -7,7 +7,7 @@ import { Config } from "./config";
 
 import { getAssetFolderPath } from "./asset";
 
-import { THANKS_URL_PATH } from "./handler";
+import { ERROR502_URL_PATH, THANKS_URL_PATH } from "./handler";
 
 interface RecaptchaResponse {
     success: boolean;
@@ -82,6 +82,7 @@ function renderAutomaticRecaptchaPage(
 
     const templateData = {
         dataSiteKey: siteKey,
+        errorPageUrl: ERROR502_URL_PATH,
         parsedRequestData: JSON.stringify(postedData),
         submitUrl: pathName,
         thanksPageUrl: postedData._redirect || THANKS_URL_PATH,

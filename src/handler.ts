@@ -8,10 +8,11 @@ import { NotFoundError, submitHandler, viewEmailHistory } from "./form";
 import { setCorsHeaders } from "./header";
 import { RecaptchaFailure } from "./recaptcha";
 import { isAjaxRequest } from "./request";
-import { StaticFileServer} from "./static-file-server";
+import { StaticFileServer } from "./static-file-server";
 
 export const SUBMIT_URL_PATH = "/submit";
 export const THANKS_URL_PATH = "/thanks";
+export const ERROR502_URL_PATH = "/error502";
 const VIEW_URL_PATH = "/view";
 
 async function routeRequest(
@@ -30,6 +31,8 @@ async function routeRequest(
         staticFileServer.serveFile("thanks.html", 200, req, res);
     } else if (parsedUrl.pathname === VIEW_URL_PATH) {
         await viewEmailHistory(res, config);
+    } else if (parsedUrl.pathname === ERROR502_URL_PATH) {
+        staticFileServer.serveFile("error502.html", 502, req, res);
     } else {
         throw new NotFoundError(`Incorrect request: ${parsedUrl.pathname} (${req.method})`);
     }
