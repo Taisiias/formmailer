@@ -1,5 +1,4 @@
 import * as sqlite3 from "sqlite3";
-import winston = require("winston");
 
 export interface FormmailerDataObject {
     date: Date;
@@ -64,7 +63,6 @@ export async function viewSentEmails(databaseFileName: string): Promise<Formmail
                 if (err) {
                     reject(err);
                 }
-                winston.debug(`Rows length: ${rows.length}`);
                 resolve(rows as FormmailerDataObject[]);
             });
         db.close();
