@@ -40,6 +40,14 @@
             "description": "HTTPS listen port",
             "type": "integer"
         },
+        "webInterfaceIP": {
+            "description": "Web Interface IP",
+            "type": "string"
+        },
+        "webInterfacePort": {
+            "description": "Web Interface port",
+            "type": "integer"
+        },
         "recipientEmails": {
             "description": "Recipient emails",
             "type": [

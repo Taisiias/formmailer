@@ -25,6 +25,8 @@ export interface Config {
     disableRecaptcha: boolean;
     smtpOptions: smtpTransport.SmtpOptions;
     subject: string;
+    webInterfaceIP: string;
+    webInterfacePort: number;
 }
 
 export interface FormTargetData {
@@ -59,6 +61,8 @@ const DefaultConfigObject: Config = {
         tls: { rejectUnauthorized: false },
     },
     subject: "Form submitted on {{{refererUrl}}}",
+    webInterfaceIP: "0.0.0.0",
+    webInterfacePort: 3002,
 };
 
 export function readConfig(path: string): Config {

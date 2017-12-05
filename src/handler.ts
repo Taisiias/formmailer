@@ -29,8 +29,6 @@ async function routeRequest(
         await submitHandler(config, parsedUrl.pathname, req, res);
     } else if (parsedUrl.pathname === THANKS_URL_PATH) {
         staticFileServer.serveFile("thanks.html", 200, req, res);
-    } else if (parsedUrl.pathname === VIEW_URL_PATH) {
-        await viewEmailHistory(res, config);
     } else if (parsedUrl.pathname === ERROR502_URL_PATH) {
         staticFileServer.serveFile("error502.html", 502, req, res);
     } else {
@@ -84,5 +82,17 @@ export function constructConnectionHandler(
         routeRequest(config, req, res, staticFileServer).catch(async (err: Error) => {
             await errorHandler(err, req, res, staticFileServer);
         });
+    };
+}
+
+export function viewHistoryHandler(
+    config: Config,
+): (req: http.IncomingMessage, res: http.ServerResponse) => void {
+    return (req: http.IncomingMessage, res: http.ServerResponse) => {
+        const parsedUrl = url.parse(req.url as string, true);
+        winston.debug(`Pathname: ${parsedUrl.pathname}`);
+        if (parsedUrl.pathname === VIEW_URL_PATH) {
+            viewEmailHistory(res, config);
+        }
     };
 }

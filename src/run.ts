@@ -5,7 +5,7 @@ import winston = require("winston");
 import * as yargs from "yargs";
 import { readConfig } from "./config";
 import { createDatabaseAndTables } from "./database";
-import { constructConnectionHandler } from "./handler";
+import { constructConnectionHandler, viewHistoryHandler } from "./handler";
 import { StaticFileServer} from "./static-file-server";
 
 const DEFAULT_CONFIG_PATH = "./config.json";
@@ -61,6 +61,12 @@ function run(): void {
                 `(listening ${config.httpsListenIP}:${config.httpsListenPort})`);
         });
     }
+
+    const viewHistoryHttpServer = http.createServer(viewHistoryHandler(config));
+    viewHistoryHttpServer.listen(config.webInterfacePort, config.webInterfaceIP, () => {
+        winston.info(
+            `HTTP server started (listening ${config.httpListenIP}:${config.webInterfacePort})`);
+    });
 }
 
 export function runAndReport(): void {
