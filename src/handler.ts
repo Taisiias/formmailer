@@ -92,7 +92,11 @@ export function viewHistoryHandler(
         const parsedUrl = url.parse(req.url as string, true);
         winston.debug(`Pathname: ${parsedUrl.pathname}`);
         if (parsedUrl.pathname === VIEW_URL_PATH) {
-            viewEmailHistory(res, config);
+            viewEmailHistory(res, config).then(() => {
+                winston.debug("Correctly returned email history page.");
+            }).catch((err) => {
+                winston.warn(`Can't render email history page: ${err}`);
+            });
         }
     };
 }
