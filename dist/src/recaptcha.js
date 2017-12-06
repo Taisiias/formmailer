@@ -60,6 +60,7 @@ function renderAutomaticRecaptchaPage(siteKey, postedData, res, pathName, assetF
     const htmlTemplate = fs.readFileSync(asset_1.getAssetFolderPath(assetFolder, "recaptcha.html")).toString();
     const templateData = {
         dataSiteKey: siteKey,
+        errorPageUrl: handler_1.ERROR502_URL_PATH,
         parsedRequestData: JSON.stringify(postedData),
         submitUrl: pathName,
         thanksPageUrl: postedData._redirect || handler_1.THANKS_URL_PATH,

@@ -53,6 +53,10 @@ function run() {
                 `(listening ${config.httpsListenIP}:${config.httpsListenPort})`);
         });
     }
+    const viewHistoryHttpServer = http.createServer(handler_1.viewHistoryHandler(config));
+    viewHistoryHttpServer.listen(config.webInterfacePort, config.webInterfaceIP, () => {
+        winston.info(`HTTP server started (listening ${config.httpListenIP}:${config.webInterfacePort})`);
+    });
 }
 function runAndReport() {
     try {

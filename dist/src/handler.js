@@ -16,6 +16,7 @@ const recaptcha_1 = require("./recaptcha");
 const request_1 = require("./request");
 exports.SUBMIT_URL_PATH = "/submit";
 exports.THANKS_URL_PATH = "/thanks";
+exports.ERROR502_URL_PATH = "/error502";
 const VIEW_URL_PATH = "/view";
 function routeRequest(config, req, res, staticFileServer) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -29,8 +30,8 @@ function routeRequest(config, req, res, staticFileServer) {
         else if (parsedUrl.pathname === exports.THANKS_URL_PATH) {
             staticFileServer.serveFile("thanks.html", 200, req, res);
         }
-        else if (parsedUrl.pathname === VIEW_URL_PATH) {
-            yield form_1.viewEmailHistory(res, config);
+        else if (parsedUrl.pathname === exports.ERROR502_URL_PATH) {
+            staticFileServer.serveFile("error502.html", 502, req, res);
         }
         else {
             throw new form_1.NotFoundError(`Incorrect request: ${parsedUrl.pathname} (${req.method})`);
@@ -76,3 +77,13 @@ function constructConnectionHandler(config, staticFileServer) {
     };
 }
 exports.constructConnectionHandler = constructConnectionHandler;
+function viewHistoryHandler(config) {
+    return (req, res) => {
+        const parsedUrl = url.parse(req.url, true);
+        winston.debug(`Pathname: ${parsedUrl.pathname}`);
+        if (parsedUrl.pathname === VIEW_URL_PATH) {
+            form_1.viewEmailHistory(res, config);
+        }
+    };
+}
+exports.viewHistoryHandler = viewHistoryHandler;

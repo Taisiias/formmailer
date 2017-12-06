@@ -9,7 +9,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const sqlite3 = require("sqlite3");
-const winston = require("winston");
 function createDatabaseAndTables(databaseFileName) {
     const db = new sqlite3.Database(databaseFileName);
     db.run(`
@@ -52,7 +51,6 @@ function viewSentEmails(databaseFileName) {
                 if (err) {
                     reject(err);
                 }
-                winston.debug(`Rows length: ${rows.length}`);
                 resolve(rows);
             });
             db.close();

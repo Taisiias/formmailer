@@ -29,6 +29,8 @@ const DefaultConfigObject = {
         tls: { rejectUnauthorized: false },
     },
     subject: "Form submitted on {{{refererUrl}}}",
+    webInterfaceIP: "0.0.0.0",
+    webInterfacePort: 3002,
 };
 function readConfig(path) {
     let cf;
