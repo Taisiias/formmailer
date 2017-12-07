@@ -9,6 +9,7 @@ export interface Config {
     enableHtmlEmail: boolean;
     enableHttp: boolean;
     enableHttps: boolean;
+    enableWebInterface: boolean;
     formTargets: { [k: string]: string | string[] | FormTargetData };
     fromEmail: string;
     httpListenIP: string;
@@ -41,6 +42,7 @@ const DefaultConfigObject: Config = {
     enableHtmlEmail: true,
     enableHttp: true,
     enableHttps: true,
+    enableWebInterface: true,
     formTargets: {},
     fromEmail: "formmailer@localhost",
     httpListenIP: "0.0.0.0",

@@ -90,7 +90,7 @@ export function viewHistoryHandler(
 ): (req: http.IncomingMessage, res: http.ServerResponse) => void {
     return (req: http.IncomingMessage, res: http.ServerResponse) => {
         const parsedUrl = url.parse(req.url as string, true);
-        winston.debug(`Pathname: ${parsedUrl.pathname}`);
+        winston.debug(`View Pathname: ${parsedUrl.pathname}`);
         if (parsedUrl.pathname === VIEW_URL_PATH) {
             viewEmailHistory(res, config).then(() => {
                 winston.debug("Correctly returned email history page.");

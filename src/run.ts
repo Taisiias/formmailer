@@ -6,7 +6,7 @@ import * as yargs from "yargs";
 import { readConfig } from "./config";
 import { createDatabaseAndTables } from "./database";
 import { constructConnectionHandler, viewHistoryHandler } from "./handler";
-import { StaticFileServer} from "./static-file-server";
+import { StaticFileServer } from "./static-file-server";
 
 const DEFAULT_CONFIG_PATH = "./config.json";
 const STARTUP_LOG_LEVEL = "debug";
@@ -15,7 +15,9 @@ function run(): void {
     winston.configure({
         level: STARTUP_LOG_LEVEL,
         transports: [new winston.transports.Console({
+            colorize: true,
             name: "Console",
+            prettyPrint: true,
             timestamp: true,
         })],
     });
@@ -61,12 +63,14 @@ function run(): void {
                 `(listening ${config.httpsListenIP}:${config.httpsListenPort})`);
         });
     }
-
-    const viewHistoryHttpServer = http.createServer(viewHistoryHandler(config));
-    viewHistoryHttpServer.listen(config.webInterfacePort, config.webInterfaceIP, () => {
-        winston.info(
-            `HTTP server started (listening ${config.httpListenIP}:${config.webInterfacePort})`);
-    });
+    if (config.enableWebInterface) {
+        const viewHistoryHttpServer = http.createServer(viewHistoryHandler(config));
+        viewHistoryHttpServer.listen(config.webInterfacePort, config.webInterfaceIP, () => {
+            winston.info(
+                `Web Interface server started ` +
+                `(listening ${config.httpListenIP}:${config.webInterfacePort})`);
+        });
+    }
 }
 
 export function runAndReport(): void {
