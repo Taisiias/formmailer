@@ -16,6 +16,18 @@
     <link href="https://cdn.datatables.net/responsive/2.2.0/css/responsive.dataTables.min.css" rel="stylesheet">
     <link href="//cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/buttons/1.4.2/css/buttons.dataTables.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" rel="stylesheet">
+
+    <style>
+        td.details-control {
+            background: url('https://datatables.net/examples/resources/details_open.png') no-repeat center center;
+            cursor: pointer;
+        }
+
+        tr.shown td.details-control {
+            background: url('https://datatables.net/examples/resources/details_close.png') no-repeat center center;
+        }
+    </style>
 
     <script type="text/javascript" charset="utf8" src="//code.jquery.com/jquery-1.12.4.js"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
@@ -27,10 +39,50 @@
         $(document).ready(function () {
             $('#view').DataTable(
                 {
-                    buttons: ['colvis'],
+                    "columns": [
+                        {
+                            "className": 'details-control',
+                            "orderable": false,
+                            "data": null,
+                            "defaultContent": ''
+                        },
+                        { "data": "date" },
+                        { "data": "referrer" },
+                        { "data": "form_name" },
+                        { "data": "to_email" },
+                        { "data": "ip" },
+                        { "data": "user_message" }
+                    ],
                     pageLength: 25,
                 }
             );
+        });
+
+
+        function format(d) {
+            // `d` is the original data object for the row
+            return '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">' +
+                '<tr>' +
+                '<td>User message:</td>' +
+                '<td>' + d.user_message + '</td>' +
+                '</tr>' +
+                '</table>';
+        }
+
+        $('#view tbody').on('click', 'td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = table.row(tr);
+
+            if (row.child.isShown()) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+            }
+            else {
+                // Open this row
+                row.child(format(row.data())).show();
+                tr.addClass('shown');
+            }
         });
     </script>
 
@@ -39,12 +91,13 @@
 <body>
     <main role="main" class="container">
         <div style="margin-top:30px; margin-bottom:30px">
-        <h3>Submissions History</h3>
+            <h3>Submissions History</h3>
         </div>
         <div>
             <table id="view" class="display responsive nowrap" cellspacing="0" width="100%" style="font-size:14px">
                 <thead>
                     <tr>
+                        <th scope="col"></th>
                         <th scope="col">Date</th>
                         <th scope="col">Referrer</th>
                         <th scope="col">Form</th>
@@ -55,6 +108,7 @@
                 </thead>
                 <tfoot>
                     <tr>
+                        <th scope="col"></th>
                         <th scope="col">Date</th>
                         <th scope="col">Referrer</th>
                         <th scope="col">Form</th>
