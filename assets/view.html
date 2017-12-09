@@ -37,7 +37,7 @@
 
     <script>
         $(document).ready(function () {
-            $('#view').DataTable(
+            var table = $('#view').DataTable(
                 {
                     "columns": [
                         {
@@ -51,38 +51,42 @@
                         { "data": "form_name" },
                         { "data": "to_email" },
                         { "data": "ip" },
-                        { "data": "user_message" }
+                        { "data": "user_message", "visible": false }
                     ],
                     pageLength: 25,
                 }
             );
-        });
 
 
-        function format(d) {
-            // `d` is the original data object for the row
-            return '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">' +
-                '<tr>' +
-                '<td>User message:</td>' +
-                '<td>' + d.user_message + '</td>' +
-                '</tr>' +
-                '</table>';
-        }
 
-        $('#view tbody').on('click', 'td.details-control', function () {
-            var tr = $(this).closest('tr');
-            var row = table.row(tr);
-
-            if (row.child.isShown()) {
-                // This row is already open - close it
-                row.child.hide();
-                tr.removeClass('shown');
+            function format(d) {
+                // `d` is the original data object for the row
+                console.log('calling format(d)');
+                return '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">' +
+                    '<tr>' +
+                    '<td style="vertical-align:top"><strong>Text:<strong></td>' +
+                    '<td>' + d.user_message + '</td>' +
+                    '</tr>' +
+                    '</table>';
             }
-            else {
-                // Open this row
-                row.child(format(row.data())).show();
-                tr.addClass('shown');
-            }
+
+            $('#view tbody').on('click', 'td.details-control', function () {
+                console.log('$(this): ', $(this));
+                var tr = $(this).closest('tr');
+                console.log(tr);
+                var row = table.row(tr);
+
+                if (row.child.isShown()) {
+                    // This row is already open - close it
+                    row.child.hide();
+                    tr.removeClass('shown');
+                }
+                else {
+                    // Open this row
+                    row.child(format(row.data())).show();
+                    tr.addClass('shown');
+                }
+            });
         });
     </script>
 
@@ -103,7 +107,7 @@
                         <th scope="col">Form</th>
                         <th scope="col">Recipient</th>
                         <th scope="col">IP</th>
-                        <th scope="col">Sent Email Text:</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tfoot>
@@ -114,12 +118,13 @@
                         <th scope="col">Form</th>
                         <th scope="col">Recipient</th>
                         <th scope="col">IP</th>
-                        <th scope="col">Sent Email Text:</th>
+                        <th></th>
                     </tr>
                 </tfoot>
                 <tbody>
                     {{#formmailerData}}
                     <tr>
+                        <td></td>
                         <td>
                             <nobr>{{date}}</nobr>
                         </td>
@@ -136,8 +141,7 @@
                             {{ip}}
                         </td>
                         <td>
-                            <span style="white-space: pre-wrap">
-                                <br>{{user_message}}</span>
+                            <span style="white-space: pre-wrap">{{user_message}}</span>
                         </td>
                     </tr>
                     {{/formmailerData}}
