@@ -40,6 +40,10 @@
             "description": "HTTPS listen port",
             "type": "integer"
         },
+        "enableWebInterface": {
+            "description": "Determines if sent email history should be accessible for view",
+            "type": "boolean"
+        },
         "webInterfaceIP": {
             "description": "Web Interface IP",
             "type": "string"

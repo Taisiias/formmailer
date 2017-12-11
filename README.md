@@ -124,6 +124,9 @@ Option  | Description | Default
 `redirectFieldName` | Name of the HTML input that contains redirect URL address. | `"_redirect"`
 `smtpOptions` | [Nodemailer options](https://nodemailer.com/smtp/) object. | `{host: "localhost", port: 25, tls: { rejectUnauthorized: false }}`
 `subject` | Email subject field content. Special entry `{{{referrerUrl}}}` will be changed to the address of the webpage from where the form is submitted. | `"Form submitted on {{{referrerUrl}}}"`
+`enableWebInterface` | Enables viewing sent email history. | `true`
+`webInterfacePort` | Port to listen HTTP requests from to view sent email history. | `3002`
+`webInterfaceIP` | IP address to listen HTTP requests from to view sent email history. | `"0.0.0.0"` (all IP addresses)
 
 ## Optional features
 
@@ -231,6 +234,12 @@ Variable | Description
 `incomingIp` | Sender IP address.
 `mustacheTemplateData` | User-submitted data (key: `key`, value: `textValue`).
 `refererUrl` | Referer URL (from HTTP request headers).
+
+## Sent email history view
+
+By default, HTTP server starts on `http://webInterfaceIP:webInerfacePort/view` where you are able to view sent email history. You can disable this by setting `enableWebInterface` to `false`.
+
+*NOTE: As there is currently no authentication in Formmailer service it is recommended to hide webInterfaceIP and webInterfacePort from outside world and make it accassable only at local network.*
 
 ## Deploying
 
