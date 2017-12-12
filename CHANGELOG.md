@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
-- Ability to view sent email history.
+- Web interface for viewing email history.
 - `enableWebInterface` config setting.
 - `webInterfaceIP` config setting.
 - `webInterfacePort` config setting.

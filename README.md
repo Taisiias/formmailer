@@ -124,9 +124,9 @@ Option  | Description | Default
 `redirectFieldName` | Name of the HTML input that contains redirect URL address. | `"_redirect"`
 `smtpOptions` | [Nodemailer options](https://nodemailer.com/smtp/) object. | `{host: "localhost", port: 25, tls: { rejectUnauthorized: false }}`
 `subject` | Email subject field content. Special entry `{{{referrerUrl}}}` will be changed to the address of the webpage from where the form is submitted. | `"Form submitted on {{{referrerUrl}}}"`
-`enableWebInterface` | Enables viewing sent email history. | `true`
-`webInterfacePort` | Port to listen HTTP requests from to view sent email history. | `3002`
-`webInterfaceIP` | IP address to listen HTTP requests from to view sent email history. | `"0.0.0.0"` (all IP addresses)
+`enableWebInterface` | Enables separate HTTP server that provides the UI for viewing sent email history. | `true`
+`webInterfaceIP` | Sent email history HTTP server IP address binding. | `"0.0.0.0"` (all IP addresses)
+`webInterfacePort` | Sent email history HTTP server port. | `3002`
 
 ## Optional features
 
@@ -216,7 +216,7 @@ FormMailer accepts JSON requests, distingushing them by `content-type: applicati
 
 If email was sent successfully, JSON response `{ result: "ok" }` will be returned. Or `{ result: "error", description: "error details description" }`, in case of an error.
 
-### Email templates
+### Email Templates
 
 FormMailer is using [Mustache.JS](https://github.com/janl/mustache.js) templates for email body and subject. Email can be sent both as plain text and as HTML. Sending out HTML emails can be turned off by setting `enableHtmlEmail` to `false` in the config.
 
@@ -235,11 +235,11 @@ Variable | Description
 `mustacheTemplateData` | User-submitted data (key: `key`, value: `textValue`).
 `refererUrl` | Referer URL (from HTTP request headers).
 
-## Sent email history view
+## Viewing Sent Emails History
 
-By default, HTTP server starts on `http://webInterfaceIP:webInerfacePort/view` where you are able to view sent email history. You can disable this by setting `enableWebInterface` to `false`.
+By default, you can access sent emails history table by the address: `http://localhost:3002/view`. You can disable this by changing `enableWebInterface` setting to `false`.
 
-*NOTE: As there is currently no authentication in Formmailer service it is recommended to hide webInterfaceIP and webInterfacePort from outside world and make it accassable only at local network.*
+*NOTE: As there is currently no authentication in the Formmailer web-interface, it is recommended to make `webInterfacePort` (3002 by default) accessible only from local intranet. Or restrict the IP network for web-interface HTTP server by setting `webInterfaceIP` config to something different from `0.0.0.0`.*
 
 ## Deploying
 
