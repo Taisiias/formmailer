@@ -1,6 +1,6 @@
 import * as sqlite3 from "sqlite3";
 
-export interface FormmailerDataObject {
+export interface SentEmailInfo {
     date: Date;
     ip: string;
     post: string;
@@ -11,8 +11,8 @@ export interface FormmailerDataObject {
 }
 
 export function createDatabaseAndTables(databaseFileName: string): void {
+    // TODO: make async
     const db = new sqlite3.Database(databaseFileName);
-
     db.run(`
         CREATE TABLE IF NOT EXISTS formmailer_data (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -36,6 +36,7 @@ export async function saveEmailToDB(
     toEmail: string | string[],
     sentMessage: string,
 ): Promise<void> {
+    // TODO: make async
     const db = new sqlite3.Database(databaseFileName);
     db.run(
         `INSERT INTO formmailer_data (date, referrer, form_name, post, user_message, to_email, ip)
@@ -51,10 +52,11 @@ export async function saveEmailToDB(
     db.close();
 }
 
-export async function viewSentEmails(databaseFileName: string): Promise<FormmailerDataObject[]> {
-    return new Promise<FormmailerDataObject[]>((resolve, reject) => {
+export async function loadSentEmailsInfo(
+    databaseFileName: string,
+): Promise<SentEmailInfo[]> {
+    return new Promise<SentEmailInfo[]>((resolve, reject) => {
         const db = new sqlite3.Database(databaseFileName);
-
         db.all(
             `SELECT date, referrer, form_name, post, user_message, to_email, ip
             FROM formmailer_data
@@ -63,7 +65,7 @@ export async function viewSentEmails(databaseFileName: string): Promise<Formmail
                 if (err) {
                     reject(err);
                 }
-                resolve(rows as FormmailerDataObject[]);
+                resolve(rows as SentEmailInfo[]);
             });
         db.close();
     });

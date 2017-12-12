@@ -6,7 +6,7 @@ import * as mst from "mustache";
 import winston = require("winston");
 import { getAssetFolderPath} from "./asset";
 import { Config } from "./config";
-import { FormmailerDataObject, saveEmailToDB, viewSentEmails } from "./database";
+import { loadSentEmailsInfo, saveEmailToDB, SentEmailInfo } from "./database";
 import { getRecipients, getSubjectTemplate } from "./form-target/helpers";
 import { THANKS_URL_PATH } from "./handler";
 import { setCorsHeaders } from "./header";
@@ -69,7 +69,8 @@ export async function viewEmailHistory(
     const htmlTemplate =
         fs.readFileSync(getAssetFolderPath(config.assetsFolder, "view.html")).toString();
 
-    const formmailerData: FormmailerDataObject[] = await viewSentEmails(config.databaseFileName);
+    // TODO: rename to `sentEmails`
+    const formmailerData: SentEmailInfo[] = await loadSentEmailsInfo(config.databaseFileName);
     const templateData = {
         formmailerData,
         length: formmailerData.length,
