@@ -69,11 +69,9 @@ export async function viewEmailHistory(
     const htmlTemplate =
         fs.readFileSync(getAssetFolderPath(config.assetsFolder, "view.html")).toString();
 
-    // TODO: rename to `sentEmails`
-    const formmailerData: SentEmailInfo[] = await loadSentEmailsInfo(config.databaseFileName);
+    const sentEmails: SentEmailInfo[] = await loadSentEmailsInfo(config.databaseFileName);
     const templateData = {
-        formmailerData,
-        length: formmailerData.length,
+        sentEmails,
     };
     winston.debug(`Rendering View sent emails page.`);
     const renderedHtml = mst.render(htmlTemplate, templateData);

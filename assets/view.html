@@ -71,7 +71,7 @@
                     </tr>
                 </tfoot>
                 <tbody>
-                    {{#formmailerData}}
+                    {{#sentEmails}}
                     <tr>
                         <td>
                             <nobr>{{date}}</nobr>
@@ -89,11 +89,13 @@
                             {{ip}}
                         </td>
                         <td>
-                            <span style="white-space: pre-wrap">
-                                <br>{{user_message}}</span>
+                        </br>
+                            {{#user_message}}
+                                </br>{{.}}
+                            {{/user_message}}
                         </td>
                     </tr>
-                    {{/formmailerData}}
+                    {{/sentEmails}}
                 </tbody>
             </table>
         </div>

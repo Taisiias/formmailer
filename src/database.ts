@@ -7,7 +7,7 @@ export interface SentEmailInfo {
     referrer: string;
     formName: string;
     toEmail: string | string[];
-    sentMessage: string;
+    sentMessage: string[];
 }
 
 export function createDatabaseAndTables(databaseFileName: string): void {
@@ -65,6 +65,9 @@ export async function loadSentEmailsInfo(
                 if (err) {
                     reject(err);
                 }
+                rows.forEach((r) => {
+                    r.user_message = (r.user_message as string).split("\n");
+                });
                 resolve(rows as SentEmailInfo[]);
             });
         db.close();
