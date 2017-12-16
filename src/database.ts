@@ -83,7 +83,8 @@ export async function loadSentEmailsInfo(
                 if (err) {
                     reject(err);
                 }
-                rows.forEach((r) => {
+                // tslint:disable-next-line:no-any
+                rows.forEach((r: {user_message: any}) => {
                     r.user_message = (r.user_message as string).split("\n");
                 });
                 resolve(rows as SentEmailInfo[]);

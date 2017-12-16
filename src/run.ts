@@ -40,7 +40,9 @@ function run(): void {
     winston.level = config.logLevel;
 
     const staticFileServer = new StaticFileServer(config.assetsFolder);
-    createDatabaseAndTables(config.databaseFileName);
+    createDatabaseAndTables(config.databaseFileName).catch((err) => {
+        winston.warn(`Error while creating database tables: ${err}`);
+    });
 
     if (config.enableHttp) {
         const httpServer = http.createServer(constructConnectionHandler(config, staticFileServer));
