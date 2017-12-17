@@ -12,26 +12,25 @@ export interface SentEmailInfo {
 
 export async function createDatabaseAndTables(databaseFileName: string): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-        // TODO: make async
         const db = new sqlite3.Database(databaseFileName);
         db.run(
             `CREATE TABLE IF NOT EXISTS formmailer_data (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            date DATETIME,
-            referrer TEXT,
-            form_name TEXT,
-            post TEXT,
-            user_message TEXT,
-            to_email TEXT,
-            ip TEXT
-        )`,
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                date DATETIME,
+                referrer TEXT,
+                form_name TEXT,
+                post TEXT,
+                user_message TEXT,
+                to_email TEXT,
+                ip TEXT
+            )`,
             (err) => {
+                db.close();
                 if (err) {
                     reject(err);
                 }
                 resolve();
             });
-        db.close();
     });
 }
 
@@ -44,7 +43,6 @@ export async function saveEmailToDB(
     toEmail: string | string[],
     sentMessage: string,
 ): Promise<void> {
-    // TODO: make async
     return new Promise<void>((resolve, reject) => {
         const db = new sqlite3.Database(databaseFileName);
         db.run(
@@ -61,12 +59,12 @@ export async function saveEmailToDB(
                 $user_message: sentMessage,
             },
             (err) => {
+                db.close();
                 if (err) {
                     reject(err);
                 }
                 resolve();
             });
-        db.close();
     });
 }
 
@@ -77,18 +75,18 @@ export async function loadSentEmailsInfo(
         const db = new sqlite3.Database(databaseFileName);
         db.all(
             `SELECT date, referrer, form_name, post, user_message, to_email, ip
-            FROM formmailer_data
-            ORDER by date DESC`,
+            FROM formmailer_data`,
             (err, rows) => {
+                db.close();
                 if (err) {
                     reject(err);
                 }
                 // tslint:disable-next-line:no-any
-                rows.forEach((r: {user_message: any}) => {
+                rows.forEach((r: { user_message: any }) => {
                     r.user_message = (r.user_message as string).split("\n");
                 });
                 resolve(rows as SentEmailInfo[]);
             });
-        db.close();
+
     });
 }
