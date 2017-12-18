@@ -15,7 +15,9 @@ function run() {
     winston.configure({
         level: STARTUP_LOG_LEVEL,
         transports: [new winston.transports.Console({
+                colorize: true,
                 name: "Console",
+                prettyPrint: true,
                 timestamp: true,
             })],
     });
@@ -35,7 +37,9 @@ function run() {
     const config = config_1.readConfig(args.config);
     winston.level = config.logLevel;
     const staticFileServer = new static_file_server_1.StaticFileServer(config.assetsFolder);
-    database_1.createDatabaseAndTables(config.databaseFileName);
+    database_1.createDatabaseAndTables(config.databaseFileName).catch((err) => {
+        winston.warn(`Error while creating database tables: ${err}`);
+    });
     if (config.enableHttp) {
         const httpServer = http.createServer(handler_1.constructConnectionHandler(config, staticFileServer));
         httpServer.listen(config.httpListenPort, config.httpListenIP, () => {
@@ -53,10 +57,13 @@ function run() {
                 `(listening ${config.httpsListenIP}:${config.httpsListenPort})`);
         });
     }
-    const viewHistoryHttpServer = http.createServer(handler_1.viewHistoryHandler(config));
-    viewHistoryHttpServer.listen(config.webInterfacePort, config.webInterfaceIP, () => {
-        winston.info(`HTTP server started (listening ${config.httpListenIP}:${config.webInterfacePort})`);
-    });
+    if (config.enableWebInterface) {
+        const viewHistoryHttpServer = http.createServer(handler_1.viewHistoryHandler(config));
+        viewHistoryHttpServer.listen(config.webInterfacePort, config.webInterfaceIP, () => {
+            winston.info(`Web Interface server started ` +
+                `(listening ${config.httpListenIP}:${config.webInterfacePort})`);
+        });
+    }
 }
 function runAndReport() {
     try {

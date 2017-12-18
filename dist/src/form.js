@@ -57,10 +57,9 @@ exports.submitHandler = submitHandler;
 function viewEmailHistory(res, config) {
     return __awaiter(this, void 0, void 0, function* () {
         const htmlTemplate = fs.readFileSync(asset_1.getAssetFolderPath(config.assetsFolder, "view.html")).toString();
-        const formmailerData = yield database_1.viewSentEmails(config.databaseFileName);
+        const sentEmails = yield database_1.loadSentEmailsInfo(config.databaseFileName);
         const templateData = {
-            formmailerData,
-            length: formmailerData.length,
+            sentEmails,
         };
         winston.debug(`Rendering View sent emails page.`);
         const renderedHtml = mst.render(htmlTemplate, templateData);

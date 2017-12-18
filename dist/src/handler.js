@@ -80,9 +80,13 @@ exports.constructConnectionHandler = constructConnectionHandler;
 function viewHistoryHandler(config) {
     return (req, res) => {
         const parsedUrl = url.parse(req.url, true);
-        winston.debug(`Pathname: ${parsedUrl.pathname}`);
+        winston.debug(`View Pathname: ${parsedUrl.pathname}`);
         if (parsedUrl.pathname === VIEW_URL_PATH) {
-            form_1.viewEmailHistory(res, config);
+            form_1.viewEmailHistory(res, config).then(() => {
+                winston.debug("Correctly returned email history page.");
+            }).catch((err) => {
+                winston.warn(`Can't render email history page: ${err}`);
+            });
         }
     };
 }

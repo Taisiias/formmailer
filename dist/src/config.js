@@ -9,6 +9,7 @@ const DefaultConfigObject = {
     enableHtmlEmail: true,
     enableHttp: true,
     enableHttps: true,
+    enableWebInterface: true,
     formTargets: {},
     fromEmail: "formmailer@localhost",
     httpListenIP: "0.0.0.0",

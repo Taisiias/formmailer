@@ -1,6 +1,6 @@
 {
   "name": "formmailer",
-  "version": "0.6.2",
+  "version": "0.7.0",
   "description": "HTTP server that emails data submitted on static website forms.",
   "main": "index.js",
   "scripts": {
