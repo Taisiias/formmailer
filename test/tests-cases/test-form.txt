@@ -1,0 +1,480 @@
+{
+    "reCaptchaSiteKey": "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI",
+    "reCaptchaSecret": "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe",
+    "disableRecaptcha": false,
+    "recipientEmails" : "root@localhost",
+    "fromEmail": "formmailer@localhost",
+    "httpListenIP": "0.0.0.0",
+    "httpListenPort": 3000,
+    "httpsListenPort": 3001,
+    "httpsCertificatePath": "./test/cert/server.crt",
+    "httpsPrivateKeyPath": "./test/cert/key.pem",
+    "enableHttps": true,
+    "enableHttp": true,
+    "formTargets": {
+        "contact": "contact@mydomain.com",
+        "sales": {
+            "recipient": "sales@mydomain.com",
+            "subject": "Purchase inquiry submitted from {{formName}}"
+        }
+    },
+    "logLevel": "debug",
+    "smtpOptions": {
+        "host": "localhost",
+        "port": 2500
+    }
+}
+
+
+---
+curl 'https://localhost:3001/submit/'
+-H 'Pragma: no-cache'
+-H 'Origin: http://127.0.0.1:8080'
+-H 'Accept-Encoding: gzip, deflate, br'
+-H 'Accept-Language: en-US,en;q=0.9,es;q=0.8,ru;q=0.7,uk;q=0.6'
+-H 'Upgrade-Insecure-Requests: 1'
+-H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36'
+-H 'Content-Type: application/x-www-form-urlencoded'
+-H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8'
+-H 'Cache-Control: no-cache'
+-H 'Referer: http://127.0.0.1:8080/'
+-H 'Cookie: _ym_uid=1503937015301271580; io=cLlilaknXKVgrBskAAAH; _ga=GA1.1.506022750.1503937015'
+-H 'Connection: keep-alive'
+--data 'user_name=Name+Name&user_mail=email%40email.com&user_message=Test+Test+Test%0D%0ATest+Test+Test&user_select=Option+2.1&user_checkbox=checked&_formname=General+Form'
+--compressed
+--insecure
+
+---
+
+<html>
+
+<head>
+    <script type='text/javascript'>
+        const THANKS_PAGE = "/thanks";
+        const ERROR_PAGE = "/error502";
+        const DATA = {"user_name":"Name Name","user_mail":"email@email.com","user_message":"Test Test Test\r\nTest Test Test","user_select":"Option 2.1","user_checkbox":"checked","_formname":"General Form"};
+        const SUBMIT_URL = "/submit/"
+
+        var onRecaptchaCheck = function (token) {
+            var httpRequest = new XMLHttpRequest();
+
+            httpRequest.onload = ajaxSuccess;
+
+            httpRequest.open("POST", SUBMIT_URL, true);
+            httpRequest.setRequestHeader('Content-Type', 'application/json');
+            let data = DATA;
+            data["g-recaptcha-response"] = token;
+            httpRequest.send(JSON.stringify(data));
+        };
+
+        function ajaxSuccess() {
+            if (JSON.parse(this.responseText).result === "error") {
+                window.location.replace(ERROR_PAGE);
+            } else {
+                window.location.replace(THANKS_PAGE);
+            }
+        };
+
+        window.onload = function () {
+            grecaptcha.execute();
+        }
+    </script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+
+<body>
+    <div id='recaptcha' class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" data-callback="onRecaptchaCheck" data-size="invisible">
+    </div>
+</body>
+
+</html>
+
+---
+
+Incoming connection from 127.0.0.1
+Incoming message from 127.0.0.1:
+> Content-Type: multipart/alternative;
+>  boundary="--_NmP-59c416adb41d92f4-Part_1"
+> From: formmailer@localhost
+> To: root@localhost
+> Subject: Form submitted on https://localhost:3001/submit/
+> Message-ID: <9ccabcc5-d0fe-f74f-6b8b-20cf443dd1a7@localhost>
+> Date: Mon, 18 Dec 2017 18:52:15 +0000
+> MIME-Version: 1.0
+>
+> ----_NmP-59c416adb41d92f4-Part_1
+> Content-Type: text/plain
+> Content-Transfer-Encoding: 7bit
+>
+> Submitted user form was received by FormMailer server, see details below.
+>
+> Referrer page: https://localhost:3001/submit/
+> Submitted form: General Form
+>
+>
+> user_name: Name Name
+> user_mail: email@email.com
+> user_message:
+>      Test Test Test
+>      Test Test Test
+> user_select: Option 2.1
+> user_checkbox: checked
+>
+>
+> Submitter IP address: 127.0.0.1
+>
+> ----_NmP-59c416adb41d92f4-Part_1
+> Content-Type: text/html
+> Content-Transfer-Encoding: quoted-printable
+>
+> <html xmlns=3D"http://www.w3.org/1999/xhtml">
+>
+> <head>
+>     <title></title>
+>     <meta http-equiv=3D"Content-Type" content=3D"text/html; =
+> charset=3Dutf-8">
+>     <meta name=3D"viewport" content=3D"width=3Ddevice-wid=
+> th">
+>     <style type=3D"text/css">
+>         body,
+>         html {
+>             width: 100% !important;
+>             margin: 0;
+>             padding: 0;
+>             -webkit-font-smoothing: antialiased;
+>             -webkit-text-size-adjust: none;
+>             =
+> -ms-text-size-adjust: 100%;
+>         }
+>
+>         table td,
+>         table {
+>             mso-table-lspace: 0pt;
+>             mso-table-rspace: 0pt;
+>         }
+>
+>         #outlook a {
+>             padding: 0;
+>         }
+>
+>         .ExternalClass,
+>         .ExternalClass p,
+>         .ExternalClass =
+> span,
+>         .ExternalClass font,
+>         .ExternalClass td,
+>         .ExternalClass div {
+>             line-height: 100%;
+>         }
+>
+>         .ExternalClass {
+>             width: 100%;
+>         }
+>
+>         @media only screen and (max-width: 480px) {
+>             table,
+>             table tr td,
+>             table td {
+>                 width: 100%=
+>  !important;
+>             }
+>             img {
+>                 width: =
+> inherit;
+>             }
+>             .layer_2 {
+>                 max-width: =
+> 100% !important;
+>             }
+>         }
+>     </style>
+> </head>
+>
+> <body style=3D"padding:0; margin: 0;">
+>     <table style=3D"height: 100%; =
+> width: 100%; background-color: rgb(239, 239, 239);" align=3D"center">
+>         <tbody>
+>             <tr>
+>                 <td valign=3D"top" =
+> id=3D"dbody" data-version=3D"2.26" style=3D"width: 100%; height: 100%; =
+> padding-top: 30px; padding-bottom: 30px; background-color: rgb(239, 239, =
+> 239);">
+>                     <!--[if (gte mso 9)|(IE)]><table =
+> align=3D"center" style=3D"max-width:600px" width=3D"600" cellpadding=3D"0" =
+> cellspacing=3D"0" border=3D"0"><tr><td valign=3D"top"><![endif]-->
+>                     <table class=3D"layer_1" align=3D"center" border=3D"0" =
+> cellpadding=3D"0" cellspacing=3D"0" style=3D"max-width: 600px; box-sizing: =
+> border-box; width: 100%; margin: 0px auto;">
+>                         =
+> <tbody>
+>                             <tr>
+>                                 =
+> <td class=3D"drow" valign=3D"top" align=3D"center" style=3D"background-colo=
+> r: rgb(255, 255, 255); box-sizing: border-box; font-size: 0px; text-align: =
+> center;">
+>                                     <!--[if (gte mso =
+> 9)|(IE)]><table width=3D"100%" align=3D"center" cellpadding=3D"0" =
+> cellspacing=3D"0" border=3D"0"><tr><td valign=3D"top"><![endif]-->
+>                                     <div class=3D"layer_2" =
+> style=3D"max-width: 600px; display: inline-block; vertical-align: top; =
+> width: 100%;">
+>                                         <table border=3D"0" =
+> cellspacing=3D"0" cellpadding=3D"0" class=3D"edcontent" =
+> style=3D"border-collapse: collapse;width:100%">
+>                            =
+>                  <tbody>
+>                                                 =
+> <tr>
+>                                                     <td valign=3D"top"=
+>  class=3D"emptycell" style=3D"padding: 10px;"></td>
+>                                                 </tr>
+>                                             </tbody>
+>                                         </table>
+>                           =
+>           </div>
+>                                     <!--[if (gte mso =
+> 9)|(IE)]></td></tr></table><![endif]-->
+>                                 =
+> </td>
+>                             </tr>
+>                             <tr>
+>                                 <td class=3D"drow" valign=3D"top" =
+> align=3D"center" style=3D"background-color: rgb(255, 255, 255); box-sizing:=
+>  border-box; font-size: 0px; text-align: center;">
+>                         =
+>             <!--[if (gte mso 9)|(IE)]><table width=3D"100%" =
+> align=3D"center" cellpadding=3D"0" cellspacing=3D"0" border=3D"0"><tr><td =
+> valign=3D"top"><![endif]-->
+>                                     <div =
+> class=3D"layer_2" style=3D"max-width: 600px; display: inline-block; =
+> vertical-align: top; width: 100%;">
+>                                        =
+>  <table border=3D"0" cellspacing=3D"0" cellpadding=3D"0" =
+> class=3D"edcontent" style=3D"border-collapse: collapse;width:100%">
+>                                             <tbody>
+>                                                 <tr>
+>                                                     <td valign=3D"top" =
+> class=3D"edtext" style=3D"padding: 15px; text-align: left; color: rgb(95, =
+> 95, 95); font-size: 12px; font-family: Helvetica, Arial, sans-serif; =
+> word-break: break-word; direction: ltr; box-sizing: border-box;">
+>                                                         <p =
+> style=3D"text-align: center; margin: 0px; padding: 0px;"><strong><span =
+> style=3D"font-size: 18px;">Submitted User Form</span></strong></p>
+>                                                     </td>
+>                                                 </tr>
+>                                             </tbody>
+>                                         </table>
+>                           =
+>           </div>
+>                                     <!--[if (gte mso =
+> 9)|(IE)]></td></tr></table><![endif]-->
+>                                 =
+> </td>
+>                             </tr>
+>                             <tr>
+>                                 <td class=3D"drow" valign=3D"top" =
+> align=3D"center" style=3D"background-color: rgb(255, 255, 255); box-sizing:=
+>  border-box; font-size: 0px; text-align: center;">
+>                         =
+>             <!--[if (gte mso 9)|(IE)]><table width=3D"100%" =
+> align=3D"center" cellpadding=3D"0" cellspacing=3D"0" border=3D"0"><tr><td =
+> valign=3D"top"><![endif]-->
+>                                     <div =
+> class=3D"layer_2" style=3D"max-width: 600px; display: inline-block; =
+> vertical-align: top; width: 100%;">
+>                                        =
+>  <table border=3D"0" cellspacing=3D"0" cellpadding=3D"0" =
+> class=3D"edcontent" style=3D"border-collapse: collapse;width:100%">
+>                                             <tbody>
+>                                                 <tr>
+>                                                     <td valign=3D"top" =
+> class=3D"edtext" style=3D"padding: 15px; text-align: left; color: rgb(95, =
+> 95, 95); font-size: 12px; font-family: Helvetica, Arial, sans-serif; =
+> word-break: break-word; direction: ltr; box-sizing: border-box;">
+>                                                         <p =
+> style=3D"text-align: center; margin: 0px; padding: 0px;"><strong><span =
+> style=3D"font-size: 16px;">Referrer page: https://localhost:3001/submit/</s=
+> pan></strong></p>
+>                                                     </td>
+>                                                 </tr>
+>                                             </tbody>
+>                                         </table>
+>                           =
+>           </div>
+>                                     <!--[if (gte mso =
+> 9)|(IE)]></td></tr></table><![endif]-->
+>                                 =
+> </td>
+>                             </tr>
+>                             <tr>
+>                                 <td class=3D"drow" valign=3D"top" =
+> align=3D"center" style=3D"background-color: rgb(255, 255, 255); box-sizing:=
+>  border-box; font-size: 0px; text-align: center;">
+>                         =
+>             <!--[if (gte mso 9)|(IE)]><table width=3D"100%" =
+> align=3D"center" cellpadding=3D"0" cellspacing=3D"0" border=3D"0"><tr><td =
+> valign=3D"top"><![endif]-->
+>                                     <div =
+> class=3D"layer_2" style=3D"max-width: 600px; display: inline-block; =
+> vertical-align: top; width: 100%;">
+>                                        =
+>  <table border=3D"0" cellspacing=3D"0" cellpadding=3D"0" =
+> class=3D"edcontent" style=3D"border-collapse: collapse;width:100%">
+>                                             <tbody>
+>                                                 <tr>
+>                                                     <td valign=3D"top" =
+> class=3D"edtext" style=3D"padding: 15px; text-align: left; color: rgb(95, =
+> 95, 95); font-size: 12px; font-family: Helvetica, Arial, sans-serif; =
+> word-break: break-word; direction: ltr; box-sizing: border-box;">
+>                                                         <p =
+> style=3D"text-align: center; margin: 0px; padding: 0px;"><strong><span =
+> style=3D"font-size: 16px;">Submitted form: General Form
+> </span></strong></p>
+>                                                     =
+> </td>
+>                                                 </tr>
+>                                             </tbody>
+>                                         </table>
+>                           =
+>           </div>
+>                                     <!--[if (gte mso =
+> 9)|(IE)]></td></tr></table><![endif]-->
+>                                 =
+> </td>
+>                             </tr>
+>                             <tr>
+>                                 <td class=3D"drow" valign=3D"top" =
+> align=3D"center" style=3D"background-color: rgb(255, 255, 255); box-sizing:=
+>  border-box; font-size: 0px; text-align: center;">
+>                         =
+>             <!--[if (gte mso 9)|(IE)]><table width=3D"100%" =
+> align=3D"center" cellpadding=3D"0" cellspacing=3D"0" border=3D"0"><tr><td =
+> valign=3D"top"><![endif]-->
+>                                     <div =
+> class=3D"layer_2" style=3D"max-width: 600px; display: inline-block; =
+> vertical-align: top; width: 100%;">
+>                                        =
+>  <table border=3D"0" cellspacing=3D"0" cellpadding=3D"0" =
+> class=3D"edcontent" style=3D"border-collapse: collapse;width:100%">
+>                                             <tbody>
+>                                                 <tr>
+>                                                     <td valign=3D"top" =
+> class=3D"edtext" style=3D"padding: 22px; text-align: left; color: rgb(95, =
+> 95, 95); font-size: 14px; font-family: Helvetica, Arial, sans-serif; =
+> word-break: break-word; direction: ltr; box-sizing: border-box;">
+>                                                         <div =
+> style=3D"text-align: left; margin: 0px; padding: 0px;">
+>                                                             <p><span =
+> style=3D"margin:10px; color: rgb(0, 0, 0);"><strong>user_name:</strong></sp=
+> an><span style=3D"white-space: pre-wrap">Name Name</span></p>
+>                                                             <p><span =
+> style=3D"margin:10px; color: rgb(0, 0, 0);"><strong>user_mail:</strong></sp=
+> an><span style=3D"white-space: pre-wrap">email@email.com</span></p>
+>                                                             <p><span =
+> style=3D"margin:10px; color: rgb(0, 0, 0);"><strong>user_message:</strong><=
+> /span><span style=3D"white-space: pre-wrap">
+>      Test Test Test
+>      Test Test Test</span></p>
+>                                             =
+>                 <p><span style=3D"margin:10px; color: rgb(0, 0, =
+> 0);"><strong>user_select:</strong></span><span style=3D"white-space: =
+> pre-wrap">Option 2.1</span></p>
+>                                            =
+>                  <p><span style=3D"margin:10px; color: rgb(0, 0, =
+> 0);"><strong>user_checkbox:</strong></span><span style=3D"white-space: =
+> pre-wrap">checked</span></p>
+>                                               =
+>           </div>
+>                                                     </td>
+>                                                 </tr>
+>                                             </tbody>
+>                                         </table>
+>                           =
+>           </div>
+>                                     <!--[if (gte mso =
+> 9)|(IE)]></td></tr></table><![endif]-->
+>                                 =
+> </td>
+>                             </tr>
+>                             <tr>
+>                                 <td class=3D"drow" valign=3D"top" =
+> align=3D"center" style=3D"background-color: rgb(255, 255, 255); box-sizing:=
+>  border-box; font-size: 0px; text-align: center;">
+>                         =
+>             <!--[if (gte mso 9)|(IE)]><table width=3D"100%" =
+> align=3D"center" cellpadding=3D"0" cellspacing=3D"0" border=3D"0"><tr><td =
+> valign=3D"top"><![endif]-->
+>                                     <div =
+> class=3D"layer_2" style=3D"max-width: 600px; display: inline-block; =
+> vertical-align: top; width: 100%;">
+>                                        =
+>  <table border=3D"0" cellspacing=3D"0" cellpadding=3D"0" =
+> class=3D"edcontent" style=3D"border-collapse: collapse;width:100%">
+>                                             <tbody>
+>                                                 <tr>
+>                                                     <td valign=3D"top" =
+> class=3D"edtext" style=3D"padding: 28px; text-align: left; color: rgb(95, =
+> 95, 95); font-size: 12px; font-family: Helvetica, Arial, sans-serif; =
+> word-break: break-word; direction: ltr; box-sizing: border-box;">
+>                                                         <p =
+> style=3D"text-align: center; margin: 0px; padding: 0px;"><strong><span =
+> style=3D"font-size: 16px;">Submitter IP address: 127.0.0.=
+> 1</span></strong></p>
+>                                                     =
+> </td>
+>                                                 </tr>
+>                                             </tbody>
+>                                         </table>
+>                           =
+>           </div>
+>                                     <!--[if (gte mso =
+> 9)|(IE)]></td></tr></table><![endif]-->
+>                                 =
+> </td>
+>                             </tr>
+>                             <tr>
+>                                 <td class=3D"drow" valign=3D"top" =
+> align=3D"center" style=3D"background-color: rgb(239, 239, 239); box-sizing:=
+>  border-box; font-size: 0px; text-align: center;">
+>                         =
+>             <!--[if (gte mso 9)|(IE)]><table width=3D"100%" =
+> align=3D"center" cellpadding=3D"0" cellspacing=3D"0" border=3D"0"><tr><td =
+> valign=3D"top"><![endif]-->
+>                                     <div =
+> class=3D"layer_2" style=3D"max-width: 600px; display: inline-block; =
+> vertical-align: top; width: 100%;">
+>                                        =
+>  <table border=3D"0" cellspacing=3D"0" cellpadding=3D"0" =
+> class=3D"edcontent" style=3D"border-collapse: collapse;width:100%">
+>                                             <tbody>
+>                                                 <tr>
+>                                                     <td valign=3D"top" =
+> class=3D"emptycell" style=3D"padding: 10px;"></td>
+>                         =
+>                         </tr>
+>                                             =
+> </tbody>
+>                2017-12-18T18:52:15.693Z - info: Message has been sent to root@localhost
+                         </table>
+>                                     </div>
+>                                 =
+>     <!--[if (gte mso 9)|(IE)]></td></tr></table><![endif]-->
+>                                 </td>
+>                             </tr>
+>                         </tbody>
+>                     </table>
+>                     <!--[if (gte mso 9)|(IE)]></td></tr></table><!=
+> [endif]-->
+>                 </td>
+>             </tr>
+>         </tbody>
+>     </table><img src=3D"http://tracking.overvis.com/tracking/open?=
+> msgid=3Dll7FCUO5h7lZSR66gsR6Uw2" style=3D"width:1px;height:1px" alt=3D""
+>     /></body>
+>
+> </html>
+>
+> ----_NmP-59c416adb41d92f4-Part_1--
+>
+Closing connection to 127.0.0.1
+
