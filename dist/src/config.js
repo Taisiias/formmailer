@@ -34,6 +34,8 @@ const DefaultConfigObject = {
     webInterfacePort: 3002,
 };
 function readConfig(path) {
+    // tslint:disable-next-line:no-console
+    console.log(`reading config...`);
     let cf;
     if (!fs.existsSync(path)) {
         throw new Error(`Config file was not found.`);
@@ -45,18 +47,13 @@ function readConfig(path) {
     catch (e) {
         throw new Error(`Config file cannot be read. ${e}`);
     }
-    let json;
     try {
         if (fileContent === "") {
             throw new Error(`Config file is empty`);
         }
-        json = JSON.parse(fileContent);
-        /* tslint:disable:no-any */
-        const mergedObject = deepMerge(DefaultConfigObject, json);
-        if (!mergedObject.hasOwnProperty("recipientEmails") && !mergedObject.recipientEmails) {
-            throw new Error(`Property recipientEmails is missing.`);
-        }
-        cf = mergedObject;
+        cf = createConfigObject(fileContent);
+        // tslint:disable-next-line:no-console
+        console.log(`Assets folder: ${cf.assetsFolder}`);
     }
     catch (e) {
         throw new Error(`Config file cannot be parsed. ${e}`);
@@ -64,3 +61,15 @@ function readConfig(path) {
     return cf;
 }
 exports.readConfig = readConfig;
+function createConfigObject(fileContent) {
+    let cf;
+    const json = JSON.parse(fileContent);
+    /* tslint:disable:no-any */
+    const mergedObject = deepMerge(DefaultConfigObject, json);
+    if (!mergedObject.hasOwnProperty("recipientEmails") && !mergedObject.recipientEmails) {
+        throw new Error(`Property recipientEmails is missing.`);
+    }
+    cf = mergedObject;
+    return cf;
+}
+exports.createConfigObject = createConfigObject;

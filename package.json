@@ -45,7 +45,7 @@
     "@types/request-promise": "^4.1.37",
     "@types/sqlite3": "^3.1.0",
     "@types/winston": "^2.3.4",
-    "@types/yargs": "^8.0.2",
+    "@types/yargs": "^10.0.0",
     "deepmerge": "^2.0.0",
     "email-validator": "^1.1.1",
     "he": "^1.1.1",
@@ -68,7 +68,7 @@
     "http-server": "^0.10.0",
     "nodemon": "^1.11.0",
     "smtp-server": "^3.3.0",
-    "ts-node": "^3.3.0",
+    "ts-node": "^4.1.0",
     "tslint": "^5.8.0"
   }
 }
