@@ -1,6 +1,6 @@
-// import * as run from "../src/run";
 import * as fs from "fs";
 import { createConfigObject } from "../src/config";
+// import { runHttpServers } from "../src/run";
 
 function parseTestFile(filePath: string): string[] {
     const fileContent = fs.readFileSync(filePath).toString();
@@ -9,19 +9,26 @@ function parseTestFile(filePath: string): string[] {
 }
 
 function runTests(): void {
+    // for (filename in ./test-cases)
+    runTest("./test/test-cases/test-form.txt");
+}
+
+function runTest(fileName: string): true | Error {
+    // tslint:disable:no-console
+    console.log(`Starting test: ${fileName}`);
+
     const [configString, curl, response, emailSent] =
-        parseTestFile("./test/test-cases/test-form.txt");
+        parseTestFile(fileName);
 
     const cf = createConfigObject(configString);
-    // tslint:disable-next-line:no-console
-    console.log(`From Email: ${cf.fromEmail}`);
 
-    // tslint:disable-next-line:no-console
+    console.log(`From Email: ${cf.fromEmail}`);
     console.log(`Curl: ${curl}`);
-    // tslint:disable-next-line:no-console
     console.log(`Response ${response}`);
-    // tslint:disable-next-line:no-console
     console.log(`Email Sent ${emailSent}`);
+
+    console.log(`Test result: OK`);
+    return true;
 }
 
 runTests();

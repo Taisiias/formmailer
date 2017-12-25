@@ -3,7 +3,7 @@ import * as http from "http";
 import * as https from "https";
 import winston = require("winston");
 import * as yargs from "yargs";
-import { readConfig } from "./config";
+import { Config, readConfig } from "./config";
 import { createDatabaseAndTables } from "./database";
 import { constructConnectionHandler, viewHistoryHandler } from "./handler";
 import { StaticFileServer } from "./static-file-server";
@@ -39,6 +39,10 @@ function run(): void {
 
     winston.level = config.logLevel;
 
+    runHttpServers(config);
+}
+
+export function runHttpServers(config: Config): void {
     const staticFileServer = new StaticFileServer(config.assetsFolder);
     createDatabaseAndTables(config.databaseFileName).catch((err) => {
         winston.warn(`Error while creating database tables: ${err}`);
