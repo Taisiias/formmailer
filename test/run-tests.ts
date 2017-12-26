@@ -29,10 +29,10 @@ function runTest(fileName: string): true | Error {
 
     const cf = createConfigObject(configString);
 
-    // console.log(`From Email: ${cf.fromEmail}`);
-    // console.log(`Curl: ${curl}`);
-    // console.log(`Response ${response}`);
-    // console.log(`Email Sent ${emailSent}`);
+    console.log(`From Email: ${cf.fromEmail}`);
+    console.log(`Curl: ${curl}`);
+    console.log(`Response ${response}`);
+    console.log(`Email Sent ${emailSent}`);
 
     console.log(`Test result: OK`);
     return true;
