@@ -18,11 +18,10 @@ function runTests(): void {
     fs.readdirSync(TESTS_FOLDER_PATH).forEach((file) => {
         winston.info(`Starting test: ${file}`);
         testPassed = runTest(TESTS_FOLDER_PATH + "/" + file);
-        if (testPassed) {
+        if (testPassed === true) {
             winston.info(`Test result: OK`);
         } else {
             isError = true;
-            // const errorMessage = testPassed as Error;
             winston.error(`An error occurred: ${(testPassed as Error).message}
             StackTrace: ${(testPassed as Error).stack}`);
         }
@@ -36,10 +35,10 @@ function runTests(): void {
 
 function runTest(fileName: string): true | Error {
 
-    // if (fileName === "./test/test-cases/test-form-2.txt") {
-    //     winston.error(`Incorrect Filename error: ${fileName}`);
-    //     return new Error("Incorrect Filename");
-    // }
+    if (fileName === "./test/test-cases/test-form-2.txt") {
+        winston.error(`Incorrect Filename error: ${fileName}`);
+        return new Error("Incorrect Filename");
+    }
 
     const [configString, curl, response, emailSent] =
         parseTestFile(fileName);

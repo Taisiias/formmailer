@@ -46,6 +46,7 @@
     "@types/sqlite3": "^3.1.0",
     "@types/winston": "^2.3.4",
     "@types/yargs": "^10.0.0",
+    "bluebird": "^3.5.1",
     "deepmerge": "^2.0.0",
     "email-validator": "^1.1.1",
     "he": "^1.1.1",
