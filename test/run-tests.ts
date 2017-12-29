@@ -36,7 +36,7 @@ function runTests(): void {
         } else {
             winston.info(`All tests passed.`);
         }
-    });
+    }).catch((e: Error) => { winston.error(`An error occurred: ${e.message}`); });
 }
 
 async function runTest(fileName: string): Promise<true | Error> {
