@@ -42,17 +42,24 @@ function run(): void {
     runHttpServers(config);
 }
 
-export function runHttpServers(config: Config): void {
+export function runHttpServers(
+    config: Config,
+): [http.Server | undefined, https.Server | undefined, http.Server | undefined] {
     const staticFileServer = new StaticFileServer(config.assetsFolder);
     createDatabaseAndTables(config.databaseFileName).catch((err) => {
         winston.warn(`Error while creating database tables: ${err}`);
     });
 
+    let httpServer: http.Server | undefined;
+    let httpsServer: https.Server | undefined;
+    let viewHistoryHttpServer: http.Server | undefined;
+
     if (config.enableHttp) {
-        const httpServer = http.createServer(constructConnectionHandler(config, staticFileServer));
+        httpServer =
+            http.createServer(constructConnectionHandler(config, staticFileServer));
         httpServer.listen(config.httpListenPort, config.httpListenIP, () => {
             winston.info(
-                `HTTP server started (listening ${config.httpListenIP}:${config.httpListenPort})`);
+                `HTTP server started (listening ${config.httpListenIP}: ${config.httpListenPort})`);
         });
     }
 
@@ -61,7 +68,7 @@ export function runHttpServers(config: Config): void {
             cert: fs.readFileSync(config.httpsCertificatePath, "utf8"),
             key: fs.readFileSync(config.httpsPrivateKeyPath, "utf8"),
         };
-        const httpsServer = https.createServer(
+        httpsServer = https.createServer(
             options, constructConnectionHandler(config, staticFileServer));
         httpsServer.listen(config.httpsListenPort, config.httpsListenIP, () => {
             winston.info(
@@ -70,13 +77,14 @@ export function runHttpServers(config: Config): void {
         });
     }
     if (config.enableWebInterface) {
-        const viewHistoryHttpServer = http.createServer(viewHistoryHandler(config));
+        viewHistoryHttpServer = http.createServer(viewHistoryHandler(config));
         viewHistoryHttpServer.listen(config.webInterfacePort, config.webInterfaceIP, () => {
             winston.info(
                 `Web Interface server started ` +
                 `(listening ${config.httpListenIP}:${config.webInterfacePort})`);
         });
     }
+    return [httpServer, httpsServer, viewHistoryHttpServer];
 }
 
 export function runAndReport(): void {

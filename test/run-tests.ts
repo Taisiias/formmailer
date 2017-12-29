@@ -1,8 +1,9 @@
 import * as fs from "fs";
+import * as http from "http";
+import * as https from "https";
 import winston = require("winston");
 import { createConfigObject } from "../src/config";
-
-// import { runHttpServers } from "../src/run";
+import { runHttpServers } from "../src/run";
 
 const TESTS_FOLDER_PATH = "./test/test-cases";
 
@@ -15,42 +16,64 @@ function parseTestFile(filePath: string): string[] {
 function runTests(): void {
     let testPassed: boolean | Error;
     let isError = false;
+    let result = Promise.resolve();
     fs.readdirSync(TESTS_FOLDER_PATH).forEach((file) => {
-        winston.info(`Starting test: ${file}`);
-        testPassed = runTest(TESTS_FOLDER_PATH + "/" + file);
-        if (testPassed === true) {
-            winston.info(`Test result: OK`);
-        } else {
-            isError = true;
-            winston.error(`An error occurred: ${(testPassed as Error).message}
+        result = result.then(async () => {
+            winston.info(`Starting test: ${file}`);
+            testPassed = await runTest(TESTS_FOLDER_PATH + "/" + file);
+            if (testPassed === true) {
+                winston.info(`Test result: OK`);
+            } else {
+                isError = true;
+                winston.error(`An error occurred: ${(testPassed as Error).message}
             StackTrace: ${(testPassed as Error).stack}`);
+            }
+        });
+    });
+    result.then(() => {
+        if (isError) {
+            winston.error(`One or more tests didn't pass.`);
+        } else {
+            winston.info(`All tests passed.`);
         }
     });
-    if (isError) {
-        winston.error(`One or more tests didn't pass.`);
-    } else {
-        winston.info(`All tests passed.`);
-    }
 }
 
-function runTest(fileName: string): true | Error {
+async function runTest(fileName: string): Promise<true | Error> {
+    return new Promise((resolve) => {
+        const [configString] =
+            parseTestFile(fileName);
 
-    if (fileName === "./test/test-cases/test-form-2.txt") {
-        winston.error(`Incorrect Filename error: ${fileName}`);
-        return new Error("Incorrect Filename");
-    }
+        if (fileName === "./test/test-cases/test-form-2.txt") {
+            winston.error(`Incorrect Filename error: ${fileName}`);
+            resolve(new Error("Incorrect Filename"));
+            return;
+        }
 
-    const [configString, curl, response, emailSent] =
-        parseTestFile(fileName);
+        const cf = createConfigObject(configString);
 
-    const cf = createConfigObject(configString);
+        let httpServer: http.Server | undefined;
+        let httpsServer: https.Server | undefined;
+        let viewEmailHistoryHttpServer: http.Server | undefined;
 
-    winston.info(`From Email: ${cf.fromEmail}`);
-    winston.info(`Curl: ${curl}`);
-    winston.info(`Response ${response}`);
-    winston.info(`Email Sent ${emailSent}`);
+        [httpServer, httpsServer, viewEmailHistoryHttpServer] = runHttpServers(cf);
+        setTimeout(() => {
+            winston.debug("Timeout set.");
+            if (httpServer) {
+                httpServer.close();
+            }
 
-    return true;
+            if (httpsServer) {
+                httpsServer.close();
+            }
+
+            if (viewEmailHistoryHttpServer) {
+                viewEmailHistoryHttpServer.close();
+            }
+            resolve(true);
+        }, 1000);
+
+    }) as Promise<true | Error>;
 }
 
 runTests();

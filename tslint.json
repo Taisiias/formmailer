@@ -18,7 +18,7 @@
         "no-default-export": true,
         "no-mergeable-namespace": true,
         "no-angle-bracket-type-assertion": true,
-        "align": [true, "parameters", "statements", "arguments"],
+        // "align": [true, "parameters", "statements", "arguments"],
         "linebreak-style": [true, "LF"],
         "variable-name": [
             true,
