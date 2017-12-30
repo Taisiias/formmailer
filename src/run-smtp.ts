@@ -43,6 +43,10 @@ server.on("error", (err: Error) => {
     console.log("Error %s", err.message);
 });
 
-server.listen(PORT, HOST, () => {
-    console.log(`SMTP server started on port ${HOST}:${PORT}`);
-});
+export function runSmtp(): void {
+    server.listen(PORT, HOST, () => {
+        console.log(`SMTP server started on port ${HOST}:${PORT}`);
+    });
+}
+
+runSmtp();

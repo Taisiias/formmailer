@@ -4,6 +4,7 @@ import * as https from "https";
 import winston = require("winston");
 import { createConfigObject } from "../src/config";
 import { runHttpServers } from "../src/run";
+import { runSmtp } from "../src/run-smtp";
 
 const TESTS_FOLDER_PATH = "./test/test-cases";
 
