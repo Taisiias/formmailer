@@ -4,7 +4,7 @@ import * as https from "https";
 import winston = require("winston");
 import { createConfigObject } from "../src/config";
 import { runHttpServers } from "../src/run";
-import { runSmtp } from "../src/run-smtp";
+import { runSmtp, stopSmtp } from "../src/run-smtp";
 
 const TESTS_FOLDER_PATH = "./test/test-cases";
 
@@ -45,13 +45,15 @@ async function runTest(fileName: string): Promise<true | Error> {
         const [configString] =
             parseTestFile(fileName);
 
-        if (fileName === "./test/test-cases/test-form-2.txt") {
-            winston.error(`Incorrect Filename error: ${fileName}`);
-            resolve(new Error("Incorrect Filename"));
-            return;
-        }
+        // if (fileName === "./test/test-cases/test-form-2.txt") {
+        //     winston.error(`Incorrect Filename error: ${fileName}`);
+        //     resolve(new Error("Incorrect Filename"));
+        //     return;
+        // }
 
         const cf = createConfigObject(configString);
+
+        runSmtp();
 
         let httpServer: http.Server | undefined;
         let httpsServer: https.Server | undefined;
@@ -60,6 +62,7 @@ async function runTest(fileName: string): Promise<true | Error> {
         [httpServer, httpsServer, viewEmailHistoryHttpServer] = runHttpServers(cf);
         setTimeout(() => {
             winston.debug("Timeout set.");
+            stopSmtp();
             if (httpServer) {
                 httpServer.close();
             }

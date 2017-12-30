@@ -49,4 +49,10 @@ export function runSmtp(): void {
     });
 }
 
+export function stopSmtp(): void {
+    server.close(() => {
+        console.log(`SMTP server stopped.`);
+    });
+}
+
 runSmtp();
