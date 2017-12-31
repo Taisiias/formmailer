@@ -36,14 +36,21 @@ function run() {
         .argv;
     const config = config_1.readConfig(args.config);
     winston.level = config.logLevel;
+    runHttpServers(config);
+}
+function runHttpServers(config) {
     const staticFileServer = new static_file_server_1.StaticFileServer(config.assetsFolder);
     database_1.createDatabaseAndTables(config.databaseFileName).catch((err) => {
         winston.warn(`Error while creating database tables: ${err}`);
     });
+    let httpServer;
+    let httpsServer;
+    let viewHistoryHttpServer;
     if (config.enableHttp) {
-        const httpServer = http.createServer(handler_1.constructConnectionHandler(config, staticFileServer));
+        httpServer =
+            http.createServer(handler_1.constructConnectionHandler(config, staticFileServer));
         httpServer.listen(config.httpListenPort, config.httpListenIP, () => {
-            winston.info(`HTTP server started (listening ${config.httpListenIP}:${config.httpListenPort})`);
+            winston.info(`HTTP server started (listening ${config.httpListenIP}: ${config.httpListenPort})`);
         });
     }
     if (config.enableHttps && config.httpsPrivateKeyPath && config.httpsCertificatePath) {
@@ -51,20 +58,22 @@ function run() {
             cert: fs.readFileSync(config.httpsCertificatePath, "utf8"),
             key: fs.readFileSync(config.httpsPrivateKeyPath, "utf8"),
         };
-        const httpsServer = https.createServer(options, handler_1.constructConnectionHandler(config, staticFileServer));
+        httpsServer = https.createServer(options, handler_1.constructConnectionHandler(config, staticFileServer));
         httpsServer.listen(config.httpsListenPort, config.httpsListenIP, () => {
             winston.info(`HTTPS server started ` +
                 `(listening ${config.httpsListenIP}:${config.httpsListenPort})`);
         });
     }
     if (config.enableWebInterface) {
-        const viewHistoryHttpServer = http.createServer(handler_1.viewHistoryHandler(config));
+        viewHistoryHttpServer = http.createServer(handler_1.viewHistoryHandler(config));
         viewHistoryHttpServer.listen(config.webInterfacePort, config.webInterfaceIP, () => {
             winston.info(`Web Interface server started ` +
                 `(listening ${config.httpListenIP}:${config.webInterfacePort})`);
         });
     }
+    return [httpServer, httpsServer, viewHistoryHttpServer];
 }
+exports.runHttpServers = runHttpServers;
 function runAndReport() {
     try {
         run();
