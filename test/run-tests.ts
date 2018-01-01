@@ -4,7 +4,7 @@ import * as https from "https";
 import winston = require("winston");
 import { createConfigObject } from "../src/config";
 import { runHttpServers } from "../src/run";
-import { runSmtp, stopSmtp } from "../src/run-smtp";
+import { HOST, PORT, server } from "../src/run-smtp";
 
 const TESTS_FOLDER_PATH = "./test/test-cases";
 
@@ -53,16 +53,23 @@ async function runTest(fileName: string): Promise<true | Error> {
 
         const cf = createConfigObject(configString);
 
-        runSmtp();
-
         let httpServer: http.Server | undefined;
         let httpsServer: https.Server | undefined;
         let viewEmailHistoryHttpServer: http.Server | undefined;
 
         [httpServer, httpsServer, viewEmailHistoryHttpServer] = runHttpServers(cf);
+        winston.info("Before Run SMTP.");
+        server.listen(PORT, HOST, () => {
+            winston.info(`Run Tests: SMTP server started on port ${HOST}:${PORT}`);
+        });
+
+        winston.info("After Run SMTP.");
+
         setTimeout(() => {
-            winston.debug("Timeout set.");
-            stopSmtp();
+            winston.info("Timeout set.");
+            server.close(() => {
+                winston.info(`Closed SMTP server.`);
+            });
             if (httpServer) {
                 httpServer.close();
             }

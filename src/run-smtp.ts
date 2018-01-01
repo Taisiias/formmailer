@@ -3,11 +3,11 @@
 import * as smtp from "smtp-server";
 import * as stream from "stream";
 
-const HOST = "localhost";
-const PORT = 2500;
+export const HOST = "localhost";
+export const PORT = 2500;
 
 const SMTPServer = smtp.SMTPServer;
-const server = new SMTPServer({
+export const server = new SMTPServer({
     authOptional: true,
     onClose,
     onConnect,
@@ -43,16 +43,6 @@ server.on("error", (err: Error) => {
     console.log("Error %s", err.message);
 });
 
-export function runSmtp(): void {
-    server.listen(PORT, HOST, () => {
-        console.log(`SMTP server started on port ${HOST}:${PORT}`);
-    });
-}
-
-export function stopSmtp(): void {
-    server.close(() => {
-        console.log(`SMTP server stopped.`);
-    });
-}
-
-runSmtp();
+server.listen(PORT, HOST, () => {
+    console.log(`SMTP server started on port ${HOST}:${PORT}`);
+});
