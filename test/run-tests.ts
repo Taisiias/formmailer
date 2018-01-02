@@ -1,10 +1,12 @@
 import * as fs from "fs";
 import * as http from "http";
 import * as https from "https";
+import * as smtp from "smtp-server";
+import * as stream from "stream";
 import winston = require("winston");
 import { createConfigObject } from "../src/config";
 import { runHttpServers } from "../src/run";
-import { HOST, PORT, server } from "../src/run-smtp";
+import { sendEmail } from "../src/send";
 
 const TESTS_FOLDER_PATH = "./test/test-cases";
 
@@ -58,12 +60,35 @@ async function runTest(fileName: string): Promise<true | Error> {
         let viewEmailHistoryHttpServer: http.Server | undefined;
 
         [httpServer, httpsServer, viewEmailHistoryHttpServer] = runHttpServers(cf);
+
         winston.info("Before Run SMTP.");
+        const HOST = "localhost";
+        const PORT = 2500;
+
+        const SMTPServer = smtp.SMTPServer;
+        const server = new SMTPServer({
+            authOptional: true,
+            onData,
+        });
+
+        function onData(
+            dataStream: stream.PassThrough,
+            _session: smtp.SMTPServerSession,
+            callback: (err?: Error) => void,
+        ): void {
+            let buf = "";
+            dataStream.on("data", (s) => {
+                buf += s;
+            });
+            dataStream.on("end", () => {
+                fs.writeFileSync("./test/email-text.txt",
+                                 buf.split("\n").map((s) => "> " + s).join("\n"));
+                callback();
+            });
+        }
         server.listen(PORT, HOST, () => {
             winston.info(`Run Tests: SMTP server started on port ${HOST}:${PORT}`);
         });
-
-        winston.info("After Run SMTP.");
 
         setTimeout(() => {
             winston.info("Timeout set.");

@@ -3,11 +3,11 @@
 import * as smtp from "smtp-server";
 import * as stream from "stream";
 
-export const HOST = "localhost";
-export const PORT = 2500;
+const HOST = "localhost";
+const PORT = 2500;
 
 const SMTPServer = smtp.SMTPServer;
-export const server = new SMTPServer({
+const server = new SMTPServer({
     authOptional: true,
     onClose,
     onConnect,
