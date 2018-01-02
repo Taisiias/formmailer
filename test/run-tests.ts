@@ -6,7 +6,6 @@ import * as stream from "stream";
 import winston = require("winston");
 import { createConfigObject } from "../src/config";
 import { runHttpServers } from "../src/run";
-import { sendEmail } from "../src/send";
 
 const TESTS_FOLDER_PATH = "./test/test-cases";
 
