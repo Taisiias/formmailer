@@ -1,3 +1,4 @@
+import * as execa from "execa";
 import * as fs from "fs";
 import * as http from "http";
 import * as https from "https";
@@ -43,7 +44,7 @@ function runTests(): void {
 
 async function runTest(fileName: string): Promise<true | Error> {
     return new Promise((resolve) => {
-        const [configString] =
+        const [configString, curl, curlResult] =
             parseTestFile(fileName);
 
         // if (fileName === "./test/test-cases/test-form-2.txt") {
@@ -60,33 +61,54 @@ async function runTest(fileName: string): Promise<true | Error> {
 
         [httpServer, httpsServer, viewEmailHistoryHttpServer] = runHttpServers(cf);
 
-        winston.info("Before Run SMTP.");
         const HOST = "localhost";
         const PORT = 2500;
 
         const SMTPServer = smtp.SMTPServer;
         const server = new SMTPServer({
             authOptional: true,
+            onConnect,
             onData,
         });
+
+        function onConnect(
+            _session: smtp.SMTPServerSession,
+            callback: (err?: Error) => void,
+        ): void {
+            winston.info(`Incoming connection onConnect`);
+            callback();
+        }
 
         function onData(
             dataStream: stream.PassThrough,
             _session: smtp.SMTPServerSession,
             callback: (err?: Error) => void,
         ): void {
+            winston.info(`onData`);
             let buf = "";
             dataStream.on("data", (s) => {
                 buf += s;
             });
             dataStream.on("end", () => {
                 fs.writeFileSync("./test/email-text.txt",
-                                 buf.split("\n").map((s) => "> " + s).join("\n"));
+                    buf.split("\n").map((s) => "> " + s).join("\n"));
                 callback();
             });
         }
+
         server.listen(PORT, HOST, () => {
-            winston.info(`Run Tests: SMTP server started on port ${HOST}:${PORT}`);
+            winston.info(`Run Tests: SMTP server started on ${HOST}:${PORT}`);
+        });
+
+        // -S, --show-error    Show error. With -s, make curl show errors when they occur
+        // -s, --silent        Silent mode (don't output anything)
+        execa.shell(curl.split("\n").join(" ")).then((result) => {
+            if (result.stderr) {
+                winston.error(`Error in Curl: ${result.stderr}`);
+            }
+            if (result.stdout.trim() !== curlResult.trim()) {
+                resolve(new Error("Incorrect curl output"));
+            }
         });
 
         setTimeout(() => {
