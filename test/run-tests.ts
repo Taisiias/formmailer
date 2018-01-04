@@ -44,7 +44,7 @@ function runTests(): void {
 
 async function runTest(fileName: string): Promise<true | Error> {
     return new Promise((resolve) => {
-        const [configString, curl, curlResult] =
+        const [configString, curl, curlResult, smtpResult] =
             parseTestFile(fileName);
 
         // if (fileName === "./test/test-cases/test-form-2.txt") {
@@ -100,14 +100,20 @@ async function runTest(fileName: string): Promise<true | Error> {
             winston.info(`Run Tests: SMTP server started on ${HOST}:${PORT}`);
         });
 
-        // -S, --show-error    Show error. With -s, make curl show errors when they occur
-        // -s, --silent        Silent mode (don't output anything)
-        execa.shell(curl.split("\n").join(" ")).then((result) => {
+        execa.shell(`${curl.split("\n").join(" ")} --show-error --silent`).then((result) => {
             if (result.stderr) {
                 winston.error(`Error in Curl: ${result.stderr}`);
             }
-            if (result.stdout.trim() !== curlResult.trim()) {
-                resolve(new Error("Incorrect curl output"));
+            if (!cf.disableRecaptcha && result.stdout.trim() !== curlResult.trim()) {
+                resolve(new Error("Incorrect curl output."));
+            }
+            const fileContent = fs.readFileSync("./test/email-text.txt").toString();
+            // winston.info(`File Content: ${fileContent}`);
+            if (smtpResult.trim() !== fileContent) {
+                // resolve(new Error("Incorrect SMTP result."))
+                winston.info("Incorrect SMTP result.");
+            } else {
+                winston.info("SMTP result: OK");
             }
         });
 
