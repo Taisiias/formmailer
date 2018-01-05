@@ -44,7 +44,7 @@ function runTests(): void {
 
 async function runTest(fileName: string): Promise<true | Error> {
     return new Promise((resolve) => {
-        const [configString, curl, curlResult, smtpResult] =
+        const [configString, curl, curlResult, smtpOutput] =
             parseTestFile(fileName);
 
         // if (fileName === "./test/test-cases/test-form-2.txt") {
@@ -90,8 +90,8 @@ async function runTest(fileName: string): Promise<true | Error> {
                 buf += s;
             });
             dataStream.on("end", () => {
-                fs.writeFileSync("./test/email-text.txt",
-                    buf.split("\n").map((s) => "> " + s).join("\n"));
+                fs.writeFileSync("./test/smtp-output.txt", buf);
+                   // buf.split("\n").map((s) => "> " + s).join("\n"));
                 callback();
             });
         }
@@ -107,14 +107,16 @@ async function runTest(fileName: string): Promise<true | Error> {
             if (!cf.disableRecaptcha && result.stdout.trim() !== curlResult.trim()) {
                 resolve(new Error("Incorrect curl output."));
             }
-            const fileContent = fs.readFileSync("./test/email-text.txt").toString();
+            const fileContent = fs.readFileSync("./test/smtp-output.txt").toString();
             // winston.info(`File Content: ${fileContent}`);
-            if (smtpResult.trim() !== fileContent) {
-                // resolve(new Error("Incorrect SMTP result."))
-                winston.info("Incorrect SMTP result.");
+            if (smtpOutput.trim() !== fileContent.trim()) {
+                // resolve(new Error("SMTP output does not match."))
+                winston.info("SMTP output does not match.");
             } else {
-                winston.info("SMTP result: OK");
+                winston.info("SMTP output: OK");
             }
+        }).catch((err) => {
+            winston.error(`Curl cannot be executed: ${err}`);
         });
 
         setTimeout(() => {
