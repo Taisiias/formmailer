@@ -8,11 +8,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const execa = require("execa");
 const fs = require("fs");
+const smtp = require("smtp-server");
 const winston = require("winston");
 const config_1 = require("../src/config");
 const run_1 = require("../src/run");
-const run_smtp_1 = require("../src/run-smtp");
 const TESTS_FOLDER_PATH = "./test/test-cases";
 function parseTestFile(filePath) {
     const fileContent = fs.readFileSync(filePath).toString();
@@ -49,21 +50,68 @@ function runTests() {
 function runTest(fileName) {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve) => {
-            const [configString] = parseTestFile(fileName);
+            const [configString, curl, curlResult, smtpOutput] = parseTestFile(fileName);
             // if (fileName === "./test/test-cases/test-form-2.txt") {
             //     winston.error(`Incorrect Filename error: ${fileName}`);
             //     resolve(new Error("Incorrect Filename"));
             //     return;
             // }
             const cf = config_1.createConfigObject(configString);
-            run_smtp_1.runSmtp();
             let httpServer;
             let httpsServer;
             let viewEmailHistoryHttpServer;
             [httpServer, httpsServer, viewEmailHistoryHttpServer] = run_1.runHttpServers(cf);
+            const HOST = "localhost";
+            const PORT = 2500;
+            const SMTPServer = smtp.SMTPServer;
+            const server = new SMTPServer({
+                authOptional: true,
+                onConnect,
+                onData,
+            });
+            function onConnect(_session, callback) {
+                winston.info(`Incoming connection onConnect`);
+                callback();
+            }
+            function onData(dataStream, _session, callback) {
+                winston.info(`onData`);
+                let buf = "";
+                dataStream.on("data", (s) => {
+                    buf += s;
+                });
+                dataStream.on("end", () => {
+                    fs.writeFileSync("./test/smtp-output.txt", buf);
+                    // buf.split("\n").map((s) => "> " + s).join("\n"));
+                    callback();
+                });
+            }
+            server.listen(PORT, HOST, () => {
+                winston.info(`Run Tests: SMTP server started on ${HOST}:${PORT}`);
+            });
+            execa.shell(`${curl.split("\n").join(" ")} --show-error --silent`).then((result) => {
+                if (result.stderr) {
+                    winston.error(`Error in Curl: ${result.stderr}`);
+                }
+                if (!cf.disableRecaptcha && result.stdout.trim() !== curlResult.trim()) {
+                    resolve(new Error("Incorrect curl output."));
+                }
+                const fileContent = fs.readFileSync("./test/smtp-output.txt").toString();
+                // winston.info(`File Content: ${fileContent}`);
+                if (smtpOutput.trim() !== fileContent.trim()) {
+                    // resolve(new Error("SMTP output does not match."))
+                    winston.info("SMTP output does not match.");
+                }
+                else {
+                    winston.info("SMTP output: OK");
+                }
+            }).catch((err) => {
+                winston.error(`Curl cannot be executed: ${err}`);
+            });
             setTimeout(() => {
-                winston.debug("Timeout set.");
-                run_smtp_1.stopSmtp();
+                winston.info("Timeout set.");
+                server.close(() => {
+                    winston.info(`Closed SMTP server.`);
+                });
                 if (httpServer) {
                     httpServer.close();
                 }

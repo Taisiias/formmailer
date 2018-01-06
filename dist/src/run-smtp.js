@@ -32,16 +32,6 @@ function onData(dataStream, session, callback) {
 server.on("error", (err) => {
     console.log("Error %s", err.message);
 });
-function runSmtp() {
-    server.listen(PORT, HOST, () => {
-        console.log(`SMTP server started on port ${HOST}:${PORT}`);
-    });
-}
-exports.runSmtp = runSmtp;
-function stopSmtp() {
-    server.close(() => {
-        console.log(`SMTP server stopped.`);
-    });
-}
-exports.stopSmtp = stopSmtp;
-runSmtp();
+server.listen(PORT, HOST, () => {
+    console.log(`SMTP server started on port ${HOST}:${PORT}`);
+});
