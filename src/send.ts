@@ -10,6 +10,7 @@ export async function sendEmail(
     html: string,
 ): Promise<void> {
     const transporter = nodemailer.createTransport(config.smtpOptions);
+    winston.debug(`Test Subject: ${text}`);
     const emailMessage = {
         from: config.fromEmail,
         html: config.enableHtmlEmail ? html : "",
