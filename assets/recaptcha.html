@@ -1,13 +1,17 @@
+<!doctype html>
+
 <html>
 
 <head>
+    <meta charset="utf-8" />
     <script type='text/javascript'>
         const THANKS_PAGE = "{{{thanksPageUrl}}}";
         const ERROR_PAGE = "{{{errorPageUrl}}}";
         const DATA = {{{ parsedRequestData }}};
-        const SUBMIT_URL = "{{{submitUrl}}}"
+        const SUBMIT_URL = "{{{submitUrl}}}";
 
         var onRecaptchaCheck = function (token) {
+
             var httpRequest = new XMLHttpRequest();
 
             httpRequest.onload = ajaxSuccess;
@@ -28,6 +32,7 @@
         };
 
         window.onload = function () {
+
             grecaptcha.execute();
         }
     </script>
