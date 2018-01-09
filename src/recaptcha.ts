@@ -44,7 +44,11 @@ export async function processReCaptcha(
     senderIpAddress: string,
     res: http.ServerResponse,
     pathName: string,
+    isAjax: boolean,
 ): Promise<boolean> {
+
+    if (isAjax) { return true; }
+
     if (!config.disableRecaptcha && config.reCaptchaSecret) {
         if (parsedRequestData["g-recaptcha-response"]) {
             winston.debug(`g-recaptcha-response is present.`);
@@ -58,12 +62,15 @@ export async function processReCaptcha(
                 throw new RecaptchaFailure(`reCAPTCHA failure.`);
             }
         } else {
+            winston.debug(`No g-recaptcha-response.`);
             if (!config.reCaptchaSiteKey) {
                 throw new RecaptchaFailure(
                     `reCaptcha is enabled but g-recaptcha-response is not provided in request`);
             }
-            renderAutomaticRecaptchaPage(
-                config.reCaptchaSiteKey, parsedRequestData, res, pathName, config.assetsFolder);
+            if (!isAjax) {
+                renderAutomaticRecaptchaPage(
+                    config.reCaptchaSiteKey, parsedRequestData, res, pathName, config.assetsFolder);
+            }
             return false;
         }
     }
@@ -89,6 +96,7 @@ function renderAutomaticRecaptchaPage(
     };
     winston.debug(`Rendering Automatic reCaptcha page.`);
     const renderedHtml = mst.render(htmlTemplate, templateData);
+
     res.write(renderedHtml);
     res.end();
 }
