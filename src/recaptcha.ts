@@ -46,9 +46,6 @@ export async function processReCaptcha(
     pathName: string,
     isAjax: boolean,
 ): Promise<boolean> {
-
-    if (isAjax) { return true; }
-
     if (!config.disableRecaptcha && config.reCaptchaSecret) {
         if (parsedRequestData["g-recaptcha-response"]) {
             winston.debug(`g-recaptcha-response is present.`);
