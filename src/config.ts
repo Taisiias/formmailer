@@ -68,8 +68,6 @@ const DefaultConfigObject: Config = {
 };
 
 export function readConfig(path: string): Config {
-    // tslint:disable-next-line:no-console
-    console.log(`reading config...`);
 
     let cf: Config;
 
@@ -89,8 +87,6 @@ export function readConfig(path: string): Config {
             throw new Error(`Config file is empty`);
         }
         cf = createConfigObject(fileContent);
-        // tslint:disable-next-line:no-console
-        console.log(`Assets folder: ${cf.assetsFolder}`);
     } catch (e) {
         throw new Error(`Config file cannot be parsed. ${e}`);
     }
