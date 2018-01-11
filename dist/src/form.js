@@ -28,7 +28,7 @@ function submitHandler(config, pathname, req, res) {
         const [parsedRequestData, bodyStr, isAjax] = yield request_1.parseRequestData(req, config.maxHttpRequestSize);
         winston.debug(`Parsed Request Data ${JSON.stringify(parsedRequestData)}`);
         const senderIpAddress = req.connection.remoteAddress || "unknown remote address";
-        if (!(yield recaptcha_1.processReCaptcha(config, parsedRequestData, senderIpAddress, res, pathname))) {
+        if (!(yield recaptcha_1.processReCaptcha(config, parsedRequestData, senderIpAddress, res, pathname, isAjax))) {
             return;
         }
         const refererUrl = getRefererUrl(parsedRequestData, req);

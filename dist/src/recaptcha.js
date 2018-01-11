@@ -34,7 +34,7 @@ function checkIfSpam(remoteip, response, secret) {
         return !body.success;
     });
 }
-function processReCaptcha(config, parsedRequestData, senderIpAddress, res, pathName) {
+function processReCaptcha(config, parsedRequestData, senderIpAddress, res, pathName, isAjax) {
     return __awaiter(this, void 0, void 0, function* () {
         if (!config.disableRecaptcha && config.reCaptchaSecret) {
             if (parsedRequestData["g-recaptcha-response"]) {
@@ -45,10 +45,13 @@ function processReCaptcha(config, parsedRequestData, senderIpAddress, res, pathN
                 }
             }
             else {
+                winston.debug(`No g-recaptcha-response.`);
                 if (!config.reCaptchaSiteKey) {
                     throw new RecaptchaFailure(`reCaptcha is enabled but g-recaptcha-response is not provided in request`);
                 }
-                renderAutomaticRecaptchaPage(config.reCaptchaSiteKey, parsedRequestData, res, pathName, config.assetsFolder);
+                if (!isAjax) {
+                    renderAutomaticRecaptchaPage(config.reCaptchaSiteKey, parsedRequestData, res, pathName, config.assetsFolder);
+                }
                 return false;
             }
         }
