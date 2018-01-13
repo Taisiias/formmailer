@@ -91,7 +91,7 @@ async function runTest(fileName: string): Promise<true | Error> {
             });
             dataStream.on("end", () => {
                 fs.writeFileSync("./test/smtp-output.txt", buf);
-                   // buf.split("\n").map((s) => "> " + s).join("\n"));
+                // buf.split("\n").map((s) => "> " + s).join("\n"));
                 callback();
             });
         }
@@ -108,9 +108,25 @@ async function runTest(fileName: string): Promise<true | Error> {
                 // resolve(new Error("Incorrect curl output."));
                 winston.info("Incorrect curl output.");
             }
-            const fileContent = fs.readFileSync("./test/smtp-output.txt").toString();
-            // winston.info(`File Content: ${fileContent}`);
-            if (smtpOutput.trim() !== fileContent.trim()) {
+            // TODO: Check also To, From and Subject
+            const regex = new RegExp(`/Content-Type: text\/plain
+Content-Transfer-Encoding: 7bit
+
+(.*)
+
+----[-_a-zA-Z0-9]+
+Content-Type: text\/html`);
+
+            const fileContent = fs.readFileSync("./test/smtp-output.txt").toString().trim();
+
+            const m = regex.exec(fileContent);
+            if (m) {
+                winston.info(`File Content: ${m[0]}`);
+            } else {
+                winston.info(`m is null`);
+            }
+
+            if (m && smtpOutput.trim() !== m[0]) {
                 // resolve(new Error("SMTP output does not match."))
                 winston.info("SMTP output does not match.");
             } else {
