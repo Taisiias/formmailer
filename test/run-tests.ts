@@ -109,21 +109,34 @@ async function runTest(fileName: string): Promise<true | Error> {
                 winston.info("Incorrect curl output.");
             }
             // TODO: Check also To, From and Subject
-            const regex = new RegExp(`/Content-Type: text\/plain
-Content-Transfer-Encoding: 7bit
+//             const regex = new RegExp(`/Content-Type: text\/plain
+// Content-Transfer-Encoding: 7bit
 
-(.*)
+// (.*)
 
-----[-_a-zA-Z0-9]+
-Content-Type: text\/html`);
+// ----[-_a-zA-Z0-9]+
+// Content-Type: text\/html/ms`);
+
+//             const regex = new RegExp(`Content-Type: multipart\/alternative;
+//  boundary="--[-_a-zA-Z0-9]+"
+// From: (.*)
+// To:`);
+
+            const regex = /From: (.*)/;
 
             const fileContent = fs.readFileSync("./test/smtp-output.txt").toString().trim();
+            // winston.info(`File Content: ${fileContent}`);
 
             const m = regex.exec(fileContent);
-            if (m) {
-                winston.info(`File Content: ${m[0]}`);
+
+            if (m !== null) {
+                winston.info(`m = ${m[1]}.`);
+                // The result can be accessed through the `m`-variable.
+                // m.forEach((match, groupIndex) => {
+                //     winston.info(`Found match, group ${groupIndex}: ${match}`);
+                // });
             } else {
-                winston.info(`m is null`);
+                winston.info(`Match not found.`);
             }
 
             if (m && smtpOutput.trim() !== m[0]) {
