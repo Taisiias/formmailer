@@ -91,6 +91,13 @@ curl 'https://localhost:3001/submit/'
 
 ---
 
+From: formmailer@localhost
+---
+To: root@localhost
+---
+Subject: Form submitted on https://localhost:3001/submit/
+---
+
 Submitted user form was received by FormMailer server, see details below.
 
 Referrer page: https://localhost:3001/submit/
@@ -103,7 +110,6 @@ user_message:
      Test Test Test
      Test Test Test
 user_select: Option 2.1
-user_checkbox: checked
 
 
 Submitter IP address: 127.0.0.1

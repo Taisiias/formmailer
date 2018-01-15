@@ -44,7 +44,7 @@ function runTests(): void {
 
 async function runTest(fileName: string): Promise<true | Error> {
     return new Promise((resolve) => {
-        const [configString, curl, curlResult, smtpOutput] =
+        const [configString, curl, curlResult, from, to, subject, emailText] =
             parseTestFile(fileName);
 
         // if (fileName === "./test/test-cases/test-form-2.txt") {
@@ -84,7 +84,6 @@ async function runTest(fileName: string): Promise<true | Error> {
             _session: smtp.SMTPServerSession,
             callback: (err?: Error) => void,
         ): void {
-            winston.info(`onData`);
             let buf = "";
             dataStream.on("data", (s) => {
                 buf += s;
@@ -108,42 +107,61 @@ async function runTest(fileName: string): Promise<true | Error> {
                 // resolve(new Error("Incorrect curl output."));
                 winston.info("Incorrect curl output.");
             }
-            // TODO: Check also To, From and Subject
-//             const regex = new RegExp(`/Content-Type: text\/plain
-// Content-Transfer-Encoding: 7bit
 
-// (.*)
+            const regexFrom = /From: (.*)/;
+            const regexTo = /To: (.*)/;
+            const regexSubject = /Subject: (.*)/;
+            const regexEmailText = new RegExp(
+`Content-Type: text\/plain
+Content-Transfer-Encoding: 7bit
 
-// ----[-_a-zA-Z0-9]+
-// Content-Type: text\/html/ms`);
+(.*)
 
-//             const regex = new RegExp(`Content-Type: multipart\/alternative;
-//  boundary="--[-_a-zA-Z0-9]+"
-// From: (.*)
-// To:`);
-
-            const regex = /From: (.*)/;
+----[-_a-zA-Z0-9]+
+Content-Type: text\/html`, "m");
 
             const fileContent = fs.readFileSync("./test/smtp-output.txt").toString().trim();
             // winston.info(`File Content: ${fileContent}`);
 
-            const m = regex.exec(fileContent);
-
-            if (m !== null) {
-                winston.info(`m = ${m[1]}.`);
+            const regexResultFrom = regexFrom.exec(fileContent);
+            if (regexResultFrom !== null) {
+                winston.info(`OK: regexResultFrom = ${regexResultFrom[1]}.`);
                 // The result can be accessed through the `m`-variable.
                 // m.forEach((match, groupIndex) => {
                 //     winston.info(`Found match, group ${groupIndex}: ${match}`);
                 // });
             } else {
-                winston.info(`Match not found.`);
+                winston.info(`FROM is incorrect.`);
             }
 
-            if (m && smtpOutput.trim() !== m[0]) {
-                // resolve(new Error("SMTP output does not match."))
-                winston.info("SMTP output does not match.");
+            const regexResultTo = regexTo.exec(fileContent);
+            if (regexResultTo !== null) {
+                winston.info(`OK: regexResultTo = ${regexResultTo[1]}.`);
+                // The result can be accessed through the `m`-variable.
+                // m.forEach((match, groupIndex) => {
+                //     winston.info(`Found match, group ${groupIndex}: ${match}`);
+                // });
             } else {
-                winston.info("SMTP output: OK");
+                winston.info(`TO is incorrect.`);
+            }
+
+            const regexResultSubject = regexSubject.exec(fileContent);
+            if (regexResultSubject !== null) {
+                winston.info(`OK: regexResultSubject = ${regexResultSubject[1]}.`);
+                // The result can be accessed through the `m`-variable.
+                // m.forEach((match, groupIndex) => {
+                //     winston.info(`Found match, group ${groupIndex}: ${match}`);
+                // });
+            } else {
+                winston.info(`SUBJECT is incorrect.`);
+            }
+
+            const regexResultEmailText = regexEmailText.exec(fileContent);
+            if (regexResultEmailText) {
+                // resolve(new Error("SMTP output does not match."))
+                winston.info(`OK: Email text ${regexResultEmailText[1]}.`);
+            } else {
+                winston.info("Email text does not match.");
             }
         }).catch((err) => {
             winston.error(`Curl cannot be executed: ${err}`);
