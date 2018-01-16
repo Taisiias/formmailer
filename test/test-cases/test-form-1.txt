@@ -95,12 +95,12 @@ From: formmailer@localhost
 ---
 To: root@localhost
 ---
-Subject: Form submitted on https://localhost:3001/submit/
+Subject: Form submitted on http://127.0.0.1:8080/
 ---
 
 Submitted user form was received by FormMailer server, see details below.
 
-Referrer page: https://localhost:3001/submit/
+Referrer page: http://127.0.0.1:8080/
 Submitted form: General Form
 
 
