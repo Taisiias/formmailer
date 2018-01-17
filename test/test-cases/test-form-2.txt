@@ -26,7 +26,7 @@
 }
 
 
----
+-----
 curl 'https://localhost:3001/submit/'
 -H 'Pragma: no-cache'
 -H 'Origin: http://127.0.0.1:8080'
@@ -44,7 +44,7 @@ curl 'https://localhost:3001/submit/'
 --compressed
 --insecure
 
----
+-----
 
 <html>
 
@@ -89,14 +89,14 @@ curl 'https://localhost:3001/submit/'
 
 </html>
 
----
+-----
 
 From: formmailer@localhost
----
+-----
 To: root@localhost
----
+-----
 Subject: Form submitted on http://127.0.0.1:8080/
----
+-----
 
 Submitted user form was received by FormMailer server, see details below.
 

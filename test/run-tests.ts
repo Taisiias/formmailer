@@ -12,7 +12,7 @@ const TESTS_FOLDER_PATH = "./test/test-cases";
 
 function parseTestFile(filePath: string): string[] {
     const fileContent = fs.readFileSync(filePath).toString();
-    const fileParts = fileContent.split("---").map((s) => s.trim());
+    const fileParts = fileContent.split("-----").map((s) => s.trim());
     return fileParts;
 }
 
@@ -42,8 +42,12 @@ function runTests(): void {
     }).catch((e: Error) => { winston.error(`An error occurred: ${e.message}`); });
 }
 
-function verified(valueToCheck: RegExpExecArray | null, expectedValue: string): boolean {
+function verifyRegExp(valueToCheck: RegExpExecArray | null, expectedValue: string): boolean {
     return valueToCheck !== null && valueToCheck[0] === expectedValue;
+}
+
+function verifyEmailText(valueToCheck: RegExpExecArray | null, expectedValue: string): boolean {
+    return valueToCheck !== null && valueToCheck[1] === expectedValue;
 }
 
 async function runTest(fileName: string): Promise<true | Error> {
@@ -108,34 +112,38 @@ async function runTest(fileName: string): Promise<true | Error> {
             const regexFrom = /From: (.*)/;
             const regexTo = /To: (.*)/;
             const regexSubject = /Subject: (.*)/;
+
             const regexEmailText = new RegExp(
-`Content-Type: text\/plain
-Content-Transfer-Encoding: 7bit
-
-(.*)
-
-----[-_a-zA-Z0-9]+
-Content-Type: text\/html`, "m");
+`Content-Type: text/plain\nContent-Transfer-Encoding: 7bit`,
+// Content-Transfer-Encoding: 7bit`,
+                // + "\n\n([^]*)\n\n"
+                // + "----[-_a-zA-Z0-9]+\n"
+                // + "Content-Type: text/html",
+                );
 
             const fileContent = fs.readFileSync("./test/smtp-output.txt").toString().trim();
+            //console.log("fileContent:", fileContent);
 
-            if (!verified(regexFrom.exec(fileContent), from)) {
+            console.log("regex", regexEmailText);
+            console.log("result", regexEmailText.test(fileContent));
+
+            if (!verifyRegExp(regexFrom.exec(fileContent), from)) {
                 winston.info(`FROM is incorrect ${regexFrom.exec(fileContent)} !== ${from}`);
             }
 
-            if (!verified(regexTo.exec(fileContent), to)) {
+            if (!verifyRegExp(regexTo.exec(fileContent), to)) {
                 winston.info(`TO is incorrect: ${regexTo.exec(fileContent)} !== ${to}`);
             }
 
-            if (!verified(regexSubject.exec(fileContent), subject)) {
+            if (!verifyRegExp(regexSubject.exec(fileContent), subject)) {
                 winston.info(
                     `SUBJECT is incorrect:${regexSubject.exec(fileContent)} !== ${subject}`);
             }
 
-            if (!verified(regexEmailText.exec(fileContent), emailText)) {
+            if (!verifyEmailText(regexEmailText.exec(fileContent), emailText)) {
                 // resolve(new Error("SMTP output does not match."))
                 winston.info(
-                    `Email text does not match: \
+                    `Email text does not match:
                     ${regexEmailText.exec(fileContent)} !== ${emailText}`);
             }
         }).catch((err) => {
