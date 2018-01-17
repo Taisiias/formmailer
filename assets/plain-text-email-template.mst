@@ -4,7 +4,7 @@ Referrer page: {{{refererUrl}}}
 {{formName}}
 
 {{#mustacheTemplateData}}
-{{key}}: {{textValue}}
+{{key}}:{{textValue}}
 {{/mustacheTemplateData}}
 
 
