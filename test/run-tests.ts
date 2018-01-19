@@ -42,17 +42,23 @@ function runTests(): void {
     }).catch((e: Error) => { winston.error(`An error occurred: ${e.message}`); });
 }
 
-function verifyRegExp(valueToCheck: RegExpExecArray | null, expectedValue: string): boolean {
+function verifyRegExp(
+    valueToCheck: RegExpExecArray | null,
+    expectedValue: string,
+): boolean {
     return valueToCheck !== null && valueToCheck[0] === expectedValue;
 }
 
-function verifyEmailText(valueToCheck: RegExpExecArray | null, expectedValue: string): boolean {
-    if (!valueToCheck) { return false; }
+function verifyEmailText(
+    valueToCheck: RegExpExecArray | null,
+    expectedValue: string,
+): [boolean, string | undefined, string] {
+    if (!valueToCheck) { return [false, undefined, expectedValue]; }
 
     const vc = valueToCheck[1].trim().replace(/\r\n/g, "\n");
     const ev = expectedValue.trim().replace(/\r\n/g, "\n");
 
-    return vc === ev;
+    return [vc === ev, vc, ev];
 }
 
 async function runTest(fileName: string): Promise<true | Error> {
@@ -141,12 +147,18 @@ async function runTest(fileName: string): Promise<true | Error> {
             }
 
             const emailTextResult = regexEmailText.exec(fileContent);
-            if (!verifyEmailText(emailTextResult, emailText)) {
+            let emailTextVerified: boolean;
+            let emailTextToCheck: string | undefined;
+            let expectedEmailText: string;
+
+            [emailTextVerified, emailTextToCheck, expectedEmailText] =
+                verifyEmailText(emailTextResult, emailText);
+            if (!emailTextVerified) {
                 // resolve(new Error("SMTP output does not match."))
-                if (emailTextResult) {
+                if (emailTextToCheck) {
                     winston.info(
                         `EMAIL TEXT - No Match -
-                        ${emailTextResult[1]} !== ${emailText}`);
+                        ${emailTextToCheck} !== ${expectedEmailText}`);
                 }
             }
         }).catch((err) => {
