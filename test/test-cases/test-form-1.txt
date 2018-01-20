@@ -1,7 +1,7 @@
 {
     "reCaptchaSiteKey": "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI",
     "reCaptchaSecret": "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe",
-    "disableRecaptcha": false,
+    "disableRecaptcha": true,
     "recipientEmails" : "root@localhost",
     "fromEmail": "formmailer@localhost",
     "httpListenIP": "0.0.0.0",

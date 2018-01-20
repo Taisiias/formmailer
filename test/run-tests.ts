@@ -56,6 +56,7 @@ function verifyEmailText(
     if (!valueToCheck) { return [false, undefined, expectedValue]; }
 
     const vc = valueToCheck[1].trim().replace(/\r\n/g, "\n");
+    winston.info(`vc = ${vc}`);
     const ev = expectedValue.trim().replace(/\r\n/g, "\n");
 
     return [vc === ev, vc, ev];
@@ -78,7 +79,7 @@ async function runTest(fileName: string): Promise<true | Error> {
         const PORT = 2500;
 
         const SMTPServer = smtp.SMTPServer;
-        const server = new SMTPServer({
+        const smtpServer = new SMTPServer({
             authOptional: true,
             onConnect,
             onData,
@@ -102,22 +103,20 @@ async function runTest(fileName: string): Promise<true | Error> {
             });
             dataStream.on("end", () => {
                 fs.writeFileSync("./test/smtp-output.txt", buf);
-                // buf.split("\n").map((s) => "> " + s).join("\n"));
                 callback();
             });
         }
 
-        server.listen(PORT, HOST, () => {
+        smtpServer.listen(PORT, HOST, () => {
             winston.info(`Run Tests: SMTP server started on ${HOST}:${PORT}`);
         });
 
         execa.shell(`${curl.split("\n").join(" ")} --show-error --silent`).then((result) => {
             if (result.stderr) {
-                winston.error(`Error in Curl: ${result.stderr}`);
+                throw new Error(`Error in Curl: ${result.stderr}`);
             }
             if (!cf.disableRecaptcha && result.stdout.trim() !== curlResult.trim()) {
-                // resolve(new Error("Incorrect curl output."));
-                winston.info("Incorrect curl output.");
+                throw new Error("Incorrect curl output.");
             }
 
             const regexFrom = /From: (.*)/;
@@ -125,65 +124,80 @@ async function runTest(fileName: string): Promise<true | Error> {
             const regexSubject = /Subject: (.*)/;
 
             const regexEmailText = new RegExp(
-                "Content-Type: text/plain\r" +
-                "Content-Transfer-Encoding: 7bit\r" +
-                "([^]*)\r" +
-                "----[-_a-zA-Z0-9]+\r" +
-                "Content-Type: text/html");
+                "Content-Type: text/plain\r"
+                + "Content-Transfer-Encoding: 7bit\r"
+                + "([^]*)\r"
+                + "----[-_a-zA-Z0-9]+\r"
+                + "Content-Type: text/html",
+            );
 
             const fileContent = fs.readFileSync("./test/smtp-output.txt").toString().trim();
 
             if (!verifyRegExp(regexFrom.exec(fileContent), from)) {
-                winston.info(`FROM - No Match - ${regexFrom.exec(fileContent)} !== ${from}`);
+                throw new Error(`FROM - No Match - ${regexFrom.exec(fileContent)} !== ${from}`);
             }
 
             if (!verifyRegExp(regexTo.exec(fileContent), to)) {
-                winston.info(`TO - No Match - ${regexTo.exec(fileContent)} !== ${to}`);
+                throw new Error(`TO - No Match - ${regexTo.exec(fileContent)} !== ${to}`);
             }
 
             if (!verifyRegExp(regexSubject.exec(fileContent), subject)) {
-                winston.info(
+                throw new Error(
                     `SUBJECT - No Match - ${regexSubject.exec(fileContent)} !== ${subject}`);
             }
 
-            const emailTextResult = regexEmailText.exec(fileContent);
+            const emailTextFromRegEx = regexEmailText.exec(fileContent);
+            if (emailTextFromRegEx) {
+                winston.info(`emailTextToCheck = ${emailTextFromRegEx[0]}`);
+            } else {
+                winston.info(`No email text from RegEx`);
+            }
             let emailTextVerified: boolean;
             let emailTextToCheck: string | undefined;
             let expectedEmailText: string;
 
             [emailTextVerified, emailTextToCheck, expectedEmailText] =
-                verifyEmailText(emailTextResult, emailText);
+                verifyEmailText(emailTextFromRegEx, emailText);
             if (!emailTextVerified) {
-                // resolve(new Error("SMTP output does not match."))
                 if (emailTextToCheck) {
-                    winston.info(
+                    throw new Error(
                         `EMAIL TEXT - No Match -
                         ${emailTextToCheck} !== ${expectedEmailText}`);
+                } else {
+                    throw new Error("EMAIL TEXT - No email text");
                 }
             }
+        }).then(() => {
+            closeServers(smtpServer, httpServer, httpsServer, viewEmailHistoryHttpServer);
+            resolve(true);
         }).catch((err) => {
-            winston.error(`Curl cannot be executed: ${err}`);
+            closeServers(smtpServer, httpServer, httpsServer, viewEmailHistoryHttpServer);
+            resolve(err);
         });
 
-        setTimeout(() => {
-            server.close(() => {
-                winston.info(`Closed SMTP server.`);
-            });
-            if (httpServer) {
-                httpServer.close();
-            }
-
-            if (httpsServer) {
-                httpsServer.close();
-            }
-
-            if (viewEmailHistoryHttpServer) {
-                viewEmailHistoryHttpServer.close();
-            }
-            resolve(true);
-        }, 1000);
-
     }) as Promise<true | Error>;
+}
+
+function closeServers(
+    smtpServer: smtp.SMTPServer,
+    httpServer: http.Server | undefined,
+    httpsServer: https.Server | undefined,
+    viewEmailHistoryHttpServer: http.Server | undefined,
+): void {
+    smtpServer.close(() => {
+        winston.info(`Closed SMTP server.`);
+    });
+    if (httpServer) {
+        httpServer.close();
+    }
+
+    if (httpsServer) {
+        httpsServer.close();
+    }
+
+    if (viewEmailHistoryHttpServer) {
+        viewEmailHistoryHttpServer.close();
+    }
 }
 
 runTests();
