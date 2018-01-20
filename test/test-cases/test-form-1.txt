@@ -110,6 +110,7 @@ user_message:
      Test Test Test
      Test Test Test
 user_select: Option 2.1
+user_checkbox: checked
 
 
 Submitter IP address: 127.0.0.1

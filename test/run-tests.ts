@@ -56,7 +56,6 @@ function verifyEmailText(
     if (!valueToCheck) { return [false, undefined, expectedValue]; }
 
     const vc = valueToCheck[1].trim().replace(/\r\n/g, "\n");
-    winston.info(`vc = ${vc}`);
     const ev = expectedValue.trim().replace(/\r\n/g, "\n");
 
     return [vc === ev, vc, ev];
@@ -123,11 +122,11 @@ async function runTest(fileName: string): Promise<true | Error> {
             const regexSubject = /Subject: (.*)/;
 
             const regexEmailText = new RegExp(
-                "Content-Type: text/plain\r"
-                + "Content-Transfer-Encoding: 7bit\r"
-                + "([^]*)\r"
-                + "----[-_a-zA-Z0-9]+\r"
-                + "Content-Type: text/html",
+                "Content-Type: text/plain\r\n" +
+                "Content-Transfer-Encoding: 7bit\r\n" +
+                "([^]*)\r\n" +
+                "----[-_a-zA-Z0-9]+\r\n" +
+                "Content-Type: text/html",
             );
 
             const fileContent = fs.readFileSync("./test/smtp-output.txt").toString().trim();
@@ -145,11 +144,7 @@ async function runTest(fileName: string): Promise<true | Error> {
                     `SUBJECT - No Match - ${regexSubject.exec(fileContent)} !== ${subject}`);
             }
             const emailTextFromRegEx = regexEmailText.exec(fileContent);
-            if (emailTextFromRegEx) {
-                winston.info(`emailTextToCheck = ${emailTextFromRegEx[0]}`);
-            } else {
-                winston.info(`No email text from RegEx`);
-            }
+
             let emailTextVerified: boolean;
             let emailTextToCheck: string | undefined;
             let expectedEmailText: string;
