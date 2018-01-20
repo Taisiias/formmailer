@@ -118,7 +118,6 @@ async function runTest(fileName: string): Promise<true | Error> {
             if (!cf.disableRecaptcha && result.stdout.trim() !== curlResult.trim()) {
                 throw new Error("Incorrect curl output.");
             }
-
             const regexFrom = /From: (.*)/;
             const regexTo = /To: (.*)/;
             const regexSubject = /Subject: (.*)/;
@@ -145,7 +144,6 @@ async function runTest(fileName: string): Promise<true | Error> {
                 throw new Error(
                     `SUBJECT - No Match - ${regexSubject.exec(fileContent)} !== ${subject}`);
             }
-
             const emailTextFromRegEx = regexEmailText.exec(fileContent);
             if (emailTextFromRegEx) {
                 winston.info(`emailTextToCheck = ${emailTextFromRegEx[0]}`);
@@ -170,7 +168,7 @@ async function runTest(fileName: string): Promise<true | Error> {
         }).then(() => {
             closeServers(smtpServer, httpServer, httpsServer, viewEmailHistoryHttpServer);
             resolve(true);
-        }).catch((err) => {
+        }).catch((err: Error) => {
             closeServers(smtpServer, httpServer, httpsServer, viewEmailHistoryHttpServer);
             resolve(err);
         });
@@ -190,11 +188,9 @@ function closeServers(
     if (httpServer) {
         httpServer.close();
     }
-
     if (httpsServer) {
         httpsServer.close();
     }
-
     if (viewEmailHistoryHttpServer) {
         viewEmailHistoryHttpServer.close();
     }
