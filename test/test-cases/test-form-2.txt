@@ -46,49 +46,6 @@ curl 'https://localhost:3001/submit/'
 
 -----
 
-<html>
-
-<head>
-    <script type='text/javascript'>
-        const THANKS_PAGE = "/thanks";
-        const ERROR_PAGE = "/error502";
-        const DATA = {"user_name":"Name Name","user_mail":"email@email.com","user_message":"Test Test Test\r\nTest Test Test","user_select":"Option 2.1","user_checkbox":"checked","_formname":"General Form"};
-        const SUBMIT_URL = "/submit/"
-
-        var onRecaptchaCheck = function (token) {
-            var httpRequest = new XMLHttpRequest();
-
-            httpRequest.onload = ajaxSuccess;
-
-            httpRequest.open("POST", SUBMIT_URL, true);
-            httpRequest.setRequestHeader('Content-Type', 'application/json');
-            let data = DATA;
-            data["g-recaptcha-response"] = token;
-            httpRequest.send(JSON.stringify(data));
-        };
-
-        function ajaxSuccess() {
-            if (JSON.parse(this.responseText).result === "error") {
-                window.location.replace(ERROR_PAGE);
-            } else {
-                window.location.replace(THANKS_PAGE);
-            }
-        };
-
-        window.onload = function () {
-            grecaptcha.execute();
-        }
-    </script>
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-</head>
-
-<body>
-    <div id='recaptcha' class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" data-callback="onRecaptchaCheck" data-size="invisible">
-    </div>
-</body>
-
-</html>
-
 -----
 
 From: formmailer@localhost
