@@ -45,17 +45,20 @@ curl 'https://localhost:3001/submit/'
 --insecure
 
 -----
+<!doctype html>
 
 <html>
 
 <head>
+    <meta charset="utf-8" />
     <script type='text/javascript'>
         const THANKS_PAGE = "/thanks";
         const ERROR_PAGE = "/error502";
         const DATA = {"user_name":"Name Name","user_mail":"email@email.com","user_message":"Test Test Test\r\nTest Test Test","user_select":"Option 2.1","user_checkbox":"checked","_formname":"General Form"};
-        const SUBMIT_URL = "/submit/"
+        const SUBMIT_URL = "/submit/";
 
         var onRecaptchaCheck = function (token) {
+
             var httpRequest = new XMLHttpRequest();
 
             httpRequest.onload = ajaxSuccess;
@@ -76,6 +79,7 @@ curl 'https://localhost:3001/submit/'
         };
 
         window.onload = function () {
+
             grecaptcha.execute();
         }
     </script>
@@ -88,7 +92,6 @@ curl 'https://localhost:3001/submit/'
 </body>
 
 </html>
-
 -----
 
 From: formmailer@localhost
