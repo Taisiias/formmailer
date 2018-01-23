@@ -28,8 +28,8 @@ function runTests(): void {
                 winston.info(`Test result: OK`);
             } else {
                 isError = true;
-                winston.error(`An error occurred: ${(testPassed as Error).message}
-            StackTrace: ${(testPassed as Error).stack}`);
+                winston.error(
+                    `An error occurred: ${(testPassed as Error).stack}`);
             }
         });
     });
@@ -107,7 +107,7 @@ async function runTest(fileName: string): Promise<true | Error> {
         }
 
         smtpServer.listen(PORT, HOST, () => {
-            winston.info(`Run Tests: SMTP server started on ${HOST}:${PORT}`);
+            winston.debug(`Run Tests: SMTP server started on ${HOST}:${PORT}`);
         });
 
         execa.shell(`${curl.split("\n").join(" ")} --show-error --silent`).then((result) => {
@@ -154,8 +154,11 @@ async function runTest(fileName: string): Promise<true | Error> {
             if (!emailTextVerified) {
                 if (emailTextToCheck) {
                     throw new Error(
-                        `EMAIL TEXT - No Match -
-                        ${emailTextToCheck} !== ${expectedEmailText}`);
+                        `\n***** EMAIL TEXT - No Match *****\n` +
+                        `\n***** Resulted text: *****\n` +
+                        `\n${emailTextToCheck}\n` +
+                        `\n***** Expected text: *****\n` +
+                        `\n${expectedEmailText}`);
                 } else {
                     throw new Error("EMAIL TEXT - No email text");
                 }
@@ -178,7 +181,7 @@ function closeServers(
     viewEmailHistoryHttpServer: http.Server | undefined,
 ): void {
     smtpServer.close(() => {
-        winston.info(`Closed SMTP server.`);
+        winston.debug(`Closed SMTP server.`);
     });
     if (httpServer) {
         httpServer.close();
