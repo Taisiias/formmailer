@@ -7,16 +7,25 @@ import * as stream from "stream";
 import winston = require("winston");
 import { createConfigObject } from "../src/config";
 import { runHttpServers } from "../src/run";
+import { closeServers, parseTestFile, verifyEmailText, verifyRegExp } from "./run-tests-helpers";
 
 const TESTS_FOLDER_PATH = "./test/test-cases";
 
-function parseTestFile(filePath: string): string[] {
-    const fileContent = fs.readFileSync(filePath).toString();
-    const fileParts = fileContent.split("-----").map((s) => s.trim());
-    return fileParts;
-}
-
 function runTests(): void {
+    const myCustomLevels = {
+        levels: {
+          testLog: "testLog",
+        }};
+
+    winston.configure({
+        level: myCustomLevels.levels.testLog,
+        transports: [new winston.transports.Console({
+            colorize: true,
+            name: "Console",
+            prettyPrint: true,
+            timestamp: true,
+        })],
+    });
     let testPassed: boolean | Error;
     let isError = false;
     let result = Promise.resolve();
@@ -42,31 +51,13 @@ function runTests(): void {
     }).catch((e: Error) => { winston.error(`An error occurred: ${e.message}`); });
 }
 
-function verifyRegExp(
-    valueToCheck: RegExpExecArray | null,
-    expectedValue: string,
-): boolean {
-    return valueToCheck !== null && valueToCheck[0] === expectedValue;
-}
-
-function verifyEmailText(
-    valueToCheck: RegExpExecArray | null,
-    expectedValue: string,
-): [boolean, string | undefined, string] {
-    if (!valueToCheck) { return [false, undefined, expectedValue]; }
-
-    const vc = valueToCheck[1].trim().replace(/\r\n/g, "\n");
-    const ev = expectedValue.trim().replace(/\r\n/g, "\n");
-
-    return [vc === ev, vc, ev];
-}
-
 async function runTest(fileName: string): Promise<true | Error> {
     return new Promise((resolve) => {
         const [configString, curl, curlResult, from, to, subject, emailText] =
             parseTestFile(fileName);
 
         const cf = createConfigObject(configString);
+        fs.writeFileSync("./test/smtp-output.txt", "");
 
         let httpServer: http.Server | undefined;
         let httpsServer: https.Server | undefined;
@@ -114,6 +105,7 @@ async function runTest(fileName: string): Promise<true | Error> {
             if (result.stderr) {
                 throw new Error(`Error in Curl: ${result.stderr}`);
             }
+            // winston.info(`Curl Stdout: ${result.stdout.trim()}`);
             if (!cf.disableRecaptcha && result.stdout.trim() !== curlResult.trim()) {
                 throw new Error("Incorrect curl output.");
             }
@@ -131,18 +123,10 @@ async function runTest(fileName: string): Promise<true | Error> {
 
             const fileContent = fs.readFileSync("./test/smtp-output.txt").toString().trim();
 
-            if (!verifyRegExp(regexFrom.exec(fileContent), from)) {
-                throw new Error(`FROM - No Match - ${regexFrom.exec(fileContent)} !== ${from}`);
-            }
+            verifyRegExp(regexFrom, from, "FROM", fileContent);
+            verifyRegExp(regexTo, to, "TO", fileContent);
+            verifyRegExp(regexSubject, subject, "SUBJECT", fileContent);
 
-            if (!verifyRegExp(regexTo.exec(fileContent), to)) {
-                throw new Error(`TO - No Match - ${regexTo.exec(fileContent)} !== ${to}`);
-            }
-
-            if (!verifyRegExp(regexSubject.exec(fileContent), subject)) {
-                throw new Error(
-                    `SUBJECT - No Match - ${regexSubject.exec(fileContent)} !== ${subject}`);
-            }
             const emailTextFromRegEx = regexEmailText.exec(fileContent);
 
             let emailTextVerified: boolean;
@@ -151,7 +135,7 @@ async function runTest(fileName: string): Promise<true | Error> {
 
             [emailTextVerified, emailTextToCheck, expectedEmailText] =
                 verifyEmailText(emailTextFromRegEx, emailText);
-            if (!emailTextVerified) {
+            if (!emailTextVerified && cf.disableRecaptcha) {
                 if (emailTextToCheck) {
                     throw new Error(
                         `\n***** EMAIL TEXT - No Match *****\n` +
@@ -172,26 +156,6 @@ async function runTest(fileName: string): Promise<true | Error> {
         });
 
     }) as Promise<true | Error>;
-}
-
-function closeServers(
-    smtpServer: smtp.SMTPServer,
-    httpServer: http.Server | undefined,
-    httpsServer: https.Server | undefined,
-    viewEmailHistoryHttpServer: http.Server | undefined,
-): void {
-    smtpServer.close(() => {
-        winston.debug(`Closed SMTP server.`);
-    });
-    if (httpServer) {
-        httpServer.close();
-    }
-    if (httpsServer) {
-        httpsServer.close();
-    }
-    if (viewEmailHistoryHttpServer) {
-        viewEmailHistoryHttpServer.close();
-    }
 }
 
 runTests();

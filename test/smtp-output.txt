@@ -1,34 +1,27 @@
 Content-Type: multipart/alternative;
- boundary="--_NmP-3b349b09d205b8e2-Part_1"
+ boundary="--_NmP-89bb1e9eb1bad7ed-Part_1"
 From: formmailer@localhost
 To: root@localhost
 Subject: Form submitted on http://127.0.0.1:8080/
-Message-ID: <d0058fb5-8989-3a01-99ed-0f0ed964f01b@localhost>
-Date: Tue, 23 Jan 2018 16:48:29 +0000
+Message-ID: <ed237d5e-be06-eeff-5b18-c72de064158a@localhost>
+Date: Wed, 24 Jan 2018 19:57:22 +0000
 MIME-Version: 1.0
 
-----_NmP-3b349b09d205b8e2-Part_1
+----_NmP-89bb1e9eb1bad7ed-Part_1
 Content-Type: text/plain
 Content-Transfer-Encoding: 7bit
 
 Submitted user form was received by FormMailer server, see details below.
 
 Referrer page: http://127.0.0.1:8080/
-Submitted form: General Form
 
 
-user_name: Name Name
-user_mail: email@email.com
-user_message:
-     Test Test Test
-     Test Test Test
-user_select: Option 2.1
-user_checkbox: checked
+user_name: Test Name
 
 
 Submitter IP address: 127.0.0.1
 
-----_NmP-3b349b09d205b8e2-Part_1
+----_NmP-89bb1e9eb1bad7ed-Part_1
 Content-Type: text/html
 Content-Transfer-Encoding: quoted-printable
 
@@ -234,11 +227,11 @@ class=3D"edtext" style=3D"padding: 15px; text-align: left; color: rgb(95, =
 word-break: break-word; direction: ltr; box-sizing: border-box;">
                                                         <p =
 style=3D"text-align: center; margin: 0px; padding: 0px;"><strong><span =
-style=3D"font-size: 16px;">Submitted form: General Form
-</span></strong></p>
-                                                    =
-</td>
-                                                </tr>
+style=3D"font-size: 16px;"></span></strong></p>
+                           =
+                         </td>
+                                            =
+    </tr>
                                             </tbody>
                                         </table>
                           =
@@ -272,25 +265,8 @@ word-break: break-word; direction: ltr; box-sizing: border-box;">
 style=3D"text-align: left; margin: 0px; padding: 0px;">
                                                             <p><span =
 style=3D"margin:10px; color: rgb(0, 0, 0);"><strong>user_name:</strong></sp=
-an><span style=3D"white-space: pre-wrap"> Name Name</span></p>
-                                                            <p><span =
-style=3D"margin:10px; color: rgb(0, 0, 0);"><strong>user_mail:</strong></sp=
-an><span style=3D"white-space: pre-wrap"> email@email.com</span></p>
-                                                            <p><span =
-style=3D"margin:10px; color: rgb(0, 0, 0);"><strong>user_message:</strong><=
-/span><span style=3D"white-space: pre-wrap">
-     Test Test Test
-     Test Test Test</span></p>
-                                            =
-                <p><span style=3D"margin:10px; color: rgb(0, 0, =
-0);"><strong>user_select:</strong></span><span style=3D"white-space: =
-pre-wrap"> Option 2.1</span></p>
-                                          =
-                  <p><span style=3D"margin:10px; color: rgb(0, 0, =
-0);"><strong>user_checkbox:</strong></span><span style=3D"white-space: =
-pre-wrap"> checked</span></p>
-                                             =
-           </div>
+an><span style=3D"white-space: pre-wrap"> Test Name</span></p>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             </tbody>
@@ -378,4 +354,4 @@ class=3D"emptycell" style=3D"padding: 10px;"></td>
 
 </html>
 
-----_NmP-3b349b09d205b8e2-Part_1--
+----_NmP-89bb1e9eb1bad7ed-Part_1--

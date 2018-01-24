@@ -25,7 +25,6 @@
     }
 }
 
-
 -----
 curl 'https://localhost:3001/submit/'
 -H 'Pragma: no-cache'
@@ -92,27 +91,5 @@ curl 'https://localhost:3001/submit/'
 </body>
 
 </html>
+
 -----
-
-From: formmailer@localhost
------
-To: root@localhost
------
-Subject: Form submitted on http://127.0.0.1:8080/
------
-
-Submitted user form was received by FormMailer server, see details below.
-
-Referrer page: http://127.0.0.1:8080/
-Submitted form: General Form
-
-
-user_name: Name Name
-user_mail: email@email.com
-user_message:
-     Test Test Test
-     Test Test Test
-user_select: Option 2.1
-
-
-Submitter IP address: 127.0.0.1

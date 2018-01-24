@@ -1,7 +1,7 @@
 {
     "reCaptchaSiteKey": "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI",
     "reCaptchaSecret": "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe",
-    "disableRecaptcha": false,
+    "disableRecaptcha": true,
     "recipientEmails" : "root@localhost",
     "fromEmail": "formmailer@localhost",
     "httpListenIP": "0.0.0.0",
@@ -27,71 +27,21 @@
 
 
 -----
-curl 'https://localhost:3001/submit/'
--H 'Pragma: no-cache'
--H 'Origin: http://127.0.0.1:8080'
+curl 'http://localhost:3000/submit/'
+-H 'Pragma: no-cache' -H 'Origin: http://127.0.0.1:8080'
 -H 'Accept-Encoding: gzip, deflate, br'
 -H 'Accept-Language: en-US,en;q=0.9,es;q=0.8,ru;q=0.7,uk;q=0.6'
--H 'Upgrade-Insecure-Requests: 1'
--H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36'
--H 'Content-Type: application/x-www-form-urlencoded'
--H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8'
+-H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36'
+-H 'Content-Type: application/json'
+-H 'Accept: */*'
 -H 'Cache-Control: no-cache'
 -H 'Referer: http://127.0.0.1:8080/'
--H 'Cookie: _ym_uid=1503937015301271580; io=cLlilaknXKVgrBskAAAH; _ga=GA1.1.506022750.1503937015'
 -H 'Connection: keep-alive'
---data 'user_name=Name+Name&user_mail=email%40email.com&user_message=Test+Test+Test%0D%0ATest+Test+Test&user_select=Option+2.1&user_checkbox=checked&_formname=General+Form'
+--data-binary '{"user_name":"Test Name"}'
 --compressed
---insecure
 
 -----
-<!doctype html>
-
-<html>
-
-<head>
-    <meta charset="utf-8" />
-    <script type='text/javascript'>
-        const THANKS_PAGE = "/thanks";
-        const ERROR_PAGE = "/error502";
-        const DATA = {"user_name":"Name Name","user_mail":"email@email.com","user_message":"Test Test Test\r\nTest Test Test","user_select":"Option 2.1","user_checkbox":"checked","_formname":"General Form"};
-        const SUBMIT_URL = "/submit/";
-
-        var onRecaptchaCheck = function (token) {
-
-            var httpRequest = new XMLHttpRequest();
-
-            httpRequest.onload = ajaxSuccess;
-
-            httpRequest.open("POST", SUBMIT_URL, true);
-            httpRequest.setRequestHeader('Content-Type', 'application/json');
-            let data = DATA;
-            data["g-recaptcha-response"] = token;
-            httpRequest.send(JSON.stringify(data));
-        };
-
-        function ajaxSuccess() {
-            if (JSON.parse(this.responseText).result === "error") {
-                window.location.replace(ERROR_PAGE);
-            } else {
-                window.location.replace(THANKS_PAGE);
-            }
-        };
-
-        window.onload = function () {
-
-            grecaptcha.execute();
-        }
-    </script>
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-</head>
-
-<body>
-    <div id='recaptcha' class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" data-callback="onRecaptchaCheck" data-size="invisible">
-    </div>
-</body>
-
-</html>
+{"result":"ok"}
 -----
 
 From: formmailer@localhost
@@ -104,16 +54,9 @@ Subject: Form submitted on http://127.0.0.1:8080/
 Submitted user form was received by FormMailer server, see details below.
 
 Referrer page: http://127.0.0.1:8080/
-Submitted form: General Form
 
 
-user_name: Name Name
-user_mail: email@email.com
-user_message:
-     Test Test Test
-     Test Test Test
-user_select: Option 2.1
-user_checkbox: checked
+user_name: Test Name
 
 
 Submitter IP address: 127.0.0.1
