@@ -24,11 +24,11 @@ function runTests(): void {
             winston.info(`Starting test: ${file}`);
             testPassed = await runTest(TESTS_FOLDER_PATH + "/" + file);
             if (testPassed === true) {
-                winston.info(`Test result: OK`);
+                winston.info(`TEST RESULT: OK`);
             } else {
                 isError = true;
                 winston.error(
-                    `An error occurred: ${(testPassed as Error).stack}`);
+                    `TEST FAIL: ${(testPassed as Error).stack}`);
             }
         });
     });
@@ -38,7 +38,7 @@ function runTests(): void {
         } else {
             winston.info(`All tests passed.`);
         }
-    }).catch((e: Error) => { winston.error(`An error occurred: ${e.message}`); });
+    }).catch((e: Error) => { winston.error(`TEST FAIL: ${e.message}`); });
 }
 
 async function runTest(fileName: string): Promise<true | Error> {

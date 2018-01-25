@@ -39,7 +39,7 @@ export function verifyRegExp(
     const regexResult = regexToCheck.exec(fileContent);
     const regexResultStr = !regexResult ? "" : regexResult[0];
     if (regexResultStr !== expectedValue) {
-        throw new Error(`****** ${expectedValueName} - No Match ****** ` +
+        throw new Error(`Incorrect ${expectedValueName}\n` +
             `${regexResultStr} !== ${expectedValue}`);
     }
 }
