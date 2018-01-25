@@ -7,25 +7,15 @@ import * as stream from "stream";
 import winston = require("winston");
 import { createConfigObject } from "../src/config";
 import { runHttpServers } from "../src/run";
-import { closeServers, parseTestFile, verifyEmailText, verifyRegExp } from "./run-tests-helpers";
+import {
+    closeServers, parseTestFile, removeFile,
+    verifyEmailText, verifyRegExp,
+} from "./run-tests-helpers";
 
 const TESTS_FOLDER_PATH = "./test/test-cases";
 
 function runTests(): void {
-    const myCustomLevels = {
-        levels: {
-          testLog: "testLog",
-        }};
 
-    winston.configure({
-        level: myCustomLevels.levels.testLog,
-        transports: [new winston.transports.Console({
-            colorize: true,
-            name: "Console",
-            prettyPrint: true,
-            timestamp: true,
-        })],
-    });
     let testPassed: boolean | Error;
     let isError = false;
     let result = Promise.resolve();
@@ -105,7 +95,6 @@ async function runTest(fileName: string): Promise<true | Error> {
             if (result.stderr) {
                 throw new Error(`Error in Curl: ${result.stderr}`);
             }
-            // winston.info(`Curl Stdout: ${result.stdout.trim()}`);
             if (!cf.disableRecaptcha && result.stdout.trim() !== curlResult.trim()) {
                 throw new Error("Incorrect curl output.");
             }
@@ -149,6 +138,7 @@ async function runTest(fileName: string): Promise<true | Error> {
             }
         }).then(() => {
             closeServers(smtpServer, httpServer, httpsServer, viewEmailHistoryHttpServer);
+            removeFile("./test/smtp-output.txt");
             resolve(true);
         }).catch((err: Error) => {
             closeServers(smtpServer, httpServer, httpsServer, viewEmailHistoryHttpServer);

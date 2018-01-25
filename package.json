@@ -4,7 +4,7 @@
   "description": "HTTP server that emails data submitted on static website forms.",
   "main": "index.js",
   "scripts": {
-    "test": "tsc && tslint --project tsconfig.json",
+    "test": "tsc && tslint --project tsconfig.json && ts-node ./test/run-tests.ts",
     "build": "tsc",
     "start": "tsc && node ./build/src/index.js",
     "live": "tsc && concurrently --kill-others --names \"FM,SMTP,HTTP\" -c \"blue.bold,green.bold,grey.bold\" \"yarn dev-formmailer\" \"yarn dev-smtp-server\" \"yarn dev-static-http\"",
@@ -12,8 +12,7 @@
     "dev-formmailer": "nodemon --exec ./node_modules/.bin/ts-node -- ./src/index.ts --config ./test/config.test.json",
     "dev-static-http": "http-server ./test -o",
     "dev-smtp-server": "node ./build/src/run-smtp.js",
-    "prepare": "tsc --outDir ./dist --sourceMap false",
-    "run-tests": "ts-node ./test/run-tests.ts"
+    "prepare": "tsc --outDir ./dist --sourceMap false"
   },
   "bin": "./dist/formmailer.js",
   "repository": {

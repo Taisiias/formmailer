@@ -5,4 +5,5 @@
 /.vscode/ftp-sync.json
 /test_cases.txt
 /formmailer.db
+/test/smtp-output.txt
 recaptcha-scheme.txt

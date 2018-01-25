@@ -10,7 +10,7 @@ export function closeServers(
     viewEmailHistoryHttpServer: http.Server | undefined,
 ): void {
     smtpServer.close(() => {
-        // winston.debug(`Closed SMTP server.`);
+        return;
     });
     if (httpServer) {
         httpServer.close();
@@ -52,4 +52,10 @@ export function verifyEmailText(
     const vc = valueToCheck[1].trim().replace(/\r\n/g, "\n");
     const ev = expectedValue.trim().replace(/\r\n/g, "\n");
     return [vc === ev, vc, ev];
+}
+
+export function removeFile(fileName: string): void {
+    if (fs.existsSync(fileName)) {
+        fs.unlinkSync(fileName);
+    }
 }
