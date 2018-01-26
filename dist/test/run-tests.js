@@ -14,12 +14,8 @@ const smtp = require("smtp-server");
 const winston = require("winston");
 const config_1 = require("../src/config");
 const run_1 = require("../src/run");
+const run_tests_helpers_1 = require("./run-tests-helpers");
 const TESTS_FOLDER_PATH = "./test/test-cases";
-function parseTestFile(filePath) {
-    const fileContent = fs.readFileSync(filePath).toString();
-    const fileParts = fileContent.split("---");
-    return fileParts;
-}
 function runTests() {
     let testPassed;
     let isError = false;
@@ -29,12 +25,11 @@ function runTests() {
             winston.info(`Starting test: ${file}`);
             testPassed = yield runTest(TESTS_FOLDER_PATH + "/" + file);
             if (testPassed === true) {
-                winston.info(`Test result: OK`);
+                winston.info(`TEST RESULT: OK`);
             }
             else {
                 isError = true;
-                winston.error(`An error occurred: ${testPassed.message}
-            StackTrace: ${testPassed.stack}`);
+                winston.error(`TEST FAIL: ${testPassed.stack}`);
             }
         }));
     });
@@ -45,18 +40,14 @@ function runTests() {
         else {
             winston.info(`All tests passed.`);
         }
-    }).catch((e) => { winston.error(`An error occurred: ${e.message}`); });
+    }).catch((e) => { winston.error(`TEST FAIL: ${e.message}`); });
 }
 function runTest(fileName) {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve) => {
-            const [configString, curl, curlResult, smtpOutput] = parseTestFile(fileName);
-            // if (fileName === "./test/test-cases/test-form-2.txt") {
-            //     winston.error(`Incorrect Filename error: ${fileName}`);
-            //     resolve(new Error("Incorrect Filename"));
-            //     return;
-            // }
+            const [configString, curl, curlResult, from, to, subject, emailText] = run_tests_helpers_1.parseTestFile(fileName);
             const cf = config_1.createConfigObject(configString);
+            fs.writeFileSync("./test/smtp-output.txt", "");
             let httpServer;
             let httpsServer;
             let viewEmailHistoryHttpServer;
@@ -64,65 +55,72 @@ function runTest(fileName) {
             const HOST = "localhost";
             const PORT = 2500;
             const SMTPServer = smtp.SMTPServer;
-            const server = new SMTPServer({
+            const smtpServer = new SMTPServer({
                 authOptional: true,
                 onConnect,
                 onData,
             });
             function onConnect(_session, callback) {
-                winston.info(`Incoming connection onConnect`);
                 callback();
             }
             function onData(dataStream, _session, callback) {
-                winston.info(`onData`);
                 let buf = "";
                 dataStream.on("data", (s) => {
                     buf += s;
                 });
                 dataStream.on("end", () => {
                     fs.writeFileSync("./test/smtp-output.txt", buf);
-                    // buf.split("\n").map((s) => "> " + s).join("\n"));
                     callback();
                 });
             }
-            server.listen(PORT, HOST, () => {
-                winston.info(`Run Tests: SMTP server started on ${HOST}:${PORT}`);
+            smtpServer.listen(PORT, HOST, () => {
+                winston.debug(`Run Tests: SMTP server started on ${HOST}:${PORT}`);
             });
             execa.shell(`${curl.split("\n").join(" ")} --show-error --silent`).then((result) => {
                 if (result.stderr) {
-                    winston.error(`Error in Curl: ${result.stderr}`);
+                    throw new Error(`Error in Curl: ${result.stderr}`);
                 }
                 if (!cf.disableRecaptcha && result.stdout.trim() !== curlResult.trim()) {
-                    resolve(new Error("Incorrect curl output."));
+                    throw new Error("Incorrect curl output.");
                 }
-                const fileContent = fs.readFileSync("./test/smtp-output.txt").toString();
-                // winston.info(`File Content: ${fileContent}`);
-                if (smtpOutput.trim() !== fileContent.trim()) {
-                    // resolve(new Error("SMTP output does not match."))
-                    winston.info("SMTP output does not match.");
+                const regexFrom = /From: (.*)/;
+                const regexTo = /To: (.*)/;
+                const regexSubject = /Subject: (.*)/;
+                const regexEmailText = new RegExp("Content-Type: text/plain\r\n" +
+                    "Content-Transfer-Encoding: 7bit\r\n" +
+                    "([^]*)\r\n" +
+                    "----[-_a-zA-Z0-9]+\r\n" +
+                    "Content-Type: text/html");
+                const fileContent = fs.readFileSync("./test/smtp-output.txt").toString().trim();
+                run_tests_helpers_1.verifyRegExp(regexFrom, from, "FROM", fileContent);
+                run_tests_helpers_1.verifyRegExp(regexTo, to, "TO", fileContent);
+                run_tests_helpers_1.verifyRegExp(regexSubject, subject, "SUBJECT", fileContent);
+                const emailTextFromRegEx = regexEmailText.exec(fileContent);
+                let emailTextVerified;
+                let emailTextToCheck;
+                let expectedEmailText;
+                [emailTextVerified, emailTextToCheck, expectedEmailText] =
+                    run_tests_helpers_1.verifyEmailText(emailTextFromRegEx, emailText);
+                if (!emailTextVerified && cf.disableRecaptcha) {
+                    if (emailTextToCheck) {
+                        throw new Error(`\n***** EMAIL TEXT - No Match *****\n` +
+                            `\n***** Resulted text: *****\n` +
+                            `\n${emailTextToCheck}\n` +
+                            `\n***** Expected text: *****\n` +
+                            `\n${expectedEmailText}`);
+                    }
+                    else {
+                        throw new Error("EMAIL TEXT - No email text");
+                    }
                 }
-                else {
-                    winston.info("SMTP output: OK");
-                }
-            }).catch((err) => {
-                winston.error(`Curl cannot be executed: ${err}`);
-            });
-            setTimeout(() => {
-                winston.info("Timeout set.");
-                server.close(() => {
-                    winston.info(`Closed SMTP server.`);
-                });
-                if (httpServer) {
-                    httpServer.close();
-                }
-                if (httpsServer) {
-                    httpsServer.close();
-                }
-                if (viewEmailHistoryHttpServer) {
-                    viewEmailHistoryHttpServer.close();
-                }
+            }).then(() => {
+                run_tests_helpers_1.closeServers(smtpServer, httpServer, httpsServer, viewEmailHistoryHttpServer);
+                run_tests_helpers_1.removeFile("./test/smtp-output.txt");
                 resolve(true);
-            }, 1000);
+            }).catch((err) => {
+                run_tests_helpers_1.closeServers(smtpServer, httpServer, httpsServer, viewEmailHistoryHttpServer);
+                resolve(err);
+            });
         });
     });
 }
