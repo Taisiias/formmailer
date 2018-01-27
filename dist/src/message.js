@@ -15,8 +15,12 @@ function constructFieldsArrayForMustache(post) {
         const buf = { key: "", textValue: "" };
         buf.key = name;
         buf.textValue = he.decode(post[name]);
+        // tslint:disable-next-line:prefer-conditional-expression
         if (buf.textValue.includes("\n")) {
             buf.textValue = "\n" + buf.textValue.split("\n").map((s) => "     " + s).join("\n");
+        }
+        else {
+            buf.textValue = ` ${buf.textValue}`;
         }
         resultingArray.push(buf);
     }

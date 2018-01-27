@@ -41,19 +41,19 @@
     "@types/node-static": "^0.7.0",
     "@types/nodemailer": "^4.3.1",
     "@types/nodemailer-smtp-transport": "^2.7.4",
-    "@types/request": "^2.0.3",
-    "@types/request-promise": "^4.1.37",
+    "@types/request": "^2.0.13",
+    "@types/request-promise": "^4.1.40",
     "@types/sqlite3": "^3.1.0",
     "@types/winston": "^2.3.4",
     "@types/yargs": "^10.0.1",
     "bluebird": "^3.5.1",
     "deepmerge": "^2.0.0",
     "email-validator": "^1.1.1",
-    "execa": "^0.8.0",
+    "execa": "^0.9.0",
     "he": "^1.1.1",
     "mustache": "^2.3.0",
     "node-static": "^0.7.10",
-    "nodemailer": "^4.4.0",
+    "nodemailer": "^4.4.2",
     "nodemailer-smtp-transport": "^2.7.4",
     "querystring": "^0.2.0",
     "request": "^2.81.0",
@@ -67,10 +67,10 @@
   "devDependencies": {
     "@types/smtp-server": "^3.3.0",
     "concurrently": "^3.5.0",
-    "http-server": "^0.10.0",
-    "nodemon": "^1.14.8",
+    "http-server": "^0.11.1",
+    "nodemon": "^1.14.11",
     "smtp-server": "^3.3.0",
     "ts-node": "^4.1.0",
-    "tslint": "^5.8.0"
+    "tslint": "^5.9.1"
   }
 }
