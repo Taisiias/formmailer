@@ -37,7 +37,7 @@
     "@types/execa": "^0.8.1",
     "@types/he": "^0.5.29",
     "@types/mustache": "^0.8.29",
-    "@types/node": "^8.5.7",
+    "@types/node": "^9.4.0",
     "@types/node-static": "^0.7.0",
     "@types/nodemailer": "^4.3.1",
     "@types/nodemailer-smtp-transport": "^2.7.4",
@@ -62,7 +62,7 @@
     "typescript": "^2.4.2",
     "url": "^0.11.0",
     "winston": "^2.3.1",
-    "yargs": "^10.0.3"
+    "yargs": "^11.0.0"
   },
   "devDependencies": {
     "@types/smtp-server": "^3.3.0",
