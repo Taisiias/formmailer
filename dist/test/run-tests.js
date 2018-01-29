@@ -10,37 +10,43 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const execa = require("execa");
 const fs = require("fs");
+const log4js_1 = require("log4js");
 const smtp = require("smtp-server");
-const winston = require("winston");
+// import winston = require("winston");
 const config_1 = require("../src/config");
 const run_1 = require("../src/run");
 const run_tests_helpers_1 = require("./run-tests-helpers");
 const TESTS_FOLDER_PATH = "./test/test-cases";
 function runTests() {
+    log4js_1.configure({
+        appenders: { out: { type: "stdout" } },
+        categories: { default: { appenders: ["out"], level: "info" } },
+    });
+    const logger = log4js_1.getLogger("out");
     let testPassed;
     let isError = false;
     let result = Promise.resolve();
     fs.readdirSync(TESTS_FOLDER_PATH).forEach((file) => {
         result = result.then(() => __awaiter(this, void 0, void 0, function* () {
-            winston.info(`Starting test: ${file}`);
+            logger.info(`Starting test: ${file}`);
             testPassed = yield runTest(TESTS_FOLDER_PATH + "/" + file);
             if (testPassed === true) {
-                winston.info(`TEST RESULT: OK`);
+                logger.info(`TEST RESULT: OK`);
             }
             else {
                 isError = true;
-                winston.error(`TEST FAIL: ${testPassed.stack}`);
+                logger.error(`TEST FAIL: ${testPassed.stack}`);
             }
         }));
     });
     result.then(() => {
         if (isError) {
-            winston.error(`One or more tests didn't pass.`);
+            logger.error(`One or more tests didn't pass.`);
         }
         else {
-            winston.info(`All tests passed.`);
+            logger.info(`All tests passed.`);
         }
-    }).catch((e) => { winston.error(`TEST FAIL: ${e.message}`); });
+    }).catch((e) => { logger.error(`TEST FAIL: ${e.message}`); });
 }
 function runTest(fileName) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -74,7 +80,8 @@ function runTest(fileName) {
                 });
             }
             smtpServer.listen(PORT, HOST, () => {
-                winston.debug(`Run Tests: SMTP server started on ${HOST}:${PORT}`);
+                // logger.debug(`Run Tests: SMTP server started on ${HOST}:${PORT}`);
+                return;
             });
             execa.shell(`${curl.split("\n").join(" ")} --show-error --silent`).then((result) => {
                 if (result.stderr) {

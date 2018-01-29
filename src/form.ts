@@ -4,6 +4,7 @@ import * as fs from "fs";
 import * as mst from "mustache";
 
 import winston = require("winston");
+// import { configure, getLogger } from "log4js";
 import { getAssetFolderPath} from "./asset";
 import { Config } from "./config";
 import { loadSentEmailsInfo, saveEmailToDB, SentEmailInfo } from "./database";

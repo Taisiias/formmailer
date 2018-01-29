@@ -1,3 +1,5 @@
+// TODO: Test headers
+
 import * as execa from "execa";
 import * as fs from "fs";
 import * as http from "http";
@@ -14,13 +16,21 @@ import {
 } from "./run-tests-helpers";
 
 const TESTS_FOLDER_PATH = "./test/test-cases";
+const DEFAULT_LOGGING_LEVEL = "info";
 
 function runTests(): void {
+
     configure({
-        appenders: { out: { type: "stdout" } },
-        categories: { default: { appenders: ["out"], level: "info" } },
+        appenders: {
+            test: { type: "stdout" },
+        },
+        categories: {
+            default: { appenders: ["test"], level: DEFAULT_LOGGING_LEVEL },
+            formMailer: { appenders: ["test"], level: "off" },
+        },
     });
-    const logger = getLogger("out");
+
+    const logger = getLogger("test");
 
     let testPassed: boolean | Error;
     let isError = false;
