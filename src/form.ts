@@ -3,8 +3,8 @@ import * as http from "http";
 import * as fs from "fs";
 import * as mst from "mustache";
 
-import winston = require("winston");
-import { getAssetFolderPath} from "./asset";
+import { getLogger } from "log4js";
+import { getAssetFolderPath } from "./asset";
 import { Config } from "./config";
 import { loadSentEmailsInfo, saveEmailToDB, SentEmailInfo } from "./database";
 import { getRecipients, getSubjectTemplate } from "./form-target/helpers";
@@ -24,13 +24,14 @@ export async function submitHandler(
     res: http.ServerResponse,
 ): Promise<void> {
     const [parsedRequestData, bodyStr, isAjax] =
-         await parseRequestData(req, config.maxHttpRequestSize);
-    winston.debug(`Parsed Request Data ${JSON.stringify(parsedRequestData)}`);
+        await parseRequestData(req, config.maxHttpRequestSize);
+
+    getLogger("formMailer").debug(`Parsed Request Data ${JSON.stringify(parsedRequestData)}`);
 
     const senderIpAddress = req.connection.remoteAddress || "unknown remote address";
 
     if (!await processReCaptcha(
-            config, parsedRequestData, senderIpAddress, res, pathname, isAjax)) {
+        config, parsedRequestData, senderIpAddress, res, pathname, isAjax)) {
         return;
     }
 
@@ -57,7 +58,7 @@ export async function submitHandler(
         res.write(JSON.stringify({ result: "ok" }));
     } else {
         const redirectUrl = parsedRequestData._redirect || THANKS_URL_PATH;
-        winston.debug(`Redirecting to ${redirectUrl}`);
+        getLogger("formMailer").debug(`Redirecting to ${redirectUrl}`);
         res.writeHead(303, { Location: redirectUrl });
     }
     res.end();
@@ -74,7 +75,7 @@ export async function viewEmailHistory(
     const templateData = {
         sentEmails,
     };
-    winston.debug(`Rendering View sent emails page.`);
+    getLogger("formMailer").debug(`Rendering View sent emails page.`);
     const renderedHtml = mst.render(htmlTemplate, templateData);
     res.write(renderedHtml);
     res.end();
@@ -85,12 +86,12 @@ function getFormTargetKey(
     pathname: string,
 ): string {
     let formTargetKey = "";
-    winston.debug(`Provided URL path name: "${pathname}"`);
+    getLogger("formMailer").debug(`Provided URL path name: "${pathname}"`);
     formTargetKey = pathname.slice(pathname.lastIndexOf("/submit") + 8);
     if (formTargetKey.endsWith("/")) {
         formTargetKey = formTargetKey.slice(0, formTargetKey.lastIndexOf("/"));
     }
-    winston.debug(`Provided form target key: "${formTargetKey}"`);
+    getLogger("formMailer").debug(`Provided form target key: "${formTargetKey}"`);
     if (formTargetKey) {
         if (!config.formTargets.hasOwnProperty(formTargetKey)) {
             throw new NotFoundError(`Target form "${formTargetKey}" doesn't exist in config.`);

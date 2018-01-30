@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as http from "http";
 import * as https from "https";
-import winston = require("winston");
+import { configure, getLogger } from "log4js";
 import * as yargs from "yargs";
 import { Config, readConfig } from "./config";
 import { createDatabaseAndTables } from "./database";
@@ -12,15 +12,8 @@ const DEFAULT_CONFIG_PATH = "./config.json";
 const STARTUP_LOG_LEVEL = "debug";
 
 function run(): void {
-    winston.configure({
-        level: STARTUP_LOG_LEVEL,
-        transports: [new winston.transports.Console({
-            colorize: true,
-            name: "Console",
-            prettyPrint: true,
-            timestamp: true,
-        })],
-    });
+
+    const logger = getLogger("formMailer");
 
     const args = yargs.usage("FormMailer server. Usage: $0 [-c <config file>]")
         .options("config", {
@@ -37,7 +30,7 @@ function run(): void {
         .argv;
     const config = readConfig(args.config as string);
 
-    winston.level = config.logLevel;
+    logger.level = config.logLevel;
 
     runHttpServers(config);
 }
@@ -45,9 +38,10 @@ function run(): void {
 export function runHttpServers(
     config: Config,
 ): [http.Server | undefined, https.Server | undefined, http.Server | undefined] {
+    const logger = getLogger("formMailer");
     const staticFileServer = new StaticFileServer(config.assetsFolder);
     createDatabaseAndTables(config.databaseFileName).catch((err) => {
-        winston.warn(`Error while creating database tables: ${err}`);
+        logger.warn(`Error while creating database tables: ${err}`);
     });
 
     let httpServer: http.Server | undefined;
@@ -58,7 +52,7 @@ export function runHttpServers(
         httpServer =
             http.createServer(constructConnectionHandler(config, staticFileServer));
         httpServer.listen(config.httpListenPort, config.httpListenIP, () => {
-            winston.info(
+            logger.info(
                 `HTTP server started (listening ${config.httpListenIP}: ${config.httpListenPort})`);
         });
     }
@@ -71,7 +65,7 @@ export function runHttpServers(
         httpsServer = https.createServer(
             options, constructConnectionHandler(config, staticFileServer));
         httpsServer.listen(config.httpsListenPort, config.httpsListenIP, () => {
-            winston.info(
+            logger.info(
                 `HTTPS server started ` +
                 `(listening ${config.httpsListenIP}:${config.httpsListenPort})`);
         });
@@ -79,7 +73,7 @@ export function runHttpServers(
     if (config.enableWebInterface) {
         viewHistoryHttpServer = http.createServer(viewHistoryHandler(config));
         viewHistoryHttpServer.listen(config.webInterfacePort, config.webInterfaceIP, () => {
-            winston.info(
+            logger.info(
                 `Web Interface server started ` +
                 `(listening ${config.httpListenIP}:${config.webInterfacePort})`);
         });
@@ -88,10 +82,15 @@ export function runHttpServers(
 }
 
 export function runAndReport(): void {
+    configure({
+        appenders: { formMailer: { type: "stdout" } },
+        categories: { default: { appenders: ["formMailer"], level: STARTUP_LOG_LEVEL } },
+    });
+    const logger = getLogger("formMailer");
     try {
         run();
     } catch (e) {
-        winston.error((e as Error).message as string);
+        logger.error((e as Error).message as string);
         return process.exit(1);
     }
 }

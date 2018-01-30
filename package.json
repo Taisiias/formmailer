@@ -44,13 +44,13 @@
     "@types/request": "^2.0.13",
     "@types/request-promise": "^4.1.40",
     "@types/sqlite3": "^3.1.0",
-    "@types/winston": "^2.3.4",
     "@types/yargs": "^10.0.1",
     "bluebird": "^3.5.1",
     "deepmerge": "^2.0.0",
     "email-validator": "^1.1.1",
     "execa": "^0.9.0",
     "he": "^1.1.1",
+    "log4js": "^2.5.2",
     "mustache": "^2.3.0",
     "node-static": "^0.7.10",
     "nodemailer": "^4.4.2",
@@ -61,7 +61,6 @@
     "sqlite3": "^3.1.9",
     "typescript": "^2.4.2",
     "url": "^0.11.0",
-    "winston": "^2.3.1",
     "yargs": "^11.0.0"
   },
   "devDependencies": {

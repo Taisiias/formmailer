@@ -1,5 +1,5 @@
+import { getLogger } from "log4js";
 import * as nodemailer from "nodemailer";
-import winston = require("winston");
 import { Config } from "./config";
 
 export async function sendEmail(
@@ -9,6 +9,9 @@ export async function sendEmail(
     text: string,
     html: string,
 ): Promise<void> {
+
+    const logger = getLogger("formMailer");
+
     const transporter = nodemailer.createTransport(config.smtpOptions);
     const emailMessage = {
         from: config.fromEmail,
@@ -18,7 +21,7 @@ export async function sendEmail(
         to,
     };
 
-    winston.debug(`Sending email.`);
+    logger.debug(`Sending email.`);
     await transporter.sendMail(emailMessage);
-    winston.info(`Message has been sent to ${to}`);
+    logger.info(`Message has been sent to ${to}`);
 }

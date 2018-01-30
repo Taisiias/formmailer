@@ -1,10 +1,12 @@
+// TODO: Test headers
+
 import * as execa from "execa";
 import * as fs from "fs";
 import * as http from "http";
 import * as https from "https";
+import { configure, getLogger } from "log4js";
 import * as smtp from "smtp-server";
 import * as stream from "stream";
-import winston = require("winston");
 import { createConfigObject } from "../src/config";
 import { runHttpServers } from "../src/run";
 import {
@@ -13,32 +15,45 @@ import {
 } from "./run-tests-helpers";
 
 const TESTS_FOLDER_PATH = "./test/test-cases";
+const DEFAULT_LOGGING_LEVEL = "info";
 
 function runTests(): void {
+
+    configure({
+        appenders: {
+            test: { type: "stdout" },
+        },
+        categories: {
+            default: { appenders: ["test"], level: DEFAULT_LOGGING_LEVEL },
+            formMailer: { appenders: ["test"], level: "off" },
+        },
+    });
+
+    const logger = getLogger("test");
 
     let testPassed: boolean | Error;
     let isError = false;
     let result = Promise.resolve();
     fs.readdirSync(TESTS_FOLDER_PATH).forEach((file) => {
         result = result.then(async () => {
-            winston.info(`Starting test: ${file}`);
+            logger.info(`Starting test: ${file}`);
             testPassed = await runTest(TESTS_FOLDER_PATH + "/" + file);
             if (testPassed === true) {
-                winston.info(`TEST RESULT: OK`);
+                logger.info(`TEST RESULT: OK`);
             } else {
                 isError = true;
-                winston.error(
+                logger.error(
                     `TEST FAIL: ${(testPassed as Error).stack}`);
             }
         });
     });
     result.then(() => {
         if (isError) {
-            winston.error(`One or more tests didn't pass.`);
+            logger.error(`One or more tests didn't pass.`);
         } else {
-            winston.info(`All tests passed.`);
+            logger.info(`All tests passed.`);
         }
-    }).catch((e: Error) => { winston.error(`TEST FAIL: ${e.message}`); });
+    }).catch((e: Error) => { logger.error(`TEST FAIL: ${e.message}`); });
 }
 
 async function runTest(fileName: string): Promise<true | Error> {
@@ -88,7 +103,8 @@ async function runTest(fileName: string): Promise<true | Error> {
         }
 
         smtpServer.listen(PORT, HOST, () => {
-            winston.debug(`Run Tests: SMTP server started on ${HOST}:${PORT}`);
+            // logger.debug(`Run Tests: SMTP server started on ${HOST}:${PORT}`);
+            return;
         });
 
         execa.shell(`${curl.split("\n").join(" ")} --show-error --silent`).then((result) => {
