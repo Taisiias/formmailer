@@ -45,7 +45,6 @@
     "@types/request": "^2.0.3",
     "@types/request-promise": "^4.1.37",
     "@types/sqlite3": "^3.1.0",
-    "@types/winston": "^2.3.4",
     "@types/yargs": "^10.0.1",
     "bluebird": "^3.5.1",
     "deepmerge": "^2.0.0",
@@ -63,7 +62,6 @@
     "sqlite3": "^3.1.9",
     "typescript": "^2.4.2",
     "url": "^0.11.0",
-    "winston": "^2.3.1",
     "yargs": "^10.0.3"
   },
   "devDependencies": {

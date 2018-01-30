@@ -8,8 +8,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const log4js_1 = require("log4js");
 const url = require("url");
-const winston = require("winston");
 const form_1 = require("./form");
 const header_1 = require("./header");
 const recaptcha_1 = require("./recaptcha");
@@ -21,7 +21,7 @@ const VIEW_URL_PATH = "/view";
 function routeRequest(config, req, res, staticFileServer) {
     return __awaiter(this, void 0, void 0, function* () {
         const parsedUrl = url.parse(req.url, true);
-        winston.debug(`Pathname: ${parsedUrl.pathname}`);
+        log4js_1.getLogger("formMailer").debug(`Pathname: ${parsedUrl.pathname}`);
         if (parsedUrl.pathname &&
             parsedUrl.pathname.toString().startsWith(exports.SUBMIT_URL_PATH) &&
             req.method === "POST") {
@@ -40,7 +40,7 @@ function routeRequest(config, req, res, staticFileServer) {
 }
 function errorHandler(err, req, res, staticFileServer) {
     return __awaiter(this, void 0, void 0, function* () {
-        winston.warn(`Error in Connection Handler: ${err}`);
+        log4js_1.getLogger("formMailer").warn(`Error in Connection Handler: ${err}`);
         const isAjax = request_1.isAjaxRequest(req);
         if (isAjax) {
             res.statusCode = err instanceof form_1.NotFoundError ? 404 : 502;
@@ -63,7 +63,7 @@ function errorHandler(err, req, res, staticFileServer) {
 }
 function constructConnectionHandler(config, staticFileServer) {
     return (req, res) => {
-        winston.debug(`Incoming request: ${req.url} (method: ${req.method})`);
+        log4js_1.getLogger("formMailer").debug(`Incoming request: ${req.url} (method: ${req.method})`);
         // set CORS headers
         if (req.method === "OPTIONS") {
             header_1.setCorsHeaders(res);
@@ -80,12 +80,12 @@ exports.constructConnectionHandler = constructConnectionHandler;
 function viewHistoryHandler(config) {
     return (req, res) => {
         const parsedUrl = url.parse(req.url, true);
-        winston.debug(`View Pathname: ${parsedUrl.pathname}`);
+        log4js_1.getLogger("formMailer").debug(`View Pathname: ${parsedUrl.pathname}`);
         if (parsedUrl.pathname === VIEW_URL_PATH) {
             form_1.viewEmailHistory(res, config).then(() => {
-                winston.debug("Correctly returned email history page.");
+                log4js_1.getLogger("formMailer").debug("Correctly returned email history page.");
             }).catch((err) => {
-                winston.warn(`Can't render email history page: ${err}`);
+                log4js_1.getLogger("formMailer").warn(`Can't render email history page: ${err}`);
             });
         }
     };

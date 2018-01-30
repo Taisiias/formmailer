@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs");
 const mst = require("mustache");
-const winston = require("winston");
+const log4js_1 = require("log4js");
 const asset_1 = require("./asset");
 const database_1 = require("./database");
 const helpers_1 = require("./form-target/helpers");
@@ -26,7 +26,7 @@ exports.NotFoundError = NotFoundError;
 function submitHandler(config, pathname, req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const [parsedRequestData, bodyStr, isAjax] = yield request_1.parseRequestData(req, config.maxHttpRequestSize);
-        winston.debug(`Parsed Request Data ${JSON.stringify(parsedRequestData)}`);
+        log4js_1.getLogger("formMailer").debug(`Parsed Request Data ${JSON.stringify(parsedRequestData)}`);
         const senderIpAddress = req.connection.remoteAddress || "unknown remote address";
         if (!(yield recaptcha_1.processReCaptcha(config, parsedRequestData, senderIpAddress, res, pathname, isAjax))) {
             return;
@@ -47,7 +47,7 @@ function submitHandler(config, pathname, req, res) {
         }
         else {
             const redirectUrl = parsedRequestData._redirect || handler_1.THANKS_URL_PATH;
-            winston.debug(`Redirecting to ${redirectUrl}`);
+            log4js_1.getLogger("formMailer").debug(`Redirecting to ${redirectUrl}`);
             res.writeHead(303, { Location: redirectUrl });
         }
         res.end();
@@ -61,7 +61,7 @@ function viewEmailHistory(res, config) {
         const templateData = {
             sentEmails,
         };
-        winston.debug(`Rendering View sent emails page.`);
+        log4js_1.getLogger("formMailer").debug(`Rendering View sent emails page.`);
         const renderedHtml = mst.render(htmlTemplate, templateData);
         res.write(renderedHtml);
         res.end();
@@ -70,12 +70,12 @@ function viewEmailHistory(res, config) {
 exports.viewEmailHistory = viewEmailHistory;
 function getFormTargetKey(config, pathname) {
     let formTargetKey = "";
-    winston.debug(`Provided URL path name: "${pathname}"`);
+    log4js_1.getLogger("formMailer").debug(`Provided URL path name: "${pathname}"`);
     formTargetKey = pathname.slice(pathname.lastIndexOf("/submit") + 8);
     if (formTargetKey.endsWith("/")) {
         formTargetKey = formTargetKey.slice(0, formTargetKey.lastIndexOf("/"));
     }
-    winston.debug(`Provided form target key: "${formTargetKey}"`);
+    log4js_1.getLogger("formMailer").debug(`Provided form target key: "${formTargetKey}"`);
     if (formTargetKey) {
         if (!config.formTargets.hasOwnProperty(formTargetKey)) {
             throw new NotFoundError(`Target form "${formTargetKey}" doesn't exist in config.`);

@@ -1,4 +1,5 @@
 "use strict";
+// TODO: Test headers
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -12,17 +13,22 @@ const execa = require("execa");
 const fs = require("fs");
 const log4js_1 = require("log4js");
 const smtp = require("smtp-server");
-// import winston = require("winston");
 const config_1 = require("../src/config");
 const run_1 = require("../src/run");
 const run_tests_helpers_1 = require("./run-tests-helpers");
 const TESTS_FOLDER_PATH = "./test/test-cases";
+const DEFAULT_LOGGING_LEVEL = "info";
 function runTests() {
     log4js_1.configure({
-        appenders: { out: { type: "stdout" } },
-        categories: { default: { appenders: ["out"], level: "info" } },
+        appenders: {
+            test: { type: "stdout" },
+        },
+        categories: {
+            default: { appenders: ["test"], level: DEFAULT_LOGGING_LEVEL },
+            formMailer: { appenders: ["test"], level: "off" },
+        },
     });
-    const logger = log4js_1.getLogger("out");
+    const logger = log4js_1.getLogger("test");
     let testPassed;
     let isError = false;
     let result = Promise.resolve();

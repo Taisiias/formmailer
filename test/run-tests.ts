@@ -7,7 +7,6 @@ import * as https from "https";
 import { configure, getLogger } from "log4js";
 import * as smtp from "smtp-server";
 import * as stream from "stream";
-// import winston = require("winston");
 import { createConfigObject } from "../src/config";
 import { runHttpServers } from "../src/run";
 import {

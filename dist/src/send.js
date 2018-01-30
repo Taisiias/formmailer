@@ -8,10 +8,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const log4js_1 = require("log4js");
 const nodemailer = require("nodemailer");
-const winston = require("winston");
 function sendEmail(config, to, subject, text, html) {
     return __awaiter(this, void 0, void 0, function* () {
+        const logger = log4js_1.getLogger("formMailer");
         const transporter = nodemailer.createTransport(config.smtpOptions);
         const emailMessage = {
             from: config.fromEmail,
@@ -20,9 +21,9 @@ function sendEmail(config, to, subject, text, html) {
             text,
             to,
         };
-        winston.debug(`Sending email.`);
+        logger.debug(`Sending email.`);
         yield transporter.sendMail(emailMessage);
-        winston.info(`Message has been sent to ${to}`);
+        logger.info(`Message has been sent to ${to}`);
     });
 }
 exports.sendEmail = sendEmail;

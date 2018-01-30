@@ -1,7 +1,6 @@
 import * as http from "http";
+import { getLogger } from "log4js";
 import * as url from "url";
-
-import winston = require("winston");
 
 import { Config } from "./config";
 import { NotFoundError, submitHandler, viewEmailHistory } from "./form";
@@ -22,7 +21,7 @@ async function routeRequest(
     staticFileServer: StaticFileServer,
 ): Promise<void> {
     const parsedUrl = url.parse(req.url as string, true);
-    winston.debug(`Pathname: ${parsedUrl.pathname}`);
+    getLogger("formMailer").debug(`Pathname: ${parsedUrl.pathname}`);
     if (parsedUrl.pathname &&
         parsedUrl.pathname.toString().startsWith(SUBMIT_URL_PATH) &&
         req.method === "POST") {
@@ -42,7 +41,7 @@ async function errorHandler(
     res: http.ServerResponse,
     staticFileServer: StaticFileServer,
 ): Promise<void> {
-    winston.warn(`Error in Connection Handler: ${err}`);
+    getLogger("formMailer").warn(`Error in Connection Handler: ${err}`);
     const isAjax = isAjaxRequest(req);
     if (isAjax) {
         res.statusCode = err instanceof NotFoundError ? 404 : 502;
@@ -69,7 +68,7 @@ export function constructConnectionHandler(
     staticFileServer: StaticFileServer,
 ): (req: http.IncomingMessage, res: http.ServerResponse) => void {
     return (req: http.IncomingMessage, res: http.ServerResponse) => {
-        winston.debug(`Incoming request: ${req.url} (method: ${req.method})`);
+        getLogger("formMailer").debug(`Incoming request: ${req.url} (method: ${req.method})`);
 
         // set CORS headers
         if (req.method === "OPTIONS") {
@@ -90,12 +89,12 @@ export function viewHistoryHandler(
 ): (req: http.IncomingMessage, res: http.ServerResponse) => void {
     return (req: http.IncomingMessage, res: http.ServerResponse) => {
         const parsedUrl = url.parse(req.url as string, true);
-        winston.debug(`View Pathname: ${parsedUrl.pathname}`);
+        getLogger("formMailer").debug(`View Pathname: ${parsedUrl.pathname}`);
         if (parsedUrl.pathname === VIEW_URL_PATH) {
             viewEmailHistory(res, config).then(() => {
-                winston.debug("Correctly returned email history page.");
+                getLogger("formMailer").debug("Correctly returned email history page.");
             }).catch((err) => {
-                winston.warn(`Can't render email history page: ${err}`);
+                getLogger("formMailer").warn(`Can't render email history page: ${err}`);
             });
         }
     };

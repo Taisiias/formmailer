@@ -1,8 +1,8 @@
 import * as fs from "fs";
 import * as http from "http";
+import { getLogger } from "log4js";
 import * as mst from "mustache";
 import * as rp from "request-promise";
-import winston = require("winston");
 import { Config } from "./config";
 
 import { getAssetFolderPath } from "./asset";
@@ -48,7 +48,7 @@ export async function processReCaptcha(
 ): Promise<boolean> {
     if (!config.disableRecaptcha && config.reCaptchaSecret) {
         if (parsedRequestData["g-recaptcha-response"]) {
-            winston.debug(`g-recaptcha-response is present.`);
+            getLogger("formMailer").debug(`g-recaptcha-response is present.`);
             const isSpam = await checkIfSpam(
                 senderIpAddress,
                 parsedRequestData["g-recaptcha-response"],
@@ -59,7 +59,7 @@ export async function processReCaptcha(
                 throw new RecaptchaFailure(`reCAPTCHA failure.`);
             }
         } else {
-            winston.debug(`No g-recaptcha-response.`);
+            getLogger("formMailer").debug(`No g-recaptcha-response.`);
             if (!config.reCaptchaSiteKey) {
                 throw new RecaptchaFailure(
                     `reCaptcha is enabled but g-recaptcha-response is not provided in request`);
@@ -91,7 +91,7 @@ function renderAutomaticRecaptchaPage(
         submitUrl: pathName,
         thanksPageUrl: postedData._redirect || THANKS_URL_PATH,
     };
-    winston.debug(`Rendering Automatic reCaptcha page.`);
+    getLogger("formMailer").debug(`Rendering Automatic reCaptcha page.`);
     const renderedHtml = mst.render(htmlTemplate, templateData);
 
     res.write(renderedHtml);

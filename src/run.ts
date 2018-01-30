@@ -1,7 +1,6 @@
 import * as fs from "fs";
 import * as http from "http";
 import * as https from "https";
-// import winston = require("winston");
 import { configure, getLogger } from "log4js";
 import * as yargs from "yargs";
 import { Config, readConfig } from "./config";
@@ -13,21 +12,8 @@ const DEFAULT_CONFIG_PATH = "./config.json";
 const STARTUP_LOG_LEVEL = "debug";
 
 function run(): void {
-    // winston.configure({
-    //     level: STARTUP_LOG_LEVEL,
-    //     transports: [new winston.transports.Console({
-    //         colorize: true,
-    //         name: "Console",
-    //         prettyPrint: true,
-    //         timestamp: true,
-    //     })],
-    // });
 
-    configure({
-        appenders: { formMailer: { type: "stdout" } },
-        categories: { default: { appenders: ["formMailer"], level: STARTUP_LOG_LEVEL } },
-    });
-    const logger = getLogger();
+    const logger = getLogger("formMailer");
 
     const args = yargs.usage("FormMailer server. Usage: $0 [-c <config file>]")
         .options("config", {
@@ -96,10 +82,15 @@ export function runHttpServers(
 }
 
 export function runAndReport(): void {
+    configure({
+        appenders: { formMailer: { type: "stdout" } },
+        categories: { default: { appenders: ["formMailer"], level: STARTUP_LOG_LEVEL } },
+    });
+    const logger = getLogger("formMailer");
     try {
         run();
     } catch (e) {
-        getLogger("formMailer").error((e as Error).message as string);
+        logger.error((e as Error).message as string);
         return process.exit(1);
     }
 }

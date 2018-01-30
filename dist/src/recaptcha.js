@@ -9,9 +9,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs");
+const log4js_1 = require("log4js");
 const mst = require("mustache");
 const rp = require("request-promise");
-const winston = require("winston");
 const asset_1 = require("./asset");
 const handler_1 = require("./handler");
 class RecaptchaFailure extends Error {
@@ -38,14 +38,14 @@ function processReCaptcha(config, parsedRequestData, senderIpAddress, res, pathN
     return __awaiter(this, void 0, void 0, function* () {
         if (!config.disableRecaptcha && config.reCaptchaSecret) {
             if (parsedRequestData["g-recaptcha-response"]) {
-                winston.debug(`g-recaptcha-response is present.`);
+                log4js_1.getLogger("formMailer").debug(`g-recaptcha-response is present.`);
                 const isSpam = yield checkIfSpam(senderIpAddress, parsedRequestData["g-recaptcha-response"], config.reCaptchaSecret);
                 if (isSpam) {
                     throw new RecaptchaFailure(`reCAPTCHA failure.`);
                 }
             }
             else {
-                winston.debug(`No g-recaptcha-response.`);
+                log4js_1.getLogger("formMailer").debug(`No g-recaptcha-response.`);
                 if (!config.reCaptchaSiteKey) {
                     throw new RecaptchaFailure(`reCaptcha is enabled but g-recaptcha-response is not provided in request`);
                 }
@@ -68,7 +68,7 @@ function renderAutomaticRecaptchaPage(siteKey, postedData, res, pathName, assetF
         submitUrl: pathName,
         thanksPageUrl: postedData._redirect || handler_1.THANKS_URL_PATH,
     };
-    winston.debug(`Rendering Automatic reCaptcha page.`);
+    log4js_1.getLogger("formMailer").debug(`Rendering Automatic reCaptcha page.`);
     const renderedHtml = mst.render(htmlTemplate, templateData);
     res.write(renderedHtml);
     res.end();

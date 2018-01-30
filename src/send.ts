@@ -1,6 +1,5 @@
 import { getLogger } from "log4js";
 import * as nodemailer from "nodemailer";
-// import winston = require("winston");
 import { Config } from "./config";
 
 export async function sendEmail(
