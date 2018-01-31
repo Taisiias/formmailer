@@ -1,5 +1,3 @@
-// TODO: Test headers
-
 import * as execa from "execa";
 import * as fs from "fs";
 import * as http from "http";

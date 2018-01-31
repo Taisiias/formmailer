@@ -43,9 +43,14 @@ curl 'https://localhost:3001/submit/'
 --data 'user_name=Name+Name&user_mail=email%40email.com&user_message=Test+Test+Test%0D%0ATest+Test+Test&user_select=Option+2.1&user_checkbox=checked&_formname=General+Form'
 --compressed
 --insecure
+--include
 
 -----
-
+HTTP/1.1 303 See Other
+Location: /thanks
+Date: Wed, 31 Jan 2018 16:27:50 GMT
+Connection: keep-alive
+Transfer-Encoding: chunked
 -----
 
 From: formmailer@localhost
