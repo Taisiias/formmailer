@@ -105,12 +105,12 @@ async function runTest(fileName: string): Promise<true | Error> {
             return;
         });
 
-        execa.shell(`${curl.split("\n").join(" ")} --show-error --silent`).then((result) => {
+        execa.shell(`${curl.split("\n").join(" ")}`).then((result) => {
             if (result.stderr) {
                 throw new Error(`Error in Curl: ${result.stderr}`);
             }
-            if (!cf.disableRecaptcha && result.stdout.trim() !== curlResult.trim()) {
-                throw new Error("Incorrect curl output.");
+            if (result.stdout.trim() !== curlResult.trim()) {
+                throw new Error(`Incorrect curl output:\n${curlResult.trim()}`);
             }
             const regexFrom = /From: (.*)/;
             const regexTo = /To: (.*)/;

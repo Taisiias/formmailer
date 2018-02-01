@@ -42,6 +42,8 @@ curl 'https://localhost:3001/submit/'
 --data 'user_name=Name+Name&user_mail=email%40email.com&user_message=Test+Test+Test%0D%0ATest+Test+Test&user_select=Option+2.1&user_checkbox=checked&_formname=General+Form'
 --compressed
 --insecure
+--show-error
+--silent
 
 -----
 <!doctype html>

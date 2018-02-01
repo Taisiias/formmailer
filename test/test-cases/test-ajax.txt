@@ -39,7 +39,8 @@ curl 'http://localhost:3000/submit/'
 -H 'Connection: keep-alive'
 --data-binary '{"user_name":"Test Name"}'
 --compressed
-
+--show-error
+--silent
 -----
 {"result":"ok"}
 -----
