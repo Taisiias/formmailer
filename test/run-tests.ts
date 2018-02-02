@@ -1,4 +1,3 @@
-import * as execa from "execa";
 import * as fs from "fs";
 import * as http from "http";
 import * as https from "https";
@@ -9,7 +8,7 @@ import { createConfigObject } from "../src/config";
 import { runHttpServers } from "../src/run";
 import {
     closeServers, parseTestFile, removeFile,
-    verifyEmailText, verifyRegExp,
+    shell, verifyEmailText, verifyRegExp,
 } from "./run-tests-helpers";
 
 const TESTS_FOLDER_PATH = "./test/test-cases";
@@ -100,17 +99,16 @@ async function runTest(fileName: string): Promise<true | Error> {
             });
         }
 
-        smtpServer.listen(PORT, HOST, () => {
-            // logger.debug(`Run Tests: SMTP server started on ${HOST}:${PORT}`);
-            return;
-        });
+        smtpServer.listen(PORT, HOST, () => undefined);
 
-        execa.shell(`${curl.split("\n").join(" ")}`).then((result) => {
+        shell(`${curl.split("\n").join(" ")}`).then((result) => {
             if (result.stderr) {
                 throw new Error(`Error in Curl: ${result.stderr}`);
             }
             if (result.stdout.trim() !== curlResult.trim()) {
-                throw new Error(`Incorrect curl output:\n${curlResult.trim()}`);
+                throw new Error(
+                    `Incorrect curl output:\n${result.stdout.trim()}`,
+                );
             }
             const regexFrom = /From: (.*)/;
             const regexTo = /To: (.*)/;

@@ -1,3 +1,4 @@
+import * as execa from "execa";
 import * as fs from "fs";
 import * as http from "http";
 import * as https from "https";
@@ -58,4 +59,11 @@ export function removeFile(fileName: string): void {
     if (fs.existsSync(fileName)) {
         fs.unlinkSync(fileName);
     }
+}
+
+export function shell(command: string): execa.ExecaChildProcess {
+    return execa.shell(command).then((result) => {
+        result.stdout = result.stdout.trim().replace(/\r/g, "");
+        return result;
+    }) as execa.ExecaChildProcess;
 }
