@@ -17,4 +17,4 @@ Run FormMailer in development mode:
 
 4. Page 'http://127.0.0.1:8080/index.html' will be automatically opened in your browser. Try to submit the form. If your setup is working correctly, you should see the contents of the email with posted data in terminal output.
 
-5. Hack away and submit a PR when ready!
+5. Hack away, run `yarn test` to make sure that tests are passing, submit a PR when ready!
