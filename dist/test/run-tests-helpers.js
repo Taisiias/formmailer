@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const execa = require("execa");
 const fs = require("fs");
 function closeServers(smtpServer, httpServer, httpsServer, viewEmailHistoryHttpServer) {
     smtpServer.close(() => {
@@ -47,3 +48,10 @@ function removeFile(fileName) {
     }
 }
 exports.removeFile = removeFile;
+function shell(command) {
+    return execa.shell(command).then((result) => {
+        result.stdout = result.stdout.trim().replace(/\r/g, "");
+        return result;
+    });
+}
+exports.shell = shell;

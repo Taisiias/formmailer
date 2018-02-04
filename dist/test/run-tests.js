@@ -1,5 +1,4 @@
 "use strict";
-// TODO: Test headers
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -9,7 +8,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const execa = require("execa");
 const fs = require("fs");
 const log4js_1 = require("log4js");
 const smtp = require("smtp-server");
@@ -85,16 +83,13 @@ function runTest(fileName) {
                     callback();
                 });
             }
-            smtpServer.listen(PORT, HOST, () => {
-                // logger.debug(`Run Tests: SMTP server started on ${HOST}:${PORT}`);
-                return;
-            });
-            execa.shell(`${curl.split("\n").join(" ")} --show-error --silent`).then((result) => {
+            smtpServer.listen(PORT, HOST, () => undefined);
+            run_tests_helpers_1.shell(`${curl.split("\n").join(" ")}`).then((result) => {
                 if (result.stderr) {
                     throw new Error(`Error in Curl: ${result.stderr}`);
                 }
-                if (!cf.disableRecaptcha && result.stdout.trim() !== curlResult.trim()) {
-                    throw new Error("Incorrect curl output.");
+                if (result.stdout.trim() !== curlResult.trim()) {
+                    throw new Error(`Incorrect curl output:\n${result.stdout.trim()}`);
                 }
                 const regexFrom = /From: (.*)/;
                 const regexTo = /To: (.*)/;

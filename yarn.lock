@@ -73,7 +73,7 @@
     "@types/node" "*"
     "@types/nodemailer" "^3"
 
-"@types/nodemailer@*", "@types/nodemailer@^4.3.1":
+"@types/nodemailer@*":
   version "4.3.1"
   resolved "https://registry.yarnpkg.com/@types/nodemailer/-/nodemailer-4.3.1.tgz#e3985c1b7c7bbbb2a886108b89f1c7ce9a690654"
   dependencies:
@@ -88,6 +88,13 @@
     "@types/nodemailer-ses-transport" "*"
     "@types/nodemailer-smtp-transport" "*"
     aws-sdk "^2.37.0"
+
+"@types/nodemailer@^4.3.2":
+  version "4.3.2"
+  resolved "https://registry.yarnpkg.com/@types/nodemailer/-/nodemailer-4.3.2.tgz#e7c303d7106b6697ede2a28e269140d92710a8d5"
+  dependencies:
+    "@types/events" "*"
+    "@types/node" "*"
 
 "@types/request-promise@^4.1.40":
   version "4.1.41"
