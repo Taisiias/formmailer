@@ -101,7 +101,7 @@ async function runTest(fileName: string): Promise<true | Error> {
 
         smtpServer.listen(PORT, HOST, () => undefined);
 
-        shell(`${curl.split("\n").join(" ")}`).then((result) => {
+        shell(`${curl}`).then((result) => {
             if (result.stderr) {
                 throw new Error(`Error while executing curl: ${result.stderr}`);
             }
@@ -115,8 +115,8 @@ async function runTest(fileName: string): Promise<true | Error> {
             const regexSubject = /Subject: (.*)/;
 
             const regexEmailText = new RegExp(
-                "Content-Type: text/plain\r\n" +
-                "Content-Transfer-Encoding: 7bit\r\n" +
+                "Content-Type: text/plain.*\r\n" +
+                "Content-Transfer-Encoding:.*\r\n" +
                 "([^]*)\r\n" +
                 "----[-_a-zA-Z0-9]+\r\n" +
                 "Content-Type: text/html",

@@ -27,19 +27,19 @@
 
 
 -----
-curl 'http://localhost:3000/submit/'
--H 'Pragma: no-cache' -H 'Origin: http://127.0.0.1:8080'
--H 'Accept-Encoding: gzip, deflate, br'
--H 'Accept-Language: en-US,en;q=0.9,es;q=0.8,ru;q=0.7,uk;q=0.6'
--H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36'
--H 'Content-Type: application/json'
--H 'Accept: */*'
--H 'Cache-Control: no-cache'
--H 'Referer: http://127.0.0.1:8080/'
--H 'Connection: keep-alive'
---data-binary '{"user_name":"Test Name"}'
---compressed
---show-error
+curl 'http://localhost:3000/submit/' \
+-H 'Pragma: no-cache' -H 'Origin: http://127.0.0.1:8080' \
+-H 'Accept-Encoding: gzip, deflate, br' \
+-H 'Accept-Language: en-US,en;q=0.9,es;q=0.8,ru;q=0.7,uk;q=0.6' \
+-H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36' \
+-H 'Content-Type: application/json' \
+-H 'Accept: */*' \
+-H 'Cache-Control: no-cache' \
+-H 'Referer: http://127.0.0.1:8080/' \
+-H 'Connection: keep-alive' \
+--data-binary '{"user_name":"Test Name"}' \
+--compressed \
+--show-error \
 --silent
 -----
 {"result":"ok"}
