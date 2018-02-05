@@ -36,7 +36,7 @@ export function verifyRegExp(
     expectedValueName: string,
     fileContent: string,
 ): void {
-    expectedValue = !expectedValue ? "" : expectedValue;
+    expectedValue = expectedValue ? expectedValue : "";
     const regexResult = regexToCheck.exec(fileContent);
     const regexResultStr = !regexResult ? "" : regexResult[0];
     if (regexResultStr !== expectedValue) {

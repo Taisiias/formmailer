@@ -103,7 +103,7 @@ async function runTest(fileName: string): Promise<true | Error> {
 
         shell(`${curl.split("\n").join(" ")}`).then((result) => {
             if (result.stderr) {
-                throw new Error(`Error in Curl: ${result.stderr}`);
+                throw new Error(`Error while executing curl: ${result.stderr}`);
             }
             if (result.stdout.trim() !== curlResult.trim()) {
                 throw new Error(
