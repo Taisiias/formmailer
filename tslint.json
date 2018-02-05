@@ -18,7 +18,6 @@
         "no-default-export": true,
         "no-mergeable-namespace": true,
         "no-angle-bracket-type-assertion": true,
-        // "align": [true, "parameters", "statements", "arguments"],
         "linebreak-style": [true, "LF"],
         "variable-name": [
             true,
@@ -42,7 +41,6 @@
         "no-use-before-declare": true,
         "no-void-expression": true,
         "restrict-plus-operands": true,
-        // "strict-boolean-expressions": true,
         "strict-type-predicates": true,
         "use-default-type-parameter": true,
         "deprecation": true,
@@ -51,7 +49,5 @@
         "no-unnecessary-qualifier": true,
         "return-undefined": true,
         "no-implicit-dependencies": [true, "dev"]
-
-        //  "completed-docs": [true, "classes", "functions", "methods"],
    }
 }

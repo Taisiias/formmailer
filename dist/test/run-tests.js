@@ -86,7 +86,7 @@ function runTest(fileName) {
             smtpServer.listen(PORT, HOST, () => undefined);
             run_tests_helpers_1.shell(`${curl.split("\n").join(" ")}`).then((result) => {
                 if (result.stderr) {
-                    throw new Error(`Error in Curl: ${result.stderr}`);
+                    throw new Error(`Error while executing curl: ${result.stderr}`);
                 }
                 if (result.stdout.trim() !== curlResult.trim()) {
                     throw new Error(`Incorrect curl output:\n${result.stdout.trim()}`);

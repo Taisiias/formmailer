@@ -53,7 +53,7 @@ export function runHttpServers(
             http.createServer(constructConnectionHandler(config, staticFileServer));
         httpServer.listen(config.httpListenPort, config.httpListenIP, () => {
             logger.info(
-                `HTTP server started (listening ${config.httpListenIP}: ${config.httpListenPort})`);
+                `HTTP server started (listening ${config.httpListenIP}:${config.httpListenPort})`);
         });
     }
 

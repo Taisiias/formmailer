@@ -11,7 +11,7 @@
     "live-support": "concurrently --kill-others --names \"SMTP,HTTP\" -c \"green.bold,grey.bold\" \"yarn dev-smtp-server\" \"yarn dev-static-http\"",
     "dev-formmailer": "nodemon --exec ./node_modules/.bin/ts-node -- ./src/index.ts --config ./test/config.test.json",
     "dev-static-http": "http-server ./test -o",
-    "dev-smtp-server": "node ./build/src/run-smtp.js",
+    "dev-smtp-server": "node ./build/test/run-smtp.js",
     "prepare": "tsc --outDir ./dist --sourceMap false"
   },
   "bin": "./dist/formmailer.js",
