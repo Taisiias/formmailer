@@ -24,7 +24,7 @@ function parseTestFile(filePath) {
 }
 exports.parseTestFile = parseTestFile;
 function verifyRegExp(regexToCheck, expectedValue, expectedValueName, fileContent) {
-    expectedValue = !expectedValue ? "" : expectedValue;
+    expectedValue = expectedValue ? expectedValue : "";
     const regexResult = regexToCheck.exec(fileContent);
     const regexResultStr = !regexResult ? "" : regexResult[0];
     if (regexResultStr !== expectedValue) {

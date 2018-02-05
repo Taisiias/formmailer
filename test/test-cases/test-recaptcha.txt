@@ -7,8 +7,8 @@
     "httpListenIP": "0.0.0.0",
     "httpListenPort": 3000,
     "httpsListenPort": 3001,
-    "httpsCertificatePath": "./test/cert/server.crt",
-    "httpsPrivateKeyPath": "./test/cert/key.pem",
+    "httpsCertificatePath": "./test/cert/localhost.crt",
+    "httpsPrivateKeyPath": "./test/cert/localhost.key",
     "enableHttps": true,
     "enableHttp": true,
     "formTargets": {
