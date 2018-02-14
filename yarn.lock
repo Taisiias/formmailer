@@ -49,9 +49,13 @@
     "@types/mime" "*"
     "@types/node" "*"
 
-"@types/node@*", "@types/node@^9.4.0":
+"@types/node@*":
   version "9.4.0"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-9.4.0.tgz#b85a0bcf1e1cc84eb4901b7e96966aedc6f078d1"
+
+"@types/node@^9.4.6":
+  version "9.4.6"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-9.4.6.tgz#d8176d864ee48753d053783e4e463aec86b8d82e"
 
 "@types/nodemailer-direct-transport@*":
   version "1.0.31"
@@ -89,9 +93,9 @@
     "@types/nodemailer-smtp-transport" "*"
     aws-sdk "^2.37.0"
 
-"@types/nodemailer@^4.3.2":
-  version "4.3.2"
-  resolved "https://registry.yarnpkg.com/@types/nodemailer/-/nodemailer-4.3.2.tgz#e7c303d7106b6697ede2a28e269140d92710a8d5"
+"@types/nodemailer@^4.3.4":
+  version "4.3.4"
+  resolved "https://registry.yarnpkg.com/@types/nodemailer/-/nodemailer-4.3.4.tgz#03bc16d50b7682bc6150b102980edd4a7343a299"
   dependencies:
     "@types/events" "*"
     "@types/node" "*"
@@ -112,9 +116,9 @@
     "@types/node" "*"
     "@types/tough-cookie" "*"
 
-"@types/smtp-server@^3.3.0":
-  version "3.3.2"
-  resolved "https://registry.yarnpkg.com/@types/smtp-server/-/smtp-server-3.3.2.tgz#65953dcc3b89f791e4967f522eff6b3581b33ef9"
+"@types/smtp-server@^3.3.4":
+  version "3.3.4"
+  resolved "https://registry.yarnpkg.com/@types/smtp-server/-/smtp-server-3.3.4.tgz#6034af3220bc99e5665423c51a47a9ed01106d66"
   dependencies:
     "@types/events" "*"
     "@types/node" "*"
@@ -1745,9 +1749,9 @@ lodash@^4.0.0, lodash@^4.13.1, lodash@^4.14.0, lodash@^4.15.0, lodash@^4.5.1:
   version "4.17.4"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.4.tgz#78203a4d1c328ae1d86dca6460e369b57f4055ae"
 
-log4js@^2.5.2:
-  version "2.5.2"
-  resolved "https://registry.yarnpkg.com/log4js/-/log4js-2.5.2.tgz#234e9c688bc4aab3999bd4b149c85851a4e62faa"
+log4js@^2.5.3:
+  version "2.5.3"
+  resolved "https://registry.yarnpkg.com/log4js/-/log4js-2.5.3.tgz#38bb7bde5e9c1c181bd75e8bc128c5cd0409caf1"
   dependencies:
     circular-json "^0.5.1"
     date-format "^1.2.0"

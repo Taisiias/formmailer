@@ -43,7 +43,7 @@ function runHttpServers(config) {
         httpServer =
             http.createServer(handler_1.constructConnectionHandler(config, staticFileServer));
         httpServer.listen(config.httpListenPort, config.httpListenIP, () => {
-            logger.info(`HTTP server started (listening ${config.httpListenIP}: ${config.httpListenPort})`);
+            logger.info(`HTTP server started (listening ${config.httpListenIP}:${config.httpListenPort})`);
         });
     }
     if (config.enableHttps && config.httpsPrivateKeyPath && config.httpsCertificatePath) {
