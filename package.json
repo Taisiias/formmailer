@@ -59,7 +59,7 @@
     "request": "^2.81.0",
     "request-promise": "^4.2.1",
     "sqlite3": "^3.1.9",
-    "typescript": "^2.7.1",
+    "typescript": "^2.7.2",
     "url": "^0.11.0",
     "yargs": "^11.0.0"
   },
@@ -67,7 +67,7 @@
     "@types/smtp-server": "^3.3.4",
     "concurrently": "^3.5.0",
     "http-server": "^0.11.1",
-    "nodemon": "^1.14.12",
+    "nodemon": "^1.15.0",
     "smtp-server": "^3.3.0",
     "ts-node": "^4.1.0",
     "tslint": "^5.9.1"
