@@ -2051,13 +2051,17 @@ nodemailer@^2.5.0:
     nodemailer-smtp-transport "2.7.2"
     socks "1.1.9"
 
-nodemailer@^4.4.0, nodemailer@^4.4.2:
+nodemailer@^4.4.0:
   version "4.4.2"
   resolved "https://registry.yarnpkg.com/nodemailer/-/nodemailer-4.4.2.tgz#f215fb88e8a1052f9f93083909e116d2b79fc8de"
 
-nodemon@^1.15.0:
-  version "1.15.0"
-  resolved "https://registry.yarnpkg.com/nodemon/-/nodemon-1.15.0.tgz#ddec01eeb9c33d53dfbf7eddb2fa32f723474c1e"
+nodemailer@^4.6.0:
+  version "4.6.0"
+  resolved "https://registry.yarnpkg.com/nodemailer/-/nodemailer-4.6.0.tgz#b99391435aabbd34b74a1283112fbdfd34f7eb8f"
+
+nodemon@^1.15.1:
+  version "1.15.1"
+  resolved "https://registry.yarnpkg.com/nodemon/-/nodemon-1.15.1.tgz#54daa72443d8d5a548f130866b92e65cded0ed58"
   dependencies:
     chokidar "^2.0.2"
     debug "^3.1.0"

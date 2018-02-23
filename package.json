@@ -53,7 +53,7 @@
     "log4js": "^2.5.3",
     "mustache": "^2.3.0",
     "node-static": "^0.7.10",
-    "nodemailer": "^4.4.2",
+    "nodemailer": "^4.6.0",
     "nodemailer-smtp-transport": "^2.7.4",
     "querystring": "^0.2.0",
     "request": "^2.81.0",
@@ -67,7 +67,7 @@
     "@types/smtp-server": "^3.3.4",
     "concurrently": "^3.5.0",
     "http-server": "^0.11.1",
-    "nodemon": "^1.15.0",
+    "nodemon": "^1.15.1",
     "smtp-server": "^3.3.0",
     "ts-node": "^4.1.0",
     "tslint": "^5.9.1"
