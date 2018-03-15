@@ -48,7 +48,7 @@
     "bluebird": "^3.5.1",
     "deepmerge": "^2.1.0",
     "email-validator": "^1.1.1",
-    "execa": "^0.9.0",
+    "execa": "^0.10.0",
     "he": "^1.1.1",
     "log4js": "^2.5.3",
     "mustache": "^2.3.0",
@@ -58,7 +58,7 @@
     "querystring": "^0.2.0",
     "request": "^2.85.0",
     "request-promise": "^4.2.1",
-    "sqlite3": "^3.1.9",
+    "sqlite3": "^4.0.0",
     "typescript": "^2.7.2",
     "url": "^0.11.0",
     "yargs": "^11.0.0"
