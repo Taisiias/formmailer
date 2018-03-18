@@ -10,17 +10,17 @@
   version "0.12.1"
   resolved "https://registry.yarnpkg.com/@types/caseless/-/caseless-0.12.1.tgz#9794c69c8385d0192acc471a540d1f8e0d16218a"
 
-"@types/deepmerge@^1.3.2":
-  version "1.3.3"
-  resolved "https://registry.yarnpkg.com/@types/deepmerge/-/deepmerge-1.3.3.tgz#2e937b138854e10a715cb083c713522703a2d2e4"
+"@types/deepmerge@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@types/deepmerge/-/deepmerge-2.1.0.tgz#22f175e5cb55874fe818caa6fd50a1d98fc3d748"
 
 "@types/events@*":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@types/events/-/events-1.1.0.tgz#93b1be91f63c184450385272c47b6496fd028e02"
 
-"@types/execa@^0.8.1":
-  version "0.8.1"
-  resolved "https://registry.yarnpkg.com/@types/execa/-/execa-0.8.1.tgz#0a9398c7661015c7d6c8e09d1f0a4018d5002f6e"
+"@types/execa@^0.9.0":
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/@types/execa/-/execa-0.9.0.tgz#9b025d2755f17e80beaf9368c3f4f319d8b0fb93"
   dependencies:
     "@types/node" "*"
 
@@ -2106,10 +2106,6 @@ nodemailer@^2.5.0:
     nodemailer-smtp-transport "2.7.2"
     socks "1.1.9"
 
-nodemailer@^4.4.0:
-  version "4.4.2"
-  resolved "https://registry.yarnpkg.com/nodemailer/-/nodemailer-4.4.2.tgz#f215fb88e8a1052f9f93083909e116d2b79fc8de"
-
 nodemailer@^4.6.3:
   version "4.6.3"
   resolved "https://registry.yarnpkg.com/nodemailer/-/nodemailer-4.6.3.tgz#c3b7e97fb72f46d4a475c406a15ed23a45dbcddc"
@@ -2819,13 +2815,13 @@ smtp-connection@2.12.0:
     httpntlm "1.6.1"
     nodemailer-shared "1.1.0"
 
-smtp-server@^3.3.0:
-  version "3.4.1"
-  resolved "https://registry.yarnpkg.com/smtp-server/-/smtp-server-3.4.1.tgz#26f1731836916c2b6294bcded853ebcba604ff39"
+smtp-server@^3.4.2:
+  version "3.4.2"
+  resolved "https://registry.yarnpkg.com/smtp-server/-/smtp-server-3.4.2.tgz#a66fe1ff726591f307ef2966ea620454d87e6290"
   dependencies:
     base32.js "^0.1.0"
     ipv6-normalize "^1.0.1"
-    nodemailer "^4.4.0"
+    nodemailer "^4.6.3"
 
 snapdragon-node@^2.0.1:
   version "2.1.1"
