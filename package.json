@@ -59,7 +59,7 @@
     "request": "^2.85.0",
     "request-promise": "^4.2.1",
     "sqlite3": "^4.0.0",
-    "typescript": "^2.7.2",
+    "typescript": "^2.8.1",
     "url": "^0.11.0",
     "yargs": "^11.0.0"
   },
