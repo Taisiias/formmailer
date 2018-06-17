@@ -107,9 +107,18 @@
     "@types/bluebird" "*"
     "@types/request" "*"
 
-"@types/request@*", "@types/request@^2.0.13":
+"@types/request@*":
   version "2.47.0"
   resolved "https://registry.yarnpkg.com/@types/request/-/request-2.47.0.tgz#76a666cee4cb85dcffea6cd4645227926d9e114e"
+  dependencies:
+    "@types/caseless" "*"
+    "@types/form-data" "*"
+    "@types/node" "*"
+    "@types/tough-cookie" "*"
+
+"@types/request@^2.47.1":
+  version "2.47.1"
+  resolved "https://registry.yarnpkg.com/@types/request/-/request-2.47.1.tgz#25410d3afbdac04c91a94ad9efc9824100735824"
   dependencies:
     "@types/caseless" "*"
     "@types/form-data" "*"
@@ -2115,9 +2124,9 @@ nodemailer-wellknown@0.1.10:
   version "0.1.10"
   resolved "https://registry.yarnpkg.com/nodemailer-wellknown/-/nodemailer-wellknown-0.1.10.tgz#586db8101db30cb4438eb546737a41aad0cf13d5"
 
-nodemailer@4.6.5:
-  version "4.6.5"
-  resolved "https://registry.yarnpkg.com/nodemailer/-/nodemailer-4.6.5.tgz#306ce18c4543f3f06e5f76665d3cb6277f872f53"
+nodemailer@4.6.7, nodemailer@^4.6.7:
+  version "4.6.7"
+  resolved "https://registry.yarnpkg.com/nodemailer/-/nodemailer-4.6.7.tgz#b68de7f36d65618bdeeeb76234e3547d51266373"
 
 nodemailer@^2.5.0:
   version "2.7.2"
@@ -2130,10 +2139,6 @@ nodemailer@^2.5.0:
     nodemailer-smtp-pool "2.8.2"
     nodemailer-smtp-transport "2.7.2"
     socks "1.1.9"
-
-nodemailer@^4.6.7:
-  version "4.6.7"
-  resolved "https://registry.yarnpkg.com/nodemailer/-/nodemailer-4.6.7.tgz#b68de7f36d65618bdeeeb76234e3547d51266373"
 
 nodemon@^1.17.5:
   version "1.17.5"
@@ -2843,13 +2848,13 @@ smtp-connection@2.12.0:
     httpntlm "1.6.1"
     nodemailer-shared "1.1.0"
 
-smtp-server@^3.4.5:
-  version "3.4.5"
-  resolved "https://registry.yarnpkg.com/smtp-server/-/smtp-server-3.4.5.tgz#0b2542a233de4d4ebb1b35bef26ea908d7a69208"
+smtp-server@^3.4.6:
+  version "3.4.6"
+  resolved "https://registry.yarnpkg.com/smtp-server/-/smtp-server-3.4.6.tgz#0f2505158ae42846f55bf374cb1a3386cabcf700"
   dependencies:
     base32.js "0.1.0"
     ipv6-normalize "1.0.1"
-    nodemailer "4.6.5"
+    nodemailer "4.6.7"
 
 snapdragon-node@^2.0.1:
   version "2.1.1"
