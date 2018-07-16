@@ -50,7 +50,7 @@
     "email-validator": "^2.0.4",
     "execa": "^0.10.0",
     "he": "^1.1.1",
-    "log4js": "^2.11.0",
+    "log4js": "^3.0.0",
     "mustache": "^2.3.0",
     "node-static": "^0.7.10",
     "nodemailer": "^4.6.7",
@@ -58,7 +58,7 @@
     "querystring": "^0.2.0",
     "request": "^2.87.0",
     "request-promise": "^4.2.1",
-    "sqlite3": "^4.0.1",
+    "sqlite3": "^4.0.2",
     "typescript": "^2.9.2",
     "url": "^0.11.0",
     "yargs": "^12.0.1"
@@ -70,6 +70,6 @@
     "nodemon": "^1.18.2",
     "smtp-server": "^3.4.6",
     "ts-node": "^7.0.0",
-    "tslint": "^5.10.0"
+    "tslint": "^5.11.0"
   }
 }
