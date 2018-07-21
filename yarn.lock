@@ -144,9 +144,9 @@
   version "2.3.2"
   resolved "https://registry.yarnpkg.com/@types/tough-cookie/-/tough-cookie-2.3.2.tgz#e0d481d8bb282ad8a8c9e100ceb72c995fb5e709"
 
-"@types/yargs@^11.1.0":
-  version "11.1.0"
-  resolved "https://registry.yarnpkg.com/@types/yargs/-/yargs-11.1.0.tgz#923caa0cca53745d83f139eeff4fa7906c52ebce"
+"@types/yargs@^11.1.1":
+  version "11.1.1"
+  resolved "https://registry.yarnpkg.com/@types/yargs/-/yargs-11.1.1.tgz#2e724257167fd6b615dbe4e54301e65fe597433f"
 
 abbrev@1:
   version "1.1.1"
@@ -1514,9 +1514,9 @@ lodash@^4.0.0, lodash@^4.13.1, lodash@^4.5.1:
   version "4.17.4"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.4.tgz#78203a4d1c328ae1d86dca6460e369b57f4055ae"
 
-log4js@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/log4js/-/log4js-3.0.1.tgz#a9325478ed09197ca9d639f682f301e5b6befe08"
+log4js@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/log4js/-/log4js-3.0.2.tgz#7ebb113fcd780dabe1c1b13ae85316044c4d7182"
   dependencies:
     circular-json "^0.5.4"
     date-format "^1.2.0"
