@@ -8,7 +8,7 @@ It runs as a service and emails contents of the forms posted to it.
 
 ![Workflow](/img/formmailer-workflow.png)
 
-Suppose you have this static page:
+Suppose you have this HTML in your static page:
 
 ```html
 <html>
@@ -60,7 +60,7 @@ FormMailer also:
 
 ## Running
 
-1. Install [Node.js](https://nodejs.org/en/) (version 6.11 or higher).
+1. Install [Node.js](https://nodejs.org/en/) (version 8 or higher).
 
 2. Install FormMailer with the command:
 
@@ -72,14 +72,12 @@ FormMailer also:
 
     ```json
     {
-        "recipientEmails" : "root@localhost",
+        "recipientEmails" : "you@yourdomain.com",
         "fromEmail": "formmailer@localhost",
-        "httpListenIP": "0.0.0.0",
-        "httpListenPort": 3000
     }
     ```
 
-     Edit settings specific for your environment (see [Configuration options](#configuration-options)). At least specify `recipientEmails` and `fromEmail`.
+     Edit settings specific for your environment (see [Configuration options](#configuration-options)).
 
 4. Start FormMailer:
 
@@ -102,31 +100,31 @@ Default configuration file location is `./config.json`. You can provide differen
 
 Option  | Description | Default
 --------|-------------|--------
-`assetsFolder` | Path to the folder containing static assets. | `"./assets"`
-`databaseFileName` | Path to the SQLite database file. | `"./formmailer.db"`
-`enableHtmlEmail` | Enables sending out HTML versions of emails. | `true`
-`enableHttp` | Determines if HTTP should be enabled | true
-`enableHttps` | Determines if HTTPS should be enabled | true
-`formTargets` | See details in [Sending different forms to different recipients](#sending-different-forms-to-different-recipients)| { }
+`recipientEmails` | E-mail recipient address. String or array of strings (for multiple recepients). | Required field.
 `fromEmail` | E-mail address that will be provided in `From:` email header. | `"formmailer@localhost"`
+`smtpOptions` | [Nodemailer options](https://nodemailer.com/smtp/) object. | `{host: "localhost", port: 25, tls: { rejectUnauthorized: false }}`
+`enableHtmlEmail` | Enables sending out HTML versions of emails. | `true`
+`enableHttp` | Determines if HTTP should be enabled | `true`
 `httpListenIP` | IP address to listen HTTP requests from. | `"0.0.0.0"` (all IP addresses)
-`httpListenPort` | Port to listen HTTP requests from. | `3000`
+`httpListenPort` | Port to listen HTTP requests from. | `80`
+`enableHttps` | Determines if HTTPS should be enabled | `true`
 `httpsListenIP` | IP address to listen HTTPS requests from. | `"0.0.0.0"` (all IP addresses)
 `httpsListenPort` | Port to listen HTTPS requests from. | `443`
-`httpsPrivateKeyPath` | Path to HTTPS private key. Specify to enable HTTPS. | ""
-`httpsCertificatePath` | Path to HTTPS certificate. Specify to enable HTTPS. | ""
-`logLevel` | How detailed logging should be (`error`, `warn`, `info`, `verbose`, `debug`, `silly`). | `"info"`
-`maxHttpRequestSize` | Maximum allowed size of HTTP requests, in bytes. | `1000000`
+`httpsPrivateKeyPath` | Path to HTTPS private key. Specify to enable HTTPS. | `""`
+`httpsCertificatePath` | Path to HTTPS certificate. Specify to enable HTTPS. | `""`
+`enableRecaptcha` | If false, receiver handler should not check `g-recaptcha-response` field even if site key is provided. | `false`
 `reCaptchaSecret` | Site secret reCAPTCHA key. No captcha checks will be performed if this value is not set. | `""`
 `reCaptchaSiteKey` | Public reCaptcha site key. | `""`
-`disableRecaptcha` | If true, receiver handler should not check `g-recaptcha-response` field even if site key is provided. | `false`
-`recipientEmails` | E-mail recipient address. String or array of strings (for multiple recepients). | Required field.
+`formTargets` | See details in [Sending different forms to different recipients](#sending-different-forms-to-different-recipients)| { }
 `redirectFieldName` | Name of the HTML input that contains redirect URL address. | `"_redirect"`
-`smtpOptions` | [Nodemailer options](https://nodemailer.com/smtp/) object. | `{host: "localhost", port: 25, tls: { rejectUnauthorized: false }}`
 `subject` | Email subject field content. Special entry `{{{referrerUrl}}}` will be changed to the address of the webpage from where the form is submitted. | `"Form submitted on {{{referrerUrl}}}"`
+`logLevel` | How detailed logging should be (`error`, `warn`, `info`, `verbose`, `debug`, `silly`). | `"info"`
 `enableWebInterface` | Enables separate HTTP server that provides the UI for viewing sent email history. | `true`
 `webInterfaceIP` | Sent email history HTTP server IP address binding. | `"0.0.0.0"` (all IP addresses)
 `webInterfacePort` | Sent email history HTTP server port. | `3002`
+`assetsFolder` | Path to the folder containing static assets. | `"./assets"`
+`databaseFileName` | Path to the SQLite database file. | `"./formmailer.db"`
+`maxHttpRequestSize` | Maximum allowed size of HTTP requests, in bytes. | `1000000`
 
 ## Optional features
 
@@ -144,7 +142,7 @@ Input name | Meaning
 -----------|--------
 `_redirect` | URL where to redirect user after the form is successfuly submitted. If `_redirect` field is omitted, user will be redirected to the default `thanks.html` page hosted by FormMailer.
 `_formurl` | Value will replace referrer in emails.
-`_formname` | Value will show up in emails. Should help to identify which form was submitted if there are several on the page.
+`_formname` | Value will show up in email header. Should help to identify which form was submitted if there are several on the page.
 
 ### reCAPTCHA
 
@@ -158,7 +156,7 @@ To enable reCAPTCHA checking:
 
 There is no need to make any modifications in your site form, reCAPTCHA will be checked on the intermediate page generated by FormMailer.
 
-To disable reCAPTCHA checking, set `disableRecaptcha` to `true`.
+To disable reCAPTCHA checking, set `enableRecaptcha` to `false`.
 
 If no `reCaptchaSiteKey` is provided in config, you have to integrate reCAPCHA on your site manually, see below.
 
@@ -186,7 +184,7 @@ First, add a dictionary similar to the one below to the configuration file:
 ```
 After that, provide form's action URL in the following format
 
-`http://formmailer.domain.com/submit/<formtarget>` where `<formtarget>` is a key from this dictionary.
+`http://formmailer.domain.com/submit/<formtarget>` where `<formtarget>` is a key in this dictionary.
 
 ```html
 <form method="POST" action="http://formmailer.domain.com/submit/sales">...
@@ -208,7 +206,7 @@ In the configuration file add private key (`.pem`) path into `httpsPrivateKeyPat
 }
 ```
 
-On the next run FormMailer should start HTTPS server, along with HTTP. If you wish to disable HTTP, change `enableHttp` config setting to `false`.
+Restart FormMailer and it should automatically run HTTPS server (on port 443), along with HTTP. If you wish to disable HTTP, change `enableHttp` config setting to `false`.
 
 ### JSON Resquests
 

@@ -109,7 +109,7 @@ function runTest(fileName) {
                 let expectedEmailText;
                 [emailTextVerified, emailTextToCheck, expectedEmailText] =
                     run_tests_helpers_1.verifyEmailText(emailTextFromRegEx, emailText);
-                if (!emailTextVerified && cf.disableRecaptcha) {
+                if (!emailTextVerified && !cf.enableRecaptcha) {
                     if (emailTextToCheck) {
                         throw new Error(`\n***** EMAIL TEXT - No Match *****\n` +
                             `\n***** Resulted text: *****\n` +

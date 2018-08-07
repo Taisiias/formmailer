@@ -136,7 +136,7 @@ async function runTest(fileName: string): Promise<true | Error> {
 
             [emailTextVerified, emailTextToCheck, expectedEmailText] =
                 verifyEmailText(emailTextFromRegEx, emailText);
-            if (!emailTextVerified && cf.disableRecaptcha) {
+            if (!emailTextVerified && !cf.enableRecaptcha) {
                 if (emailTextToCheck) {
                     throw new Error(
                         `\n***** EMAIL TEXT - No Match *****\n` +

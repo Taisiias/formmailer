@@ -12,7 +12,7 @@
     "dev-formmailer": "nodemon --exec ./node_modules/.bin/ts-node -- ./src/index.ts --config ./test/config.test.json",
     "dev-static-http": "http-server ./test -o",
     "dev-smtp-server": "node ./build/test/run-smtp.js",
-    "prepare": "tsc --outDir ./dist --sourceMap false"
+    "prepare": "rm -rf ./dist && tsc --outDir ./dist --sourceMap false"
   },
   "bin": "./dist/formmailer.js",
   "repository": {
