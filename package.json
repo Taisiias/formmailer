@@ -1,6 +1,6 @@
 {
   "name": "formmailer",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "HTTP server that emails data submitted on static website forms.",
   "main": "index.js",
   "scripts": {
@@ -14,7 +14,7 @@
     "dev-smtp-server": "node ./build/test/run-smtp.js",
     "prepare": "rm -rf ./dist && tsc --outDir ./dist --sourceMap false"
   },
-  "bin": "./dist/formmailer.js",
+  "bin": "./bin/formmailer.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Taisiias/formmailer.git"
