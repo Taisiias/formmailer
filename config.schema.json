@@ -158,8 +158,8 @@
             "description": "Recaptcha Secret Key",
             "type": "string"
         },
-        "disableRecaptcha": {
-            "description": "Determines if g-recaptcha-response checking should be disabled.",
+        "enableRecaptcha": {
+            "description": "Determines if g-recaptcha-response checking should be enabled.",
             "type": "boolean"
         }
     },

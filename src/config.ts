@@ -23,7 +23,7 @@ export interface Config {
     reCaptchaSiteKey: string;
     recipientEmails: string | string[];
     redirectFieldName: string;
-    disableRecaptcha: boolean;
+    enableRecaptcha: boolean;
     smtpOptions: smtpTransport.SmtpOptions;
     subject: string;
     webInterfaceIP: string;
@@ -38,15 +38,15 @@ export interface FormTargetData {
 const DefaultConfigObject: Config = {
     assetsFolder: "./assets",
     databaseFileName: "./formmailer.db",
-    disableRecaptcha: false,
     enableHtmlEmail: true,
     enableHttp: true,
     enableHttps: true,
+    enableRecaptcha: false,
     enableWebInterface: true,
     formTargets: {},
     fromEmail: "formmailer@localhost",
     httpListenIP: "0.0.0.0",
-    httpListenPort: 3000,
+    httpListenPort: 80,
     httpsCertificatePath: "",
     httpsListenIP: "0.0.0.0",
     httpsListenPort: 443,

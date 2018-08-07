@@ -51,6 +51,9 @@ export function runHttpServers(
     if (config.enableHttp) {
         httpServer =
             http.createServer(constructConnectionHandler(config, staticFileServer));
+        httpServer.on("error", (err) => {
+            logger.error(`HTTP server start error: ${err}`);
+        });
         httpServer.listen(config.httpListenPort, config.httpListenIP, () => {
             logger.info(
                 `HTTP server started (listening ${config.httpListenIP}:${config.httpListenPort})`);
@@ -64,6 +67,9 @@ export function runHttpServers(
         };
         httpsServer = https.createServer(
             options, constructConnectionHandler(config, staticFileServer));
+        httpsServer.on("error", (err) => {
+            logger.error(`HTTPS server start error: ${err}`);
+        });
         httpsServer.listen(config.httpsListenPort, config.httpsListenIP, () => {
             logger.info(
                 `HTTPS server started ` +

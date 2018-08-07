@@ -36,7 +36,7 @@ function checkIfSpam(remoteip, response, secret) {
 }
 function processReCaptcha(config, parsedRequestData, senderIpAddress, res, pathName, isAjax) {
     return __awaiter(this, void 0, void 0, function* () {
-        if (!config.disableRecaptcha && config.reCaptchaSecret) {
+        if (config.enableRecaptcha && config.reCaptchaSecret) {
             if (parsedRequestData["g-recaptcha-response"]) {
                 log4js_1.getLogger("formMailer").debug(`g-recaptcha-response is present.`);
                 const isSpam = yield checkIfSpam(senderIpAddress, parsedRequestData["g-recaptcha-response"], config.reCaptchaSecret);
