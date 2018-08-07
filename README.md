@@ -1,6 +1,7 @@
 # FormMailer
 
 ![CircleCI badge](https://img.shields.io/circleci/project/github/Taisiias/formmailer.svg)
+[![NPM version][npm-image]][npm-url]
 
 **FormMailer is a simple way to receive emails from contact forms on your static website.**
 
@@ -296,3 +297,6 @@ Don't forget to check your firewall settings to allow outside TCP connections to
 ## License
 
 [MIT License](LICENSE)
+
+[npm-url]: https://www.npmjs.com/package/formmailer
+[npm-image]: https://img.shields.io/npm/v/formmailer.svg
