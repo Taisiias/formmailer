@@ -39,7 +39,7 @@
     "@types/mustache": "^0.8.31",
     "@types/node": "^10.9.4",
     "@types/node-static": "^0.7.0",
-    "@types/nodemailer": "^4.6.2",
+    "@types/nodemailer": "^4.6.4",
     "@types/nodemailer-smtp-transport": "^2.7.4",
     "@types/request": "^2.47.1",
     "@types/request-promise": "^4.1.42",
