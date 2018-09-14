@@ -94,9 +94,9 @@
     "@types/nodemailer-smtp-transport" "*"
     aws-sdk "^2.37.0"
 
-"@types/nodemailer@^4.6.4":
-  version "4.6.4"
-  resolved "https://registry.yarnpkg.com/@types/nodemailer/-/nodemailer-4.6.4.tgz#a11759101c2f6f821a4eed7547056a21a7de566e"
+"@types/nodemailer@^4.6.5":
+  version "4.6.5"
+  resolved "https://registry.yarnpkg.com/@types/nodemailer/-/nodemailer-4.6.5.tgz#8bb799202f8cfcc8200a1c1627f6a8a74fe71da6"
   dependencies:
     "@types/events" "*"
     "@types/node" "*"
@@ -117,9 +117,9 @@
     "@types/node" "*"
     "@types/tough-cookie" "*"
 
-"@types/smtp-server@^3.4.0":
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/@types/smtp-server/-/smtp-server-3.4.0.tgz#f52de4b2e86289b1adddeb84e26e824fe1753bc3"
+"@types/smtp-server@^3.4.1":
+  version "3.4.1"
+  resolved "https://registry.yarnpkg.com/@types/smtp-server/-/smtp-server-3.4.1.tgz#4a3d210f25dd46c98f3915baa714832859cef61f"
   dependencies:
     "@types/events" "*"
     "@types/node" "*"
