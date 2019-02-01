@@ -50,7 +50,7 @@
     "email-validator": "^2.0.4",
     "execa": "^1.0.0",
     "he": "^1.2.0",
-    "log4js": "^3.0.6",
+    "log4js": "^4.0.1",
     "mustache": "^3.0.1",
     "node-static": "^0.7.11",
     "nodemailer": "^5.1.1",
