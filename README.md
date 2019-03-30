@@ -74,7 +74,7 @@ FormMailer also:
     ```json
     {
         "recipientEmails" : "you@yourdomain.com",
-        "fromEmail": "formmailer@localhost",
+        "fromEmail": "formmailer@localhost"
     }
     ```
 
