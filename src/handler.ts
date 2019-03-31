@@ -96,6 +96,10 @@ export function viewHistoryHandler(
             }).catch((err) => {
                 getLogger("formMailer").warn(`Can't render email history page: ${err}`);
             });
+        } else {
+            res.writeHead(301, {Location: VIEW_URL_PATH});
+            res.end();
+            return;
         }
     };
 }
