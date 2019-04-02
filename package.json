@@ -44,7 +44,7 @@
     "@types/request": "^2.48.1",
     "@types/request-promise": "^4.1.42",
     "@types/sqlite3": "^3.1.5",
-    "@types/yargs": "^12.0.10",
+    "@types/yargs": "^12.0.11",
     "bluebird": "^3.5.3",
     "deepmerge": "^3.2.0",
     "email-validator": "^2.0.4",
