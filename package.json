@@ -61,7 +61,7 @@
     "sqlite3": "^4.0.6",
     "typescript": "^3.4.5",
     "url": "^0.11.0",
-    "yargs": "^13.2.2"
+    "yargs": "^13.2.4"
   },
   "devDependencies": {
     "@types/smtp-server": "^3.5.1",
@@ -69,7 +69,7 @@
     "http-server": "^0.11.1",
     "nodemon": "^1.18.11",
     "smtp-server": "^3.5.0",
-    "ts-node": "^8.1.0",
+    "ts-node": "^8.2.0",
     "tslint": "^5.16.0"
   }
 }
