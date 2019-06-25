@@ -69,7 +69,7 @@
     "http-server": "^0.11.1",
     "nodemon": "^1.19.1",
     "smtp-server": "^3.5.0",
-    "ts-node": "^8.2.0",
-    "tslint": "^5.17.0"
+    "ts-node": "^8.3.0",
+    "tslint": "^5.18.0"
   }
 }
