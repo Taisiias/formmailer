@@ -50,7 +50,7 @@
     "email-validator": "^2.0.4",
     "execa": "^1.0.0",
     "he": "^1.2.0",
-    "log4js": "^4.3.2",
+    "log4js": "^4.4.0",
     "mustache": "^3.0.1",
     "node-static": "^0.7.11",
     "nodemailer": "^6.2.1",
@@ -65,7 +65,7 @@
   },
   "devDependencies": {
     "@types/smtp-server": "^3.5.1",
-    "concurrently": "^4.1.0",
+    "concurrently": "^4.1.1",
     "http-server": "^0.11.1",
     "nodemon": "^1.19.1",
     "smtp-server": "^3.5.0",
