@@ -1675,16 +1675,16 @@ lodash@^4.17.15:
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
   integrity sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
 
-log4js@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/log4js/-/log4js-5.0.0.tgz#8133529479cdc6e2371b2cb6c29f285d2d3f4f3c"
-  integrity sha512-yySdC7uCTYo1cCW3Of79PFQVrR1NVK3XxdFozEkLOYhpFsyhVE68yizMdJV7pcrwhvop5J+GGamwb2ejrDt6ww==
+log4js@^5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/log4js/-/log4js-5.1.0.tgz#3fa5372055a4c2611ab92d80496bffc100841508"
+  integrity sha512-QtXrBGZiIwfwBrH9zF2uQarvBuJ5+Icqx9fW+nQL4pnmPITJw8n6kh3bck5IkcTDBQatDeKqUMXXX41fp0TIqw==
   dependencies:
     date-format "^2.1.0"
     debug "^4.1.1"
     flatted "^2.0.1"
     rfdc "^1.1.4"
-    streamroller "^2.0.0"
+    streamroller "^2.1.0"
 
 lowercase-keys@^1.0.0:
   version "1.0.1"
@@ -2727,10 +2727,10 @@ stealthy-require@^1.1.1:
   resolved "https://registry.yarnpkg.com/stealthy-require/-/stealthy-require-1.1.1.tgz#35b09875b4ff49f26a777e509b3090a3226bf24b"
   integrity sha1-NbCYdbT/SfJqd35QmzCQoyJr8ks=
 
-streamroller@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/streamroller/-/streamroller-2.0.0.tgz#11545471dca16c3dbb1eb294232685f82f637895"
-  integrity sha512-F3YGsrfLJMqS2QB5NEV1qd8ZluCNw+srK3t/q3odEwXpy+FF9uR7pPg9YiJxi7jKKahMdZBPBL668lf3Lnk43A==
+streamroller@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/streamroller/-/streamroller-2.1.0.tgz#702de4dbba428c82ed3ffc87a75a21a61027e461"
+  integrity sha512-Ps7CuQL0RRG0YAigxNehrGfHrLu+jKSSnhiZBwF8uWi62WmtHDQV1OG5gVgV5SAzitcz1GrM3QVgnRO0mXV2hg==
   dependencies:
     date-format "^2.1.0"
     debug "^4.1.1"
