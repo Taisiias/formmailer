@@ -61,7 +61,7 @@
     "sqlite3": "^4.1.0",
     "typescript": "^3.5.3",
     "url": "^0.11.0",
-    "yargs": "^14.0.0"
+    "yargs": "^14.2.0"
   },
   "devDependencies": {
     "@types/smtp-server": "^3.5.2",
